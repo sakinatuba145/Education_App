@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../auth/api_service.dart';
-
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   static const Color orange = Color(0xFFFF8A00);
   static const Color lightBg = Color(0xFFFFF7F0);
-
-  Future<void> getUserData() async {
-    final user = await ApiService.getUser();
-
-    print(user.username);
-    print(user.email);
-  }
 
   @override
   Widget build(BuildContext context) {

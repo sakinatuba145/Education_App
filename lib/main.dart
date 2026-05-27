@@ -1,5 +1,8 @@
-import 'package:education_app/features/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:education_app/quiz/quiz_screen.dart';
+import 'package:education_app/quiz/teacher_create_exam_screen.dart';
+
+
 void main() {
   runApp(const MyApp());
 }
@@ -11,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),
+      home: TeacherCreateExamScreen(),
     );
   }
 }

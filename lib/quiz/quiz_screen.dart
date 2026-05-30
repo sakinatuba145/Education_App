@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'quiz_model.dart';
 import 'result_screen.dart';
 import 'package:education_app/core/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class QuizScreen extends StatefulWidget {
   final ExamModel exam;
 
-  const QuizScreen({
-    super.key,
-    required this.exam,
-  });
+  const QuizScreen({super.key, required this.exam});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -17,7 +15,6 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   int currentIndex = 0;
-
   final Map<int, dynamic> answers = {};
 
   void selectAnswer(int value) {
@@ -33,13 +30,9 @@ class _QuizScreenState extends State<QuizScreen> {
       final q = widget.exam.questions[i];
 
       if (q.type == QuestionType.mcq) {
-        if (answers[i] == q.correctIndex) {
-          score++;
-        }
+        if (answers[i] == q.correctIndex) score++;
       } else {
-        if ((answers[i] ?? "").toString().isNotEmpty) {
-          score++;
-        }
+        if ((answers[i] ?? "").toString().isNotEmpty) score++;
       }
     }
 
@@ -56,22 +49,6 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
-  void nextQuestion() {
-    if (currentIndex < widget.exam.questions.length - 1) {
-      setState(() {
-        currentIndex++;
-      });
-    }
-  }
-
-  void prevQuestion() {
-    if (currentIndex > 0) {
-      setState(() {
-        currentIndex--;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final q = widget.exam.questions[currentIndex];
@@ -81,79 +58,79 @@ class _QuizScreenState extends State<QuizScreen> {
       backgroundColor: AppColors.background,
 
       body: SafeArea(
-        child: Padding(
+        child: ListView(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios),
-                    onPressed: () => Navigator.pop(context),
+          children: [
+
+            Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back_ios),
+                    ),
+                    Text(
+                      "Q ${currentIndex + 1}/${widget.exam.questions.length}",
+                      style: GoogleFonts.poppins(
+                        color: AppColors.secondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(22),
                   ),
-                  Text(
-                    "Q ${currentIndex + 1}/${widget.exam.questions.length}",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                  child: Text(
+                    q.question,
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color:Colors.black,
                     ),
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
                 ),
-                child: Text(
-                  q.question,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
 
-              const SizedBox(height: 20),
-              Expanded(
-                child: q.type == QuestionType.mcq
+                const SizedBox(height: 20),
+
+                q.type == QuestionType.mcq
                     ? ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: q.options.length,
                   itemBuilder: (context, i) {
-                    final selected =
-                        answers[currentIndex] == i;
+                    final selected = answers[currentIndex] == i;
 
                     return GestureDetector(
                       onTap: () => selectAnswer(i),
                       child: Container(
-                        margin:
-                        const EdgeInsets.only(bottom: 12),
+                        margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: selected
-                              ? AppColors.primary.withOpacity(0.2)
+                              ? AppColors.primary.withOpacity(0.15)
                               : Colors.white,
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: selected
-                                ? AppColors.primary
-                                : Colors.grey.shade300,
+                            color: AppColors.primary,
                           ),
                         ),
-                        child: Text(q.options[i]),
+                        child: Text(
+                          q.options[i],
+                          style: GoogleFonts.poppins(),
+                        ),
                       ),
                     );
                   },
                 )
                     : TextField(
-                  onChanged: (val) {
-                    answers[currentIndex] = val;
-                  },
+                  onChanged: (val) => answers[currentIndex] = val,
                   maxLines: 5,
                   decoration: InputDecoration(
                     hintText: "Write answer...",
@@ -165,41 +142,39 @@ class _QuizScreenState extends State<QuizScreen> {
                     ),
                   ),
                 ),
-              ),
 
-              Row(
-                children: [
+                const SizedBox(height: 20),
 
-
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: prevQuestion,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade400,
-                        padding: const EdgeInsets.all(14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: currentIndex > 0
+                            ? () => setState(() => currentIndex--)
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                        ),
+                        child: const Text("Previous"),
                       ),
-                      child: const Text("Previous"),
                     ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: isLast ? submitQuiz : nextQuestion,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        padding: const EdgeInsets.all(14),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: isLast
+                            ? submitQuiz
+                            : () => setState(() => currentIndex++),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                        ),
+                        child: Text(isLast ? "Submit" : "Next"),
                       ),
-                      child: Text(isLast ? "Submit" : "Next"),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
     );
   }
 }

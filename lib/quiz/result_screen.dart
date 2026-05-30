@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'quiz_model.dart';
 import 'package:education_app/core/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ResultScreen extends StatelessWidget {
   final int score;
@@ -19,111 +20,124 @@ class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final percentage = ((score / total) * 100).round();
-    final passed = percentage >= 50;
 
     return Scaffold(
       backgroundColor: AppColors.background,
 
       body: SafeArea(
-        child: Column(
-          children: [
+        child: ListView(
+      padding: const EdgeInsets.all(16),
+            children: [
 
-            const SizedBox(height: 20),
-
-            Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Column(
+              Row(
                 children: [
-
-                  Icon(
-                    passed ? Icons.emoji_events : Icons.close,
-                    size: 60,
-                    color: passed ? Colors.green : Colors.red,
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    passed ? "Excellent!" : "Try Again",
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    "$score / $total",
-                    style: const TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                  ),
-
-                  Text(
-                    "$percentage%",
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Result",
+                        style: GoogleFonts.playfairDisplay(
+                          fontSize: 34,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.secondary,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 10),
+              Container(
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      "$score / $total",
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    Text(
+                      "$percentage%",
+                      style: GoogleFonts.poppins(),
+                    ),
+                  ],
+                ),
+              ),
 
-            Expanded(
-              child: ListView.builder(
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: exam.questions.length,
                 itemBuilder: (context, i) {
                   final q = exam.questions[i];
+                  final userAnswer = answers[i];
 
-                  bool correct = false;
-
-                  if (q.type == QuestionType.mcq) {
-                    correct = answers[i] == q.correctIndex;
-                  }
+                  bool isCorrect = q.type == QuestionType.mcq
+                      ? userAnswer == q.correctIndex
+                      : (userAnswer ?? "").toString().isNotEmpty;
 
                   return Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    padding: const EdgeInsets.all(14),
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: correct ? Colors.green : Colors.red,
+                        color: isCorrect ? Colors.green : Colors.red,
+                        width: 1.5,
                       ),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
 
                         Text(
                           q.question,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
 
                         const SizedBox(height: 8),
 
+                        if (q.type == QuestionType.mcq) ...[
+                          Text(
+                            "Your Answer: ${q.options[userAnswer ?? 0]}",
+                            style: TextStyle(
+                              color: isCorrect ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+
+                          Text(
+                            "Correct Answer: ${q.options[q.correctIndex]}",
+                            style: const TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ] else
+                          Text(
+                            "Your Answer: ${userAnswer ?? ""}",
+                            style: GoogleFonts.poppins(),
+                          ),
+
+                        const SizedBox(height: 6),
+
                         Text(
-                          correct ? "Correct" : "Wrong",
+                          isCorrect ? "Correct" : "Wrong",
                           style: TextStyle(
-                            color: correct
-                                ? Colors.green
-                                : Colors.red,
+                            color: isCorrect ? Colors.green : Colors.red,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -131,31 +145,25 @@ class ResultScreen extends StatelessWidget {
                   );
                 },
               ),
-            ),
 
-
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.popUntil(
-                      context,
-                          (route) => route.isFirst,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.all(14),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                    ),
+                    child: const Text("Back to Home"),
                   ),
-                  child: const Text("Back to Home"),
                 ),
               ),
-            ),
-          ],
+  ],
+          ),
         ),
-      ),
     );
   }
 }

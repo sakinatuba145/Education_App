@@ -1,12 +1,12 @@
-import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dashboard_services.dart';
 import '../quiz/quiz_screen.dart';
+import 'dashboard_services.dart';
 
 class DashboardScreen extends StatefulWidget {
   static String id = 'dashboard_screen';
+
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
@@ -23,9 +23,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   String name = "";
   String role = "";
-  void changePage(int index){
+
+  void changePage(int index) {
     setState(() {
-      selectedIndex =index;
+      selectedIndex = index;
     });
   }
 
@@ -60,13 +61,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Color(0xFF9E9E9E),
-          title: Text("Dashboard"), centerTitle: true,
+        backgroundColor: Color(0xFF9E9E9E),
+        title: Text("Dashboard"),
+        centerTitle: true,
         actions: [
-          Switch(value: themeProvider.isDark, onChanged: (value){
-            themeProvider.toggleTheme();
-          },
-          )
+          Switch(
+            value: themeProvider.isDark,
+            onChanged: (value) {
+              themeProvider.toggleTheme();
+            },
+          ),
         ],
       ),
 
@@ -75,21 +79,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-                accountName: Text("User Name"),
-                accountEmail: Text("User@email.com"),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(Icons.person,size: 40,),
+              accountName: Text("User Name"),
+              accountEmail: Text("User@email.com"),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, size: 40),
+              ),
+              decoration: BoxDecoration(color: Color(0xFF9E9E9E)),
             ),
-            decoration: BoxDecoration(color: Color(0xFF9E9E9E),),
-            ),
-            ListTile(
-
-            )
+            ListTile(),
           ],
         ),
       ),
-      body:Row(
+      body: Row(
         children: [
           // ================= SIDEBAR =================
           Container(
@@ -97,8 +99,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             color: Color(0xFF9E9E9E),
             child: Column(
               children: [
-                const SizedBox(height: 50),
-
+                 SizedBox(height: 50),
                 // 👤 Profile
                 const CircleAvatar(
                   radius: 35,
@@ -111,9 +112,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   "User Name",
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
-
-                const SizedBox(height: 30),
-
+                SizedBox(height: 30),
                 // 📚 Menu Items
                 sidebarItem(
                   icon: Icons.dashboard,
@@ -121,23 +120,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   index: 0,
                 ),
 
-                sidebarItem(
-                  icon: Icons.quiz,
-                  title: "Quiz",
-                  index: 1,
-                ),
-
-                sidebarItem(
-                  icon: Icons.settings,
-                  title: "Settings",
-                  index: 2,
-                ),
-
-                sidebarItem(
-                  icon: Icons.logout,
-                  title: "Logout",
-                  index: 3,
-                ),
+                sidebarItem(icon: Icons.quiz, title: "Quiz", index: 1),
+                sidebarItem(icon: Icons.settings, title: "Settings", index: 2),
+                sidebarItem(icon: Icons.logout, title: "Logout", index: 3),
               ],
             ),
           ),
@@ -164,31 +149,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return GestureDetector(
       onTap: () {
-        if (index == 1) {
-          // 👉 Quiz page example
-          final exam = ExamModel(
-            id: '1',
-            title: 'Demo Exam',
-            subject: 'General',
-            questions: [
-              QuizModel(
-                id: 'q1',
-                question: 'Flutter is developed by?',
-                options: ['Apple', 'Google', 'Microsoft', 'Facebook'],
-                correctIndex: 1,
-              ),
-            ],
-          );
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => QuizScreen(exam: exam),
-            ),
-          );
-        } else {
-          changePage(index);
-        }
+        TextButton(
+          onPressed: () {
+            Navigator.pushNamed(context, QuizScreen.id);
+          },
+          child: const Text("Register"),
+        );
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -201,10 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Icon(icon, color: Colors.white),
             const SizedBox(width: 10),
-            Text(
-              title,
-              style: const TextStyle(color: Colors.white),
-            ),
+            Text(title, style: const TextStyle(color: Colors.white)),
           ],
         ),
       ),
@@ -228,4 +191,3 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 }
-

@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 class DashboardService {
 
   // گرفتن تعداد کورس‌ها (فعلاً dummy)
@@ -5,6 +7,8 @@ class DashboardService {
     await Future.delayed(const Duration(seconds: 1));
     return 12;
   }
+  //get Profile Information of user----1
+  final User? user = FirebaseAuth.instance.currentUser;
 
   // گرفتن تعداد assignment ها
   Future<int> getAssignmentsCount(String userId) async {

@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../courses/course_screen.dart';
+import '../quiz/quiz_screen.dart';
+import '../teacher/screens/teacher_dashboard_screen.dart';
 import 'chart_painter.dart';
 import 'chartdata.dart';
-import 'course_page.dart';
+
 import 'data_dashboard.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -366,7 +369,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           label: 'Settings',
           isSelected: false,
           isDesktop: isDesktop,
-          onTap: () {},
+          onTap: () {setState(() {
+    Navigator.pushNamed(context, TeacherDashboardScreen.id);}
+          );},
         ),
       ],
     );
@@ -497,6 +502,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+
   Widget _buildPageContent(bool isMobile, bool isTablet, bool isDesktop) {
     switch (_selectedIndex) {
       case 0:
@@ -527,7 +533,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => CoursePage(title: course.title),
+                    builder: (_) => CourseScreen(),
                   ),
                 );
               },
@@ -566,6 +572,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         "Open Course",
                         style: TextStyle(color: Colors.grey, fontSize: 12),
                       ),
+                     IconButton(onPressed: (){
+                       setState(() {
+                         Navigator.pushNamed(context, QuizScreen.id);
+                       });
+                     }, icon: Icon(Icons.quiz))
                     ],
                   ),
                 ),
@@ -725,7 +736,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Row(
               children: students.map((student) {
                 return Container(
-                  width: 150,
+                  width: isMobile ? 180 : 150,
                   margin: EdgeInsets.only(right: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -734,8 +745,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
                           student.imageUrl,
-                          height: 100,
-                          width: 150,
+                          height: 80,
+                          width: 120,
                           fit: BoxFit.cover,
                         ),
                       ),

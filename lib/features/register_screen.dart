@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:education_app/core/widgets/app_snackbar.dart';
 import 'package:education_app/core/constants/app_strings.dart';
 import 'package:education_app/features/auth_services.dart';
-
+import 'package:education_app/theme_provider.dart';
 class RegisterScreen extends StatefulWidget {
   static String id='register_screen';
 

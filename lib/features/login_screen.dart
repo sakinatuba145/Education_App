@@ -8,11 +8,9 @@ import 'forgot_password.dart';
 import 'google_login.dart' as _authService;
 
 class LoginScreen extends StatefulWidget {
-  static String id='login_screen';
+  static String id = 'login_screen';
 
-  const LoginScreen({
-    super.key,
-  });
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -52,13 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Login Failed: ${e.toString()}',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login Failed: ${e.toString()}')));
     }
 
     setState(() {
@@ -71,12 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Login",
-          style: theme.textTheme.titleLarge,
-        ),
-      ),
+      appBar: AppBar(title: Text("Login", style: theme.textTheme.titleLarge)),
 
       body: SafeArea(
         child: Center(
@@ -85,11 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                Text(
-                  "Welcome Back ",
-                  style: theme.textTheme.headlineMedium,
-                ),
+                Text("Welcome Back ", style: theme.textTheme.headlineMedium),
 
                 const SizedBox(height: 10),
 
@@ -100,10 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 40),
 
-                Text(
-                  "Email",
-                  style: theme.textTheme.titleMedium,
-                ),
+                Text("Email", style: theme.textTheme.titleMedium),
 
                 const SizedBox(height: 12),
 
@@ -119,10 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 24),
 
-                Text(
-                  "Password",
-                  style: theme.textTheme.titleMedium,
-                ),
+                Text("Password", style: theme.textTheme.titleMedium),
 
                 const SizedBox(height: 12),
 
@@ -141,28 +120,30 @@ class _LoginScreenState extends State<LoginScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {Navigator.pushNamed(context, ForgotPasswordScreen.id);},
+                    onPressed: () {
+                      Navigator.pushNamed(context, ForgotPasswordScreen.id);
+                    },
                     child: const Text("Forgot Password?"),
                   ),
                 ),
 
                 const SizedBox(height: 24),
-
                 SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                  onPressed: (){Navigator.pushNamed(context, DashboardScreen.id);},
-                    child:
-                    isLoading
+                    onPressed: () {
+                      Navigator.pushNamed(context, DashboardScreen.id);
+                    },
+                    child: isLoading
                         ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: Colors.white,
-                      ),
-                    )
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
+                          )
                         : const Text("Login"),
                   ),
                 ),
@@ -171,23 +152,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 Row(
                   children: [
-                    const Expanded(
-                      child: Divider(),
-                    ),
+                    const Expanded(child: Divider()),
 
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                      ),
-                      child: Text(
-                        "OR",
-                        style: theme.textTheme.bodySmall,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text("OR", style: theme.textTheme.bodySmall),
                     ),
 
-                    const Expanded(
-                      child: Divider(),
-                    ),
+                    const Expanded(child: Divider()),
                   ],
                 ),
 
@@ -199,8 +171,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: OutlinedButton.icon(
                     onPressed: () async {
                       try {
-                        final userCredential =
-                        await _authService.signInWithGoogle();
+                        final userCredential = await _authService
+                            .signInWithGoogle();
                         print(userCredential.user?.email);
                       } catch (e) {
                         print(e);
@@ -228,7 +200,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
 
                     TextButton(
-                      onPressed: () {Navigator.pushNamed(context, RegisterScreen.id);},
+                      onPressed: () {
+                        Navigator.pushNamed(context, RegisterScreen.id);
+                      },
                       child: const Text("Register"),
                     ),
                   ],

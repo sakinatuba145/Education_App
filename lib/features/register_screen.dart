@@ -1,11 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:education_app/core/widgets/app_snackbar.dart';
 import 'package:education_app/core/constants/app_strings.dart';
 import 'package:education_app/features/auth_services.dart';
 
 class RegisterScreen extends StatefulWidget {
-  static String id='register_screen';
+  static String id = 'register_screen';
+
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -23,10 +24,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool obscureConfirm = true;
 
   void register() async {
-    if (nameController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        passwordController.text.isEmpty ||
-        confirmController.text.isEmpty) {
+    if (nameController.text.isEmpty &&
+    emailController.text.isEmpty &&
+    passwordController.text.isEmpty ||
+    confirmController.text.isEmpty) {
       AppSnackBar.show(context, AppStrings.fillFields);
       return;
     }
@@ -57,7 +58,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         AppSnackBar.show(context, "Registration failed");
       }
     } catch (e) {
-      AppSnackBar.show(context, "Error occurred");
+      print("REGISTER ERROR: $e");
+      AppSnackBar.show(context, e.toString());
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
@@ -138,7 +140,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
 
               const SizedBox(height: 20),
-
               TextField(
                 controller: confirmController,
                 obscureText: obscureConfirm,

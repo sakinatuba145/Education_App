@@ -51,6 +51,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFFf5b400),
         title: Text(
           "Forgot Password",
           style: theme.textTheme.titleLarge,
@@ -58,7 +59,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ),
 
       body: SafeArea(
-        child: Center(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xffFFF8F0),
+                Color(0xffFFE0B2),
+                Color(0xffFFD180),
+              ],
+            ),
+          ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -69,14 +83,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   style: theme.textTheme.headlineMedium,
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: 30),
 
                 Text(
                   "Enter your email and we will send a reset link",
                   style: theme.textTheme.bodyMedium,
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 50),
 
                 TextField(
                   controller: emailController,
@@ -88,12 +102,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 25),
+                const SizedBox(height: 50),
 
                 SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFf5b400)),
                     onPressed: isLoading ? null : resetPassword,
                     child: isLoading
                         ? const CircularProgressIndicator(
@@ -104,7 +119,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 50),
 
                 Center(
                   child: TextButton(

@@ -69,6 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFFf5b400),
         title: Text(
           "Register",
           style: theme.textTheme.titleLarge,
@@ -76,161 +77,175 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
 
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xffFFF8F0),
+                Color(0xffFFE0B2),
+                Color(0xffFFD180),
+              ],
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-              Text(
-                "Create Account",
-                style: theme.textTheme.headlineMedium,
-              ),
-
-              const SizedBox(height: 10),
-
-              Text(
-                "Join your learning journey",
-                style: theme.textTheme.bodyMedium,
-              ),
-
-              const SizedBox(height: 40),
-
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  hintText: "Full name",
-                  prefixIcon: Icon(Icons.person_outline),
+                Text(
+                  "Create Account",
+                  style: theme.textTheme.headlineMedium,
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  hintText: "Email",
-                  prefixIcon: Icon(Icons.email_outlined),
+                Text(
+                  "Join your learning journey",
+                  style: theme.textTheme.bodyMedium,
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 40),
 
-              TextField(
-                controller: passwordController,
-                obscureText: obscurePass,
-                decoration: InputDecoration(
-                  hintText: "Password",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscurePass
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    hintText: "Full name",
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    hintText: "Email",
+                    prefixIcon: Icon(Icons.email_outlined),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                TextField(
+                  controller: passwordController,
+                  obscureText: obscurePass,
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscurePass
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          obscurePass = !obscurePass;
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        obscurePass = !obscurePass;
-                      });
-                    },
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              TextField(
-                controller: confirmController,
-                obscureText: obscureConfirm,
-                decoration: InputDecoration(
-                  hintText: "Confirm password",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscureConfirm
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                TextField(
+
+                  controller: confirmController,
+                  obscureText: obscureConfirm,
+                  decoration: InputDecoration(
+                    hintText: "Confirm password",
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscureConfirm
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          obscureConfirm = !obscureConfirm;
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        obscureConfirm = !obscureConfirm;
-                      });
-                    },
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              DropdownButtonFormField<String>(
-                initialValue: role,
-                items: const [
-                  DropdownMenuItem(
-                    value: "student",
-                    child: Text("Student"),
-                  ),
-                  DropdownMenuItem(
-                    value: "teacher",
-                    child: Text("Teacher"),
-                  ),
-                  DropdownMenuItem(
-                    value: "academy",
-                    child: Text("Academy"),
-                  ),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => role = value);
-                  }
-                },
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.school_outlined),
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: isLoading ? null : register,
-                  child: isLoading
-                      ? const CircularProgressIndicator(
-                    color: Colors.white,
-                  )
-                      : const Text("Create Account"),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    final auth = AuthService();
-                    final user = await auth.signInWithGoogle();
-
-                    if (user != null && mounted) {
-                      Navigator.pop(context);
+                DropdownButtonFormField<String>(
+                  initialValue: role,
+                  items: const [
+                    DropdownMenuItem(
+                      value: "student",
+                      child: Text("Student"),
+                    ),
+                    DropdownMenuItem(
+                      value: "teacher",
+                      child: Text("Teacher"),
+                    ),
+                    DropdownMenuItem(
+                      value: "academy",
+                      child: Text("Academy"),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => role = value);
                     }
                   },
-                  icon: const Icon(Icons.g_mobiledata),
-                  label: const Text("Continue with Google"),
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.school_outlined),
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 30),
 
-              Center(
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Already have an account? Login"),
+                SizedBox(
+                  width: double.infinity,
+                  height: 40,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFf5b400)),
+                      onPressed: isLoading ? null : register,
+                      child: isLoading
+                          ? const CircularProgressIndicator(
+                      )
+                          : const Text("Create Account", style: TextStyle(fontSize: 20, color: Colors.black),),
+                    ),
                 ),
-              ),
-            ],
+
+
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      final auth = AuthService();
+                      final user = await auth.signInWithGoogle();
+
+                      if (user != null && mounted) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    icon: const Icon(Icons.g_mobiledata),
+                    label: const Text("Continue with Google",),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                Center(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Already have an account? Login"),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

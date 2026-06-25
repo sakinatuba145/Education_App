@@ -183,7 +183,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         end: Alignment.bottomCenter,
                         colors: _isDarkMode
                             ? [Colors.grey[900]!, Colors.grey[850]!]
-                            : [Colors.blue[900]!, Colors.blue[700]!],
+                            : [Color(0xFFf5b400)!, Color(0xffFFD180)!],
                       ),
                     ),
                     child: _buildSideNavigation(isDesktop),
@@ -401,7 +401,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Text(
                   label,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Color(0xffFFF8F0),
                     fontSize: 16,
                     fontWeight: isSelected
                         ? FontWeight.bold
@@ -421,7 +421,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       height: 70,
       padding: EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: _isDarkMode ? Colors.grey[850] : Colors.white,
+        color: _isDarkMode ? Colors.grey[850] : Colors.orange[500],
         boxShadow: [
           BoxShadow(
             color: Colors.white.withAlpha(55),
@@ -474,7 +474,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: _isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                  fillColor: _isDarkMode ? Colors.grey[800] : Colors.white,
                 ),
               ),
             ),
@@ -504,6 +504,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 
   Widget _buildPageContent(bool isMobile, bool isTablet, bool isDesktop) {
+
     switch (_selectedIndex) {
       case 0:
         return _buildDashboardScreen(isMobile, isTablet, isDesktop);
@@ -539,7 +540,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: _isDarkMode ? Colors.grey[850] : Colors.white,
+                  color: _isDarkMode ? Colors.grey[850] : Color(0xffFFE0B2),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -612,7 +613,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildRevenueChart(bool isMobile, bool isTablet, bool isDesktop) {
     return Container(
       decoration: BoxDecoration(
-        color: _isDarkMode ? Colors.grey[850] : Colors.grey[100],
+        color: _isDarkMode ? Colors.grey[850] : Color(0xffFFE0B2),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -648,7 +649,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _isDarkMode ? Colors.grey[850] : Colors.grey[100],
+        color: _isDarkMode ? Colors.grey[850] : Color(0xffFFE0B2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -711,7 +712,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _isDarkMode ? Colors.grey[800] : Colors.white,
+        color: _isDarkMode ? Colors.grey[800] : Color(0xffFFE0B2),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

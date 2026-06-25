@@ -1,4 +1,4 @@
-import 'theme_provider.dart';
+import 'package:education_app/courses/course_screen.dart';
 import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +9,15 @@ import 'features/forgot_password.dart';
 import 'firebase_options.dart';
 
 import 'courses/course_bloc.dart';
+import 'theme_provider.dart';
 
 import 'core/constants/theme.dart';
 import 'core/helpers/shared_preferences_helper.dart';
+import 'features/welcome_screen.dart';
 import 'features/login_screen.dart';
 import 'features/register_screen.dart';
 import 'dashboard/dashboard_screen.dart';
+import 'teacher/screens/teacher_dashboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,8 +57,9 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       themeMode:themeProvider.themeMode,
       routes: {
-        LoginScreen.id: (context) => LoginScreen(toggleTheme: () {  },),
-        RegisterScreen.id: (context) => RegisterScreen(Theme: () {  },),
+        WelcomeScreen.id: (context) => WelcomeScreen(),
+        LoginScreen.id: (context) => LoginScreen(),
+        RegisterScreen.id: (context) => RegisterScreen(),
         ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
         DashboardScreen.id: (context) => DashboardScreen(),
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
@@ -63,7 +67,7 @@ class MyApp extends StatelessWidget {
         QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),
       },
 
-      initialRoute: RegisterScreen.id,
+      initialRoute: WelcomeScreen.id,
     );
   }
 }

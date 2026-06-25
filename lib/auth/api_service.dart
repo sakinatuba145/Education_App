@@ -1,8 +1,14 @@
-import 'package:dio/dio.dart';
 import 'package:education_app/auth/user_models.dart';
+import 'package:dio/dio.dart';
 
 class ApiService {
-  static get dio => null;
+  static final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://dummyjson.com/',
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
 
   static Future<UserModel> getUser() async {
     final response = await dio.get('users/1');

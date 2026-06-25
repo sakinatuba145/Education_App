@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 void getData() async {
   final dio = Dio();
@@ -7,5 +8,7 @@ void getData() async {
     'https://jsonplaceholder.typicode.com/posts',
   );
 
-  print(response.data);
+  if (kDebugMode) {
+    print(response.data);
+  }
 }

@@ -10,7 +10,7 @@ class QuizRepository {
 
   Future<QuizModel> fetchQuiz(String id) {
     return service.getQuizById(id);
-  }
+ }
 
   Future<void> sendResult(String id, int score) {
     return service.submitResult(quizId: id, score: score);

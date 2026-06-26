@@ -20,6 +20,11 @@ import 'dashboard/dashboard_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
 import 'teacher/screens/academy_dashboard_screen.dart';
 import 'teacher/screens/course_creation_screen.dart';
+import 'quiz/create_exam_screen.dart';
+import 'profile/profile_screen.dart';
+import 'profile/settings_screen.dart';
+import 'profile/progress_screen.dart';
+import 'profile/favorites_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +67,11 @@ class MyApp extends StatelessWidget {
         TeacherDashboardScreen.id: (context) => const TeacherDashboardScreen(),
         AcademyDashboardScreen.id: (context) => const AcademyDashboardScreen(),
         CourseCreationScreen.id: (context) => const CourseCreationScreen(),
+        'profile_screen': (context) => const ProfileScreen(),
+        'settings_screen': (context) => const SettingsScreen(),
+        'progress_screen': (context) => const ProgressScreen(),
+        'favorites_screen': (context) => const FavoritesScreen(),
+        'teacher_create_exam': (context) => const TeacherCreateExamScreen(),
         CourseScreen.id: (context) => CourseScreen(),
         QuizScreen.id: (context) => QuizScreen(
               exam: ModalRoute.of(context)!.settings.arguments as ExamModel,

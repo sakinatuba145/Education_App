@@ -1,6 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:education_app/features/auth_services.dart';
+import 'package:education_app/features/welcome_screen.dart';
+import 'package:education_app/courses/course_discovery_screen_premium.dart';
+import 'package:education_app/quiz/quiz_player_screen_premium.dart';
+import 'package:education_app/profile/profile_screen.dart';
+import 'package:education_app/profile/settings_screen.dart';
+import 'package:education_app/profile/progress_screen.dart';
+import 'package:education_app/profile/favorites_screen.dart';
 import 'chart_painter.dart';
 import 'chartdata.dart';
 import 'course_page.dart';
@@ -224,22 +232,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 type: BottomNavigationBarType.fixed,
                 selectedItemColor: Colors.blue[700],
                 unselectedItemColor: Colors.grey,
-                items: [
+                items: const [
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.dashboard_rounded),
-                    label: "Dashboard",
+                    icon: Icon(Icons.home_rounded),
+                    label: "Home",
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.analytics_rounded),
-                    label: "Analytics",
+                    icon: Icon(Icons.explore_rounded),
+                    label: "Explore",
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.menu_book_rounded),
-                    label: "Library",
+                    icon: Icon(Icons.quiz_rounded),
+                    label: "Quizzes",
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.more_horiz),
-                    label: "More",
+                    icon: Icon(Icons.person_rounded),
+                    label: "Profile",
                   ),
                 ],
               );
@@ -307,10 +315,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.logout),
-            title: Text('Logout'),
+            leading: const Icon(Icons.bar_chart_rounded),
+            title: const Text('My Progress'),
             onTap: () {
-              setState(() {});
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProgressScreen()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite_outline),
+            title: const Text('Favourites'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings_outlined),
+            title: const Text('Settings'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
+            onTap: () async {
+              await AuthService().logout();
+              if (context.mounted) {
+                Navigator.pushReplacementNamed(context, WelcomeScreen.id);
+              }
             },
           ),
         ],
@@ -502,11 +537,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 0:
         return _buildDashboardScreen(isMobile, isTablet, isDesktop);
       case 1:
-        return _buildDefaultScreen();
+        // Explore / Course Discovery
+        return const CourseDiscoveryScreenPremium();
       case 2:
-        return _buildDefaultScreen();
+        // Quizzes
+        return const QuizPlayerScreenPremium();
+      case 3:
+        // Profile & Settings
+        return const ProfileScreen();
       default:
-        return _buildDefaultScreen();
+        return _buildDashboardScreen(isMobile, isTablet, isDesktop);
     }
   }
 

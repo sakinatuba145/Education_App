@@ -4,8 +4,12 @@ import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/teacher/screens/course_creation_screen.dart';
 import 'package:education_app/teacher/screens/course_editor_screen.dart';
+import 'package:education_app/teacher/screens/course_creation_screen_premium.dart';
+import 'package:education_app/teacher/screens/lesson_management_screen_premium.dart';
+import 'package:education_app/teacher/screens/content_upload_screen_premium.dart';
+import 'package:education_app/quiz/create_exam_screen.dart';
 import 'package:education_app/features/auth_services.dart';
-import 'package:education_app/features/welcome_screen.dart';
+import 'package:education_app/features/login_screen.dart';
 
 const _primary = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF3E0);
@@ -20,9 +24,10 @@ class TeacherDashboardScreen extends StatefulWidget {
 
 class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  late TabController _courseTabController;
   final TeacherCourseService _courseService = TeacherCourseService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  int _portalIndex = 0;
 
   List<CourseModel> _allCourses = [];
   bool _isLoading = true;
@@ -30,7 +35,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _courseTabController = TabController(length: 3, vsync: this);
     _loadCourses();
   }
 
@@ -49,97 +54,160 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
 
   List<CourseModel> get _published => _allCourses.where((c) => c.isPublished).toList();
   List<CourseModel> get _drafts => _allCourses.where((c) => c.isDraft).toList();
-
   int get _totalStudents => _allCourses.fold(0, (s, c) => s + c.totalEnrolled);
+
+  String get _teacherName {
+    final raw = _auth.currentUser?.displayName ?? 'Instructor';
+    return raw.contains('|') ? raw.split('|').first : raw;
+  }
+
+  // ── Portal title per tab ────────────────────────────────────────────────
+  String get _portalTitle {
+    switch (_portalIndex) {
+      case 1: return 'Create Course';
+      case 2: return 'Manage Lessons';
+      case 3: return 'Upload Content';
+      case 4: return 'Quiz Builder';
+      default: return 'Teacher Portal';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final user = _auth.currentUser;
-    final rawName = user?.displayName ?? 'Instructor';
-    final name = rawName.contains('|') ? rawName.split('|').first : rawName;
-
     return Scaffold(
       backgroundColor: _bg,
-      appBar: AppBar(
-        backgroundColor: _bg,
-        elevation: 0,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Welcome back,', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-            Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: _primary),
-            onPressed: _loadCourses,
-          ),
-          PopupMenuButton(
-            icon: CircleAvatar(
-              backgroundColor: _primary,
-              radius: 18,
-              child: Text(name.isNotEmpty ? name[0].toUpperCase() : 'T',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                child: const Row(children: [Icon(Icons.logout, size: 18), SizedBox(width: 8), Text('Logout')]),
-                onTap: () async {
-                  await AuthService().logout();
-                  if (mounted) Navigator.pushReplacementNamed(context, WelcomeScreen.id);
-                },
-              ),
-            ],
-          ),
-          const SizedBox(width: 8),
+      // ── Show home AppBar only on Tab 0; premium screens carry their own ─
+      appBar: _portalIndex == 0 ? _buildHomeAppBar() : null,
+
+      // ── Portal body via IndexedStack ────────────────────────────────────
+      body: IndexedStack(
+        index: _portalIndex,
+        children: [
+          // Tab 0 — My Courses
+          _buildCoursesTab(),
+          // Tab 1 — Create Course (premium multi-step)
+          const CourseCreationScreenPremium(),
+          // Tab 2 — Lesson Management (premium reorderable)
+          const LessonManagementScreenPremium(),
+          // Tab 3 — Content Upload (premium drag-drop)
+          const ContentUploadScreenPremium(),
+          // Tab 4 — Quiz Builder / Exam Creator
+          const TeacherCreateExamScreen(),
         ],
       ),
-      body: RefreshIndicator(
-        color: _primary,
-        onRefresh: _loadCourses,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: _buildStatsRow()),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: Text('My Courses', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              ),
+
+      // ── Bottom Navigation ───────────────────────────────────────────────
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _portalIndex,
+        onTap: (i) => setState(() => _portalIndex = i),
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: _primary,
+        unselectedItemColor: Colors.grey,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+        unselectedLabelStyle: const TextStyle(fontSize: 11),
+        backgroundColor: Colors.white,
+        elevation: 12,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'My Courses'),
+          BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline_rounded), label: 'Create'),
+          BottomNavigationBarItem(icon: Icon(Icons.playlist_play_rounded), label: 'Lessons'),
+          BottomNavigationBarItem(icon: Icon(Icons.upload_rounded), label: 'Upload'),
+          BottomNavigationBarItem(icon: Icon(Icons.quiz_outlined), label: 'Quiz'),
+        ],
+      ),
+
+      // ── FAB only on courses tab ─────────────────────────────────────────
+      floatingActionButton: _portalIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: _createCourse,
+              backgroundColor: _primary,
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('New Course', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            )
+          : null,
+    );
+  }
+
+  // ── Home AppBar ─────────────────────────────────────────────────────────
+  PreferredSizeWidget _buildHomeAppBar() {
+    return AppBar(
+      backgroundColor: _bg,
+      elevation: 0,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Welcome back,', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+          Text(_teacherName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+        ],
+      ),
+      actions: [
+        IconButton(icon: const Icon(Icons.refresh, color: _primary), onPressed: _loadCourses),
+        PopupMenuButton(
+          icon: CircleAvatar(
+            backgroundColor: _primary,
+            radius: 18,
+            child: Text(
+              _teacherName.isNotEmpty ? _teacherName[0].toUpperCase() : 'T',
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
-            SliverToBoxAdapter(
-              child: TabBar(
-                controller: _tabController,
-                labelColor: _primary,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: _primary,
-                tabs: [
-                  Tab(text: 'All (${_allCourses.length})'),
-                  Tab(text: 'Published (${_published.length})'),
-                  Tab(text: 'Draft (${_drafts.length})'),
-                ],
-              ),
-            ),
-            SliverFillRemaining(
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: _primary))
-                  : TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildCourseList(_allCourses),
-                        _buildCourseList(_published),
-                        _buildCourseList(_drafts),
-                      ],
-                    ),
+          ),
+          itemBuilder: (_) => [
+            PopupMenuItem(
+              child: const Row(children: [Icon(Icons.logout, size: 18), SizedBox(width: 8), Text('Logout')]),
+              onTap: _logout,
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _createCourse,
-        backgroundColor: _primary,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('New Course', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
+  Future<void> _logout() async {
+    await AuthService().logout();
+    if (mounted) Navigator.pushReplacementNamed(context, LoginScreen.id);
+  }
+
+  // ── Courses Tab ─────────────────────────────────────────────────────────
+  Widget _buildCoursesTab() {
+    return RefreshIndicator(
+      color: _primary,
+      onRefresh: _loadCourses,
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: _buildStatsRow()),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: const Text('My Courses', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: TabBar(
+              controller: _courseTabController,
+              labelColor: _primary,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: _primary,
+              tabs: [
+                Tab(text: 'All (${_allCourses.length})'),
+                Tab(text: 'Published (${_published.length})'),
+                Tab(text: 'Draft (${_drafts.length})'),
+              ],
+            ),
+          ),
+          SliverFillRemaining(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator(color: _primary))
+                : TabBarView(
+                    controller: _courseTabController,
+                    children: [
+                      _buildCourseList(_allCourses),
+                      _buildCourseList(_published),
+                      _buildCourseList(_drafts),
+                    ],
+                  ),
+          ),
+        ],
       ),
     );
   }
@@ -196,7 +264,6 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
         ),
       );
     }
-
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: courses.length,
@@ -343,7 +410,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _courseTabController.dispose();
     super.dispose();
   }
 }

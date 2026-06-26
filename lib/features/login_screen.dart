@@ -3,6 +3,7 @@ import 'package:education_app/features/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen.dart';
+import 'package:education_app/teacher/screens/academy_dashboard_screen.dart';
 import 'forgot_password.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -43,26 +44,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      // Use the role the user selected on this screen —
-      // this fixes old accounts that have no stored role.
-      String role = _selectedRole;
+      final storedRole = result?['role'] as String? ?? 'unknown';
+      final roleIsExplicit = result?['roleIsExplicit'] as bool? ?? false;
 
-      // If the stored role is teacher/academy, respect that over the toggle
-      final storedRole = result?['role'] ?? 'student';
-      if (storedRole == 'teacher' || storedRole == 'academy') {
-        role = storedRole;
+      // ── Strict role enforcement ─────────────────────────────────────────
+      if (roleIsExplicit && storedRole != _selectedRole) {
+        // Role mismatch — block login
+        final storedLabel = _roleLabel(storedRole);
+        final selectedLabel = _roleLabel(_selectedRole);
+        _showRoleMismatchError(
+          selected: selectedLabel,
+          actual: storedLabel,
+        );
+        return;
       }
 
-      // Persist the chosen role so next login remembers it
-      await _authService.updateUserRole(role);
+      // No role ever stored (old account created before role-saving was added)
+      // → trust the user's selection and save it permanently
+      if (!roleIsExplicit) {
+        await _authService.saveRoleFirstTime(_selectedRole);
+      }
 
       if (!mounted) return;
 
-      if (role == 'teacher' || role == 'academy') {
-        Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
-      } else {
-        Navigator.pushReplacementNamed(context, DashboardScreen.id);
-      }
+      // Route to correct module
+      _navigateByRole(roleIsExplicit ? storedRole : _selectedRole);
     } on Exception catch (e) {
       if (!mounted) return;
       final msg = e.toString()
@@ -76,6 +82,73 @@ class _LoginScreenState extends State<LoginScreen> {
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
+  }
+
+  void _navigateByRole(String role) {
+    switch (role) {
+      case 'teacher':
+        Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
+        break;
+      case 'academy':
+        Navigator.pushReplacementNamed(context, AcademyDashboardScreen.id);
+        break;
+      default:
+        Navigator.pushReplacementNamed(context, DashboardScreen.id);
+    }
+  }
+
+  String _roleLabel(String role) {
+    switch (role) {
+      case 'teacher': return 'Teacher';
+      case 'academy': return 'Academy';
+      case 'student': return 'Student';
+      default: return role;
+    }
+  }
+
+  void _showRoleMismatchError({required String selected, required String actual}) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.block, color: Colors.red),
+            SizedBox(width: 8),
+            Text('Wrong Role Selected'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'This account is registered as a $actual.',
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'You selected "$selected" — please select "$actual" and try again.',
+              style: const TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              // Auto-select the correct role for convenience
+              setState(() => _selectedRole = actual.toLowerCase());
+            },
+            child: Text('Switch to $actual'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showError(String message) {
@@ -103,30 +176,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     );
-  }
-
-  Future<void> _loginAsTeacherDemo() async {
-    setState(() => isLoading = true);
-    const email = 'demo.teacher@eduaf.com';
-    const password = 'TeacherDemo@123';
-    const name = 'Demo Teacher';
-    const role = 'teacher';
-    try {
-      try {
-        await _authService.loginWithEmail(email: email, password: password);
-      } catch (_) {
-        await _authService.register(name, email, password, role);
-        await _authService.loginWithEmail(email: email, password: password);
-      }
-      await _authService.updateUserRole(role);
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
-    } catch (e) {
-      if (!mounted) return;
-      _showError('Demo login failed: ${e.toString()}');
-    } finally {
-      if (mounted) setState(() => isLoading = false);
-    }
   }
 
   String _friendlyAuthError(String code) {
@@ -164,7 +213,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 32),
 
                 // ── Role selector ──────────────────────────────────────────
-                Text('I am a...', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text('Login as...', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text('Must match your account type', style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey)),
                 const SizedBox(height: 12),
                 Container(
                   decoration: BoxDecoration(
@@ -231,34 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 24, width: 24,
                             child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
                           )
-                        : Text('Login as ${_selectedRole[0].toUpperCase()}${_selectedRole.substring(1)}'),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-                Row(children: [
-                  const Expanded(child: Divider()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('OR', style: theme.textTheme.bodySmall),
-                  ),
-                  const Expanded(child: Divider()),
-                ]),
-                const SizedBox(height: 24),
-
-                // Demo button
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: OutlinedButton.icon(
-                    onPressed: isLoading ? null : _loginAsTeacherDemo,
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: _primary),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    icon: Icon(Icons.play_circle_outline, color: _primary),
-                    label: Text('Try Teacher Demo Account',
-                        style: TextStyle(color: _primary, fontWeight: FontWeight.bold)),
+                        : Text('Login as ${_roleLabel(_selectedRole)}'),
                   ),
                 ),
 

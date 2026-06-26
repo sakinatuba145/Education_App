@@ -18,6 +18,7 @@ import 'features/login_screen.dart';
 import 'features/register_screen.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
+import 'teacher/screens/academy_dashboard_screen.dart';
 import 'teacher/screens/course_creation_screen.dart';
 
 void main() async {
@@ -59,6 +60,7 @@ class MyApp extends StatelessWidget {
         ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
         DashboardScreen.id: (context) => DashboardScreen(),
         TeacherDashboardScreen.id: (context) => const TeacherDashboardScreen(),
+        AcademyDashboardScreen.id: (context) => const AcademyDashboardScreen(),
         CourseCreationScreen.id: (context) => const CourseCreationScreen(),
         CourseScreen.id: (context) => CourseScreen(),
         QuizScreen.id: (context) => QuizScreen(

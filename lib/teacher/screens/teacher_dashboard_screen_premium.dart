@@ -32,13 +32,26 @@ class _TeacherDashboardScreenPremiumState
   }
 
   Future<void> _loadStats() async {
-    // Simulated stats loading
-    await Future.delayed(const Duration(milliseconds: 300));
-    setState(() {
-      _activeCourses = 12;
-      _totalStudents = 342;
-      _avgRating = 4.8;
-    });
+    try {
+      final courses = await _courseService.getMyCourses();
+      int students = 0;
+      double totalRating = 0;
+      int ratedCount = 0;
+      int active = 0;
+      for (final c in courses) {
+        students += c.totalEnrolled;
+        if (c.averageRating > 0) {
+          totalRating += c.averageRating;
+          ratedCount++;
+        }
+        if (c.status == 'published') active++;
+      }
+      setState(() {
+        _activeCourses = active;
+        _totalStudents = students;
+        _avgRating = ratedCount > 0 ? totalRating / ratedCount : 0;
+      });
+    } catch (_) {}
   }
 
   @override

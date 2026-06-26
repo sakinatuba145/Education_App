@@ -82,14 +82,16 @@ class _CourseScreenState extends State<CourseScreen> {
     );
   }
 }
-class LessonScreen extends StatefulWidget {
-  const LessonScreen({super.key,});
-  @override
-  State<LessonScreen> createState() => _LessonScreenState();
-}
-class _LessonScreenState extends State<LessonScreen> {
+class LessonScreen extends StatelessWidget {
+  const LessonScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return LessonScreen();
+    return Scaffold(
+      appBar: AppBar(title: const Text('Lessons')),
+      body: const Center(
+        child: Text('Select a lesson to get started.'),
+      ),
+    );
   }
 }

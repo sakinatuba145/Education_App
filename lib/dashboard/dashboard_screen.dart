@@ -9,6 +9,10 @@ import 'package:education_app/profile/profile_screen.dart';
 import 'package:education_app/profile/settings_screen.dart';
 import 'package:education_app/profile/progress_screen.dart';
 import 'package:education_app/profile/favorites_screen.dart';
+import 'package:education_app/student/services/enrollment_service.dart';
+import 'package:education_app/student/screens/my_courses_screen.dart';
+import 'package:education_app/student/screens/course_player_screen.dart';
+import 'package:education_app/core/constants/app_colors.dart';
 import 'chart_painter.dart';
 import 'chartdata.dart';
 import 'course_page.dart';
@@ -211,10 +215,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         floatingActionButton: _selectedIndex == 0
             ? FloatingActionButton.extended(
-                onPressed: () {},
-                label: Text("New"),
-                icon: Icon(Icons.add),
-                backgroundColor: Colors.blue[700],
+                onPressed: () => setState(() => _selectedIndex = 1),
+                label: const Text("Explore"),
+                icon: const Icon(Icons.explore),
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
               )
             : null,
@@ -508,68 +512,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildDashboardScreen(bool isMobile, bool isTablet, bool isDesktop) {
-    int crossAxisCount = isMobile ? 2 : (isTablet ? 3 : 4);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GridView.count(
-          crossAxisCount: crossAxisCount,
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          children: courses.map((course) {
-            return InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CoursePage(title: course.title),
-                  ),
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: _isDarkMode ? Colors.grey[850] : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withAlpha(80),
-                      blurRadius: 10,
-                      offset: Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundColor: course.color.withAlpha(60),
-                        child: Icon(course.icon, color: course.color),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        course.title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        "Open Course",
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+        _EnrolledCoursesSection(isMobile: isMobile, isDesktop: isDesktop),
         SizedBox(height: 24),
         if (isDesktop)
           Row(
@@ -781,6 +727,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildDefaultScreen() {
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildDefaultScreenOld() {
     return Container(
       color: Colors.red,
       child: Center(
@@ -812,6 +762,230 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ];
     if (index < 0 || index >= icons.length) return Icons.home_rounded;
     return icons[index];
+  }
+}
+
+class _EnrolledCoursesSection extends StatefulWidget {
+  final bool isMobile;
+  final bool isDesktop;
+
+  const _EnrolledCoursesSection({
+    required this.isMobile,
+    required this.isDesktop,
+  });
+
+  @override
+  State<_EnrolledCoursesSection> createState() =>
+      _EnrolledCoursesSectionState();
+}
+
+class _EnrolledCoursesSectionState extends State<_EnrolledCoursesSection> {
+  final EnrollmentService _enrollmentService = EnrollmentService();
+  List<EnrolledCourse> _courses = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _enrollmentService.streamMyEnrollments().listen(
+      (courses) {
+        if (mounted) {
+          setState(() {
+            _courses = courses;
+            _loading = false;
+          });
+        }
+      },
+      onError: (_) {
+        if (mounted) setState(() => _loading = false);
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    if (_loading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 32),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('My Courses', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            TextButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MyCoursesScreen()),
+              ),
+              icon: const Icon(Icons.arrow_forward, size: 16),
+              label: const Text('View All'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (_courses.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(15),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.school_outlined, size: 60, color: Colors.grey[300]),
+                const SizedBox(height: 12),
+                Text('No courses yet', style: textTheme.titleMedium?.copyWith(color: Colors.grey[600])),
+                const SizedBox(height: 6),
+                Text(
+                  'Explore and enroll in courses to see them here',
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodySmall?.copyWith(color: Colors.grey[400]),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CourseDiscoveryScreenPremium()),
+                  ),
+                  icon: const Icon(Icons.explore, size: 16),
+                  label: const Text('Explore Courses'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          ...(_courses.take(widget.isDesktop ? 4 : 3).map((course) => _buildCourseCard(context, course))),
+      ],
+    );
+  }
+
+  Widget _buildCourseCard(BuildContext context, EnrolledCourse course) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CoursePlayerScreen(courseId: course.courseId),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: course.thumbnailUrl != null && course.thumbnailUrl!.isNotEmpty
+                    ? Image.network(
+                        course.thumbnailUrl!,
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _placeholder(),
+                      )
+                    : _placeholder(),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      course.courseTitle,
+                      style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      course.instructorName.isNotEmpty ? course.instructorName : 'Instructor',
+                      style: textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: course.progress,
+                              minHeight: 6,
+                              color: course.isCompleted ? AppColors.success : AppColors.primary,
+                              backgroundColor: Colors.grey[200],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${course.progressPercent}%',
+                          style: textTheme.labelSmall?.copyWith(
+                            color: course.isCompleted ? AppColors.success : AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                course.isCompleted ? Icons.check_circle : Icons.play_circle_outline,
+                color: course.isCompleted ? AppColors.success : AppColors.primary,
+                size: 28,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _placeholder() {
+    return Container(
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Icon(Icons.video_library, color: AppColors.primary, size: 28),
+    );
   }
 }
 

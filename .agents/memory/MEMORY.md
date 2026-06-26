@@ -1,2 +1,4 @@
 - [Teacher module architecture](teacher-module.md) — full Coursera-like teacher flow built; auth role saved to Firestore on register; login routes by role
 - [Flutter Dart 3.8 gotchas](dart38-gotchas.md) — isScrollControlled only works in showModalBottomSheet not showDialog; const constructors must exist on class
+- [EduAf Firebase schema](eduaf-schema.md) — role encoding, collection paths, service method names critical for all portals
+- [EduAf compilation rules](eduaf-compilation.md) — dart:io banned (web), getLessons→getCourseLessons, Future.wait mixed types, courseId required param pitfalls

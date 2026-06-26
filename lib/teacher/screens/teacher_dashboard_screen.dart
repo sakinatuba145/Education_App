@@ -88,7 +88,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
           // Tab 1 — Create Course (premium multi-step)
           const CourseCreationScreenPremium(),
           // Tab 2 — Lesson Management (premium reorderable)
-          const LessonManagementScreenPremium(),
+          const SizedBox.shrink(),
           // Tab 3 — Content Upload (premium drag-drop)
           const ContentUploadScreenPremium(),
           // Tab 4 — Quiz Builder / Exam Creator
@@ -320,6 +320,15 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
                           PopupMenuItem(
                             child: const Row(children: [Icon(Icons.edit, size: 18), SizedBox(width: 8), Text('Edit')]),
                             onTap: () => _openCourse(course),
+                          ),
+                          PopupMenuItem(
+                            child: const Row(children: [Icon(Icons.video_library, size: 18), SizedBox(width: 8), Text('Manage Lessons')]),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => LessonManagementScreenPremium(courseId: course.id),
+                              ),
+                            ).then((_) => _loadCourses()),
                           ),
                           if (course.isDraft)
                             PopupMenuItem(

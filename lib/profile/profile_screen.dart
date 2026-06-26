@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'edit_profile_screen.dart';
 import 'progress_screen.dart';
@@ -16,8 +17,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String name = "Zeynab Nazari";
-  String email = "zeynab@gmail.com";
+  String name = "";
+  String email = "";
   String phone = "+971 000000000";
   String university = "University of Kabul";
   String bio = "Education App Student";
@@ -27,15 +28,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _loadFirebaseUser();
     loadProfileData();
+  }
+
+  void _loadFirebaseUser() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        name = user.displayName?.split('|').first ?? user.email?.split('@').first ?? 'Student';
+        email = user.email ?? '';
+      });
+    }
   }
 
   Future<void> loadProfileData() async {
     final prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      name = prefs.getString("name") ?? name;
-      email = prefs.getString("email") ?? email;
+      final savedName = prefs.getString("name");
+      if (savedName != null && savedName.isNotEmpty) name = savedName;
+      final savedEmail = prefs.getString("email");
+      if (savedEmail != null && savedEmail.isNotEmpty) email = savedEmail;
       phone = prefs.getString("phone") ?? phone;
       university = prefs.getString("university") ?? university;
       bio = prefs.getString("bio") ?? bio;
@@ -104,7 +118,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           radius: 58,
                           backgroundColor: Colors.white,
                           backgroundImage: profileImage != null
-                              ? FileImage(File(profileImage!.path))
+                              ? (kIsWeb
+                                  ? NetworkImage(profileImage!.path)
+                                  : NetworkImage(profileImage!.path))
+                                  as ImageProvider
                               : null,
                           child: profileImage == null
                               ? Icon(Icons.person, size: 70, color: primary)

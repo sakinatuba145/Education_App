@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen.dart';
+import 'package:education_app/teacher/screens/academy_dashboard_screen.dart';
 import 'package:education_app/dashboard/dashboard_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -46,8 +47,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (user != null) {
         // Navigate directly to the right dashboard — no need to log in again
-        if (role == 'teacher' || role == 'academy') {
+        if (role == 'teacher') {
           Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
+        } else if (role == 'academy') {
+          Navigator.pushReplacementNamed(context, AcademyDashboardScreen.id);
         } else {
           Navigator.pushReplacementNamed(context, DashboardScreen.id);
         }

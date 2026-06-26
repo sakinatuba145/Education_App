@@ -285,16 +285,41 @@ class TeacherCourseService {
           .where('status', isEqualTo: 'published')
           .get();
 
-      final courses = snapshot.docs
-          .map((doc) => CourseModel.fromJson(doc.data()))
-          .where((c) => c.visibility == 'public')
-          .toList();
+      final courses = <CourseModel>[];
+      for (final doc in snapshot.docs) {
+        try {
+          final course = CourseModel.fromJson(doc.data());
+          // Accept public courses OR courses where visibility was never explicitly set private
+          if (course.visibility != 'private') {
+            courses.add(course);
+          }
+        } catch (_) {
+          // Skip malformed documents silently
+        }
+      }
 
       courses.sort((a, b) => b.totalEnrolled.compareTo(a.totalEnrolled));
-
       return courses.take(limit).toList();
     } catch (e) {
-      throw Exception('Failed to get public courses: ${e.toString()}');
+      // Fallback: try fetching all courses if status filter fails
+      try {
+        final fallback = await _firestore
+            .collection(COURSES_COLLECTION)
+            .limit(limit)
+            .get();
+        final results = <CourseModel>[];
+        for (final doc in fallback.docs) {
+          try {
+            final c = CourseModel.fromJson(doc.data());
+            if (c.status == 'published' && c.visibility != 'private') {
+              results.add(c);
+            }
+          } catch (_) {}
+        }
+        return results;
+      } catch (_) {
+        return [];
+      }
     }
   }
 

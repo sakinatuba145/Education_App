@@ -40,6 +40,13 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
       final teacherId = _auth.currentUser?.uid;
       if (teacherId == null) return;
       final courses = await _courseService.getMyCourses(teacherId: teacherId);
+      // Self-heal: fix any published courses stuck with private visibility
+      for (final c in courses) {
+        if (c.status == 'published' && c.visibility == 'private') {
+          _courseService.updateCourse(
+              courseId: c.id, data: {'visibility': 'public'});
+        }
+      }
       if (mounted) setState(() { _allCourses = courses; _isLoading = false; });
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
@@ -449,7 +456,8 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   Future<void> _publishCourse(CourseModel course) async {
     try {
       await _courseService.updateCourse(
-          courseId: course.id, data: {'status': 'published'});
+          courseId: course.id,
+          data: {'status': 'published', 'visibility': 'public'});
       _loadCourses();
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Course published!'),

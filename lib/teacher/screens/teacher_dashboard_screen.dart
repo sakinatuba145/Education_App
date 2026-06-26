@@ -3,6 +3,8 @@ import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/teacher/widgets/course_card_widget.dart';
 import 'package:education_app/teacher/constants/teacher_strings.dart';
+import 'package:education_app/teacher/screens/course_creation_screen.dart';
+import 'package:education_app/teacher/screens/lesson_management_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class TeacherDashboardScreen extends StatefulWidget {
@@ -159,13 +161,20 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
         return CourseCardWidget(
           course: course,
           onTap: () {
-            // Navigate to course editor
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Open course: ${course.title}')),
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LessonManagementScreen(courseId: course.id),
+              ),
             );
           },
           onEdit: () {
-            // Edit course
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LessonManagementScreen(courseId: course.id),
+              ),
+            );
           },
           onDelete: () {
             _showDeleteConfirmation(course);
@@ -179,9 +188,10 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
   }
 
   void _createNewCourse() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Navigate to course creation screen')),
-    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CourseCreationScreen()),
+    ).then((_) => _loadCourses());
   }
 
   void _publishCourse(CourseModel course) async {

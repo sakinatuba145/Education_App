@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
 import 'package:education_app/teacher/services/teacher_lesson_service.dart';
 import 'package:education_app/teacher/constants/teacher_strings.dart';
+import 'package:education_app/teacher/screens/content_upload_screen.dart';
 
 class LessonManagementScreen extends StatefulWidget {
   final String courseId;
@@ -155,15 +156,106 @@ class _LessonManagementScreenState extends State<LessonManagementScreen> {
   }
 
   void _createNewLesson() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Navigate to lesson creation')),
-    );
+    _showLessonDialog();
   }
 
   void _editLesson(LessonModel lesson) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Edit: ${lesson.title}')),
+    _showLessonDialog(lesson: lesson);
+  }
+
+  void _showLessonDialog({LessonModel? lesson}) {
+    final titleController = TextEditingController(text: lesson?.title ?? '');
+    final isEditing = lesson != null;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(isEditing ? 'Edit Lesson' : 'New Lesson'),
+        content: TextField(
+          controller: titleController,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Lesson Title',
+            hintText: 'e.g. Introduction to the topic',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final title = titleController.text.trim();
+              if (title.isEmpty) return;
+              Navigator.pop(context);
+              await _saveLessonAndOpenUpload(
+                title: title,
+                existingLesson: lesson,
+              );
+            },
+            child: Text(isEditing ? 'Save' : 'Create'),
+          ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _saveLessonAndOpenUpload({
+    required String title,
+    LessonModel? existingLesson,
+  }) async {
+    try {
+      late String lessonId;
+
+      if (existingLesson != null) {
+        await _lessonService.updateLesson(
+          courseId: widget.courseId,
+          lessonId: existingLesson.id,
+          data: {'title': title},
+        );
+        lessonId = existingLesson.id;
+      } else {
+        final newLesson = LessonModel(
+          id: '',
+          courseId: widget.courseId,
+          title: title,
+          description: '',
+          sequenceNumber: _lessons.length,
+          contentIds: [],
+          totalViews: 0,
+          totalCompleted: 0,
+          averageRating: 0,
+          totalDuration: Duration.zero,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        lessonId = await _lessonService.createLesson(
+          courseId: widget.courseId,
+          lesson: newLesson,
+        );
+      }
+
+      if (!mounted) return;
+
+      // Navigate to content upload for this lesson
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ContentUploadScreen(
+            courseId: widget.courseId,
+            lessonId: lessonId,
+          ),
+        ),
+      );
+      _loadLessons();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    }
   }
 
   void _deleteLesson(LessonModel lesson) {

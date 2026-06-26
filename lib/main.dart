@@ -18,6 +18,9 @@ import 'features/login_screen.dart';
 import 'features/register_screen.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
+import 'teacher/screens/course_creation_screen.dart';
+import 'teacher/screens/lesson_management_screen.dart';
+import 'teacher/screens/content_upload_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

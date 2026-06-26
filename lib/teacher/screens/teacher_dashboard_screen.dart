@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/teacher/models/course_model.dart';
+import 'package:education_app/teacher/models/lesson_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
+import 'package:education_app/teacher/services/teacher_lesson_service.dart';
 import 'package:education_app/teacher/screens/course_creation_screen.dart';
 import 'package:education_app/teacher/screens/course_editor_screen.dart';
 import 'package:education_app/teacher/screens/course_creation_screen_premium.dart';
@@ -10,7 +12,7 @@ import 'package:education_app/teacher/screens/lesson_management_screen_premium.d
 import 'package:education_app/teacher/screens/content_upload_screen_premium.dart';
 import 'package:education_app/teacher/screens/student_submissions_screen.dart';
 import 'package:education_app/teacher/screens/quiz_results_screen.dart';
-import 'package:education_app/quiz/create_exam_screen.dart';
+import 'package:education_app/teacher/screens/quiz_builder_screen.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/login_screen.dart';
 import 'package:education_app/core/constants/app_colors.dart';
@@ -30,11 +32,13 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _courseTabController;
   final TeacherCourseService _courseService = TeacherCourseService();
+  final TeacherLessonService _lessonService = TeacherLessonService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   int _portalIndex = 0;
 
   List<CourseModel> _allCourses = [];
   bool _isLoading = true;
+  CourseModel? _quizSelectedCourse;
 
   @override
   void initState() {
@@ -84,8 +88,8 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
           _buildLessonManagementTab(),
           // Tab 3 — Content Upload (premium drag-drop)
           const ContentUploadScreenPremium(),
-          // Tab 4 — Quiz Builder / Exam Creator
-          const TeacherCreateExamScreen(),
+          // Tab 4 — Quiz Builder (course → lesson → QuizBuilderScreen)
+          _buildQuizBuilderTab(),
         ],
       ),
 
@@ -510,6 +514,193 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
     );
   }
 
+  // ── Tab 4: Quiz Builder — two-step: pick course → pick lesson ───────────
+  Widget _buildQuizBuilderTab() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: _primary));
+    }
+    if (_allCourses.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.quiz_outlined, size: 72, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text('No courses yet', style: TextStyle(fontSize: 16, color: Colors.grey[500])),
+            const SizedBox(height: 8),
+            Text('Create a course first, then build quizzes for its lessons.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: Colors.grey[400])),
+          ],
+        ),
+      );
+    }
+
+    if (_quizSelectedCourse == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text('Select a course to build quizzes',
+                style: TextStyle(fontSize: 14, color: Colors.grey)),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: _allCourses.length,
+              itemBuilder: (_, i) {
+                final course = _allCourses[i];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))],
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    leading: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: _primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.quiz_outlined, color: _primary),
+                    ),
+                    title: Text(course.title,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                    subtitle: Text(
+                      '${course.totalLessons} lessons • ${course.status}',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+                    trailing: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text('Select',
+                          style: TextStyle(color: _primary, fontSize: 12, fontWeight: FontWeight.w600)),
+                    ),
+                    onTap: () => setState(() => _quizSelectedCourse = course),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Step 2: pick a lesson within the selected course
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => setState(() => _quizSelectedCourse = null),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Quiz Builder',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(_quizSelectedCourse!.title,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
+          child: Text('Pick a lesson to edit its quiz',
+              style: TextStyle(fontSize: 13, color: Colors.grey)),
+        ),
+        Expanded(
+          child: FutureBuilder<List<LessonModel>>(
+            future: _lessonService.getCourseLessons(_quizSelectedCourse!.id),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator(color: _primary));
+              }
+              final lessons = snapshot.data ?? [];
+              if (lessons.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.video_library_outlined, size: 60, color: Colors.grey[300]),
+                      const SizedBox(height: 12),
+                      Text('No lessons yet', style: TextStyle(color: Colors.grey[500])),
+                      const SizedBox(height: 8),
+                      Text('Add lessons to this course first.',
+                          style: TextStyle(fontSize: 13, color: Colors.grey[400])),
+                    ],
+                  ),
+                );
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: lessons.length,
+                itemBuilder: (_, i) {
+                  final lesson = lessons[i];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      leading: CircleAvatar(
+                        backgroundColor: _primary.withValues(alpha: 0.1),
+                        child: Text(
+                          '${lesson.sequenceNumber}',
+                          style: const TextStyle(
+                              color: _primary, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      title: Text(lesson.title,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                      subtitle: lesson.description.isNotEmpty
+                          ? Text(lesson.description,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 12, color: Colors.grey[500]))
+                          : null,
+                      trailing: const Icon(Icons.quiz_outlined, color: _primary),
+                      onTap: () => _showLessonQuizSheet(
+                        _quizSelectedCourse!.id,
+                        lesson.id,
+                        lesson.title,
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   // ── Quiz Results: load quizzes for course, pick one ─────────────────────
   void _showCourseQuizResults(CourseModel course) {
     showModalBottomSheet(
@@ -519,6 +710,22 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) => _CourseQuizPickerSheet(course: course),
+    );
+  }
+
+  // ── Show quizzes for a lesson; create new or open existing ───────────────
+  void _showLessonQuizSheet(String courseId, String lessonId, String lessonTitle) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _LessonQuizPickerSheet(
+        courseId: courseId,
+        lessonId: lessonId,
+        lessonTitle: lessonTitle,
+      ),
     );
   }
 
@@ -648,6 +855,232 @@ class _CourseQuizPickerSheetState extends State<_CourseQuizPickerSheet> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => QuizResultsScreen(
+                                    quizId: quiz['id'] as String,
+                                    quizTitle: title,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Lesson Quiz Picker: list/create quizzes for a lesson ─────────────────
+class _LessonQuizPickerSheet extends StatefulWidget {
+  final String courseId;
+  final String lessonId;
+  final String lessonTitle;
+  const _LessonQuizPickerSheet({
+    required this.courseId,
+    required this.lessonId,
+    required this.lessonTitle,
+  });
+
+  @override
+  State<_LessonQuizPickerSheet> createState() => _LessonQuizPickerSheetState();
+}
+
+class _LessonQuizPickerSheetState extends State<_LessonQuizPickerSheet> {
+  final _firestore = FirebaseFirestore.instance;
+  List<Map<String, dynamic>> _quizzes = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final snap = await _firestore
+          .collection('courses')
+          .doc(widget.courseId)
+          .collection('lessons')
+          .doc(widget.lessonId)
+          .collection('quizzes')
+          .get();
+      setState(() {
+        _quizzes = snap.docs.map((d) => {'id': d.id, ...d.data()}).toList();
+        _loading = false;
+      });
+    } catch (_) {
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _createNewQuiz() async {
+    final titleCtrl = TextEditingController(text: '${widget.lessonTitle} Quiz');
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('New Quiz'),
+        content: TextField(
+          controller: titleCtrl,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Quiz Title',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: _primary, foregroundColor: Colors.white),
+            child: const Text('Create'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && titleCtrl.text.trim().isNotEmpty && mounted) {
+      final newRef = _firestore
+          .collection('courses')
+          .doc(widget.courseId)
+          .collection('lessons')
+          .doc(widget.lessonId)
+          .collection('quizzes')
+          .doc();
+      final quizId = newRef.id;
+      final title = titleCtrl.text.trim();
+      await newRef.set({
+        'id': quizId,
+        'title': title,
+        'courseId': widget.courseId,
+        'lessonId': widget.lessonId,
+        'questions': [],
+        'passingScore': 70,
+        'shuffleQuestions': false,
+        'showAnswersOption': 'immediately',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      if (mounted) {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => QuizBuilderScreen(
+              courseId: widget.courseId,
+              lessonId: widget.lessonId,
+              quizId: quizId,
+              quizTitle: title,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.55,
+      maxChildSize: 0.9,
+      minChildSize: 0.3,
+      expand: false,
+      builder: (_, controller) => Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+            child: Row(
+              children: [
+                const Icon(Icons.quiz_outlined, color: _primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Quizzes',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(widget.lessonTitle,
+                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: _createNewQuiz,
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text('New Quiz'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator(color: _primary))
+                : _quizzes.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.quiz_outlined, size: 48, color: Colors.grey[300]),
+                            const SizedBox(height: 12),
+                            Text('No quizzes yet',
+                                style: TextStyle(color: Colors.grey[500])),
+                            const SizedBox(height: 8),
+                            Text('Tap "New Quiz" to create one.',
+                                style: TextStyle(fontSize: 13, color: Colors.grey[400])),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: controller,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: _quizzes.length,
+                        itemBuilder: (_, i) {
+                          final quiz = _quizzes[i];
+                          final title = quiz['title'] as String? ?? 'Quiz ${i + 1}';
+                          final qCount = (quiz['questions'] as List?)?.length ?? 0;
+                          return ListTile(
+                            leading: Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: _primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(Icons.quiz_outlined, color: _primary, size: 20),
+                            ),
+                            title: Text(title,
+                                style: const TextStyle(fontWeight: FontWeight.w600)),
+                            subtitle: Text('$qCount question${qCount == 1 ? '' : 's'}',
+                                style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                            trailing: const Icon(Icons.edit_outlined, color: _primary),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => QuizBuilderScreen(
+                                    courseId: widget.courseId,
+                                    lessonId: widget.lessonId,
                                     quizId: quiz['id'] as String,
                                     quizTitle: title,
                                   ),

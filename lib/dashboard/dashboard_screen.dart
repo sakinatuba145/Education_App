@@ -534,8 +534,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           SizedBox(height: 16),
           _buildRecentActivities(),
         ],
-        SizedBox(height: 24),
-        _buildStudentProfile(isMobile, isTablet, isDesktop),
       ],
     );
   }

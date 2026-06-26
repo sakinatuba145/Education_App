@@ -1,4 +1,3 @@
-- [Teacher module architecture](teacher-module.md) — full Coursera-like teacher flow built; auth role saved to Firestore on register; login routes by role
-- [Flutter Dart 3.8 gotchas](dart38-gotchas.md) — isScrollControlled only works in showModalBottomSheet not showDialog; const constructors must exist on class
-- [EduAf Firebase schema](eduaf-schema.md) — role encoding, collection paths, service method names critical for all portals
-- [EduAf compilation rules](eduaf-compilation.md) — dart:io banned (web), getLessons→getCourseLessons, Future.wait mixed types, courseId required param pitfalls; getMyCourses requires teacherId named param; CourseContentModel uses uploadedAt not updatedAt; cast precedence: ((x as double) * 100) not (x as double * 100)
+- [Quiz builder wiring](quiz-builder-wiring.md) — QuizBuilderScreen needs courseId+lessonId+quizId+quizTitle; quizId must be a real Firestore doc ID (new or existing), not auto-generated client-side.
+- [Teacher Tab 4 pattern](teacher-tab4-pattern.md) — Teacher dashboard Tab 4 uses 2-step course→lesson picker then _LessonQuizPickerSheet bottom sheet; _buildLessonManagementTab is the reference pattern.
+- [Firestore seed accounts](firestore-seed-accounts.md) — Three test accounts exist in Firebase Auth and Firestore users collection; roles encoded in displayName as "Name|role".

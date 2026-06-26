@@ -25,6 +25,7 @@ export 'constants/teacher_strings.dart';
 
 // Screens
 export 'screens/teacher_dashboard_screen.dart';
+export 'screens/teacher_course_hub_screen.dart';
 export 'screens/course_creation_screen.dart';
 export 'screens/course_creation_screen_premium.dart';
 export 'screens/lesson_management_screen_premium.dart';

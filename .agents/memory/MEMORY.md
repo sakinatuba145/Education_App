@@ -1,4 +1,5 @@
 - [Quiz builder wiring](quiz-builder-wiring.md) — QuizBuilderScreen needs courseId+lessonId+quizId+quizTitle; quizId must be a real Firestore doc ID (new or existing), not auto-generated client-side.
+- [Quiz navigation pattern](quiz-navigation.md) — Any "open quiz" button must fetch-or-create the quiz doc first; _navigateToQuizBuilder() in TeacherCourseHubScreen is the reference impl.
 - [Teacher Tab 4 pattern](teacher-tab4-pattern.md) — Teacher dashboard Tab 4 uses 2-step course→lesson picker then _LessonQuizPickerSheet bottom sheet; _buildLessonManagementTab is the reference pattern.
 - [Firestore seed accounts](firestore-seed-accounts.md) — Three test accounts exist in Firebase Auth and Firestore users collection; roles encoded in displayName as "Name|role".
 - [CourseModel instructorName](course-model-decisions.md) — instructorName added as optional field to CourseModel; course creation saves teacher displayName split by |; enrollInCourse uses instructorName with teacherId fallback.

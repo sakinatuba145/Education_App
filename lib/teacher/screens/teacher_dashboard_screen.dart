@@ -8,6 +8,7 @@ import 'package:education_app/teacher/services/teacher_lesson_service.dart';
 import 'package:education_app/teacher/screens/course_creation_screen.dart';
 import 'package:education_app/teacher/screens/course_editor_screen.dart';
 import 'package:education_app/teacher/screens/course_creation_screen_premium.dart';
+import 'package:education_app/teacher/screens/teacher_course_hub_screen.dart';
 import 'package:education_app/teacher/screens/lesson_management_screen_premium.dart';
 import 'package:education_app/teacher/screens/content_upload_screen_premium.dart';
 import 'package:education_app/teacher/screens/student_submissions_screen.dart';
@@ -393,12 +394,12 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
   }
 
   void _createCourse() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const CourseCreationScreen()))
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const CourseCreationScreenPremium()))
         .then((_) => _loadCourses());
   }
 
   void _openCourse(CourseModel course) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => CourseEditorScreen(courseId: course.id)))
+    Navigator.push(context, MaterialPageRoute(builder: (_) => TeacherCourseHubScreen(courseId: course.id)))
         .then((_) => _loadCourses());
   }
 

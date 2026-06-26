@@ -94,7 +94,9 @@ class EnrollmentService {
       'courseTitle': course.title,
       'courseSubtitle': course.subtitle,
       'thumbnailUrl': course.thumbnailUrl,
-      'instructorName': course.teacherId,
+      'instructorName': course.instructorName.isNotEmpty
+          ? course.instructorName
+          : course.teacherId,
       'enrolledAt': now,
       'progress': 0.0,
       'status': 'active',

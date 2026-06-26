@@ -1,6 +1,7 @@
 class CourseModel {
   final String id;
   final String teacherId;
+  final String instructorName;
   final String title;
   final String subtitle;
   final String description;
@@ -30,6 +31,7 @@ class CourseModel {
   CourseModel({
     required this.id,
     required this.teacherId,
+    this.instructorName = '',
     required this.title,
     required this.subtitle,
     required this.description,
@@ -61,6 +63,7 @@ class CourseModel {
     return CourseModel(
       id: json['id'] ?? '',
       teacherId: json['teacherId'] ?? '',
+      instructorName: json['instructorName'] as String? ?? '',
       title: json['title'] ?? '',
       subtitle: json['subtitle'] ?? '',
       description: json['description'] ?? '',
@@ -98,6 +101,7 @@ class CourseModel {
   Map<String, dynamic> toJson() => {
     'id': id,
     'teacherId': teacherId,
+    'instructorName': instructorName,
     'title': title,
     'subtitle': subtitle,
     'description': description,

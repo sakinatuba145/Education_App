@@ -85,9 +85,12 @@ class _CourseCreationScreenPremiumState
     try {
       final now = DateTime.now();
       final title = _titleController.text.trim();
+      final teacherName =
+          user.displayName?.split('|').first ?? user.email ?? 'Teacher';
       final course = CourseModel(
         id: '',
         teacherId: user.uid,
+        instructorName: teacherName,
         title: title,
         subtitle: _subtitleController.text.trim().isEmpty
             ? title
@@ -112,12 +115,13 @@ class _CourseCreationScreenPremiumState
             ? double.tryParse(_priceController.text.trim()) ?? 0
             : null,
         totalRevenue: 0,
-        status: 'draft',
+        status: 'published',
         visibility: 'public',
-        slug: title.toLowerCase().replaceAll(' ', '-'),
+        slug: title.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-'),
         keywords: _selectedCategory.toLowerCase(),
         createdAt: now,
         updatedAt: now,
+        publishedAt: now,
       );
 
       await _courseService.createCourse(course: course);

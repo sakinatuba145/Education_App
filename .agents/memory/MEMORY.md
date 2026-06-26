@@ -1,3 +1,6 @@
 - [Quiz builder wiring](quiz-builder-wiring.md) — QuizBuilderScreen needs courseId+lessonId+quizId+quizTitle; quizId must be a real Firestore doc ID (new or existing), not auto-generated client-side.
 - [Teacher Tab 4 pattern](teacher-tab4-pattern.md) — Teacher dashboard Tab 4 uses 2-step course→lesson picker then _LessonQuizPickerSheet bottom sheet; _buildLessonManagementTab is the reference pattern.
 - [Firestore seed accounts](firestore-seed-accounts.md) — Three test accounts exist in Firebase Auth and Firestore users collection; roles encoded in displayName as "Name|role".
+- [CourseModel instructorName](course-model-decisions.md) — instructorName added as optional field to CourseModel; course creation saves teacher displayName split by |; enrollInCourse uses instructorName with teacherId fallback.
+- [Dead legacy files](dead-code.md) — dashboard_services.dart, quiz_services.dart, quiz_repository.dart, course_bloc.dart are unused dead code; course_screen.dart now redirects to CourseDiscoveryScreenPremium.
+- [Student Quiz Tab](student-quiz-tab.md) — Tab 2 in DashboardScreen uses StudentQuizBrowserScreen (lib/student/screens/student_quiz_browser_screen.dart); expands enrolled courses to show lessons; taps open QuizPlayerScreenPremium(courseId, lessonId).

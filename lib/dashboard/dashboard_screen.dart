@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/welcome_screen.dart';
 import 'package:education_app/courses/course_discovery_screen_premium.dart';
-import 'package:education_app/quiz/quiz_player_screen_premium.dart';
+import 'package:education_app/student/screens/student_quiz_browser_screen.dart';
 import 'package:education_app/profile/profile_screen.dart';
 import 'package:education_app/profile/settings_screen.dart';
 import 'package:education_app/profile/progress_screen.dart';
@@ -502,7 +502,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return const CourseDiscoveryScreenPremium();
       case 2:
         // Quizzes
-        return const QuizPlayerScreenPremium();
+        return const StudentQuizBrowserScreen();
       case 3:
         // Profile & Settings
         return const ProfileScreen();

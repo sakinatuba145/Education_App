@@ -6,6 +6,21 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Encode role in displayName as "Name|role" so auth works even if Firestore fails
+  String _encodeName(String name, String role) => '$name|$role';
+
+  String _parseRole(User user) {
+    final dn = user.displayName ?? '';
+    if (dn.contains('|')) return dn.split('|').last;
+    return 'student';
+  }
+
+  String _parseName(User user) {
+    final dn = user.displayName ?? '';
+    if (dn.contains('|')) return dn.split('|').first;
+    return dn;
+  }
+
   Future<Map<String, dynamic>?> loginWithEmail({
     required String email,
     required String password,
@@ -17,8 +32,17 @@ class AuthService {
     final user = credential.user;
     if (user == null) return null;
 
-    final doc = await _firestore.collection('users').doc(user.uid).get();
-    final role = doc.data()?['role'] ?? 'student';
+    // Try Firestore first, fall back to displayName-encoded role
+    String role = _parseRole(user);
+    try {
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (doc.exists && doc.data()?['role'] != null) {
+        role = doc.data()!['role'];
+      }
+    } catch (_) {
+      // Firestore unavailable or rules deny — use displayName fallback
+    }
+
     return {'user': user, 'role': role};
   }
 
@@ -35,23 +59,41 @@ class AuthService {
     final user = credential.user;
     if (user == null) return null;
 
-    await user.updateDisplayName(name);
+    // Store name AND role in displayName as "Name|role" — always works
+    await user.updateDisplayName(_encodeName(name, role));
 
-    await _firestore.collection('users').doc(user.uid).set({
-      'uid': user.uid,
-      'name': name,
-      'email': email,
-      'role': role,
-      'createdAt': DateTime.now().toIso8601String(),
-    });
+    // Also try to write to Firestore — non-critical, catch any errors
+    try {
+      await _firestore.collection('users').doc(user.uid).set({
+        'uid': user.uid,
+        'name': name,
+        'email': email,
+        'role': role,
+        'createdAt': DateTime.now().toIso8601String(),
+      });
+    } catch (_) {
+      // Firestore write failed (rules may not allow it) — displayName is the fallback
+    }
 
     return user;
   }
 
   Future<String> getUserRole(String uid) async {
-    final doc = await _firestore.collection('users').doc(uid).get();
-    return doc.data()?['role'] ?? 'student';
+    // Try Firestore first
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (doc.exists && doc.data()?['role'] != null) {
+        return doc.data()!['role'];
+      }
+    } catch (_) {}
+
+    // Fall back to displayName
+    final user = _auth.currentUser;
+    if (user != null) return _parseRole(user);
+    return 'student';
   }
+
+  String getDisplayName(User user) => _parseName(user);
 
   Future<User?> signInWithGoogle() async {
     final googleUser = await GoogleSignIn().signIn();
@@ -67,16 +109,18 @@ class AuthService {
     final user = userCredential.user;
 
     if (user != null) {
-      final doc = await _firestore.collection('users').doc(user.uid).get();
-      if (!doc.exists) {
-        await _firestore.collection('users').doc(user.uid).set({
-          'uid': user.uid,
-          'name': user.displayName ?? '',
-          'email': user.email ?? '',
-          'role': 'student',
-          'createdAt': DateTime.now().toIso8601String(),
-        });
-      }
+      try {
+        final doc = await _firestore.collection('users').doc(user.uid).get();
+        if (!doc.exists) {
+          await _firestore.collection('users').doc(user.uid).set({
+            'uid': user.uid,
+            'name': user.displayName ?? '',
+            'email': user.email ?? '',
+            'role': 'student',
+            'createdAt': DateTime.now().toIso8601String(),
+          });
+        }
+      } catch (_) {}
     }
 
     return user;

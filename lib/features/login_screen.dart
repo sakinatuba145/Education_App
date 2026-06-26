@@ -20,14 +20,14 @@ class _LoginScreenState extends State<LoginScreen> {
   bool obscurePass = true;
   final AuthService _authService = AuthService();
 
+  static const _primary = Color(0xFFFFA726);
+
   Future<void> login() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
+      _showError('Please enter your email and password.');
       return;
     }
 
@@ -48,13 +48,61 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         Navigator.pushReplacementNamed(context, DashboardScreen.id);
       }
+    } on Exception catch (e) {
+      if (!mounted) return;
+      final msg = e.toString()
+          .replaceAll('Exception: ', '')
+          .replaceAll('[firebase_auth/', '')
+          .replaceAll(']', '');
+      _showError(_friendlyAuthError(msg));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: ${e.toString().replaceAll('Exception: ', '')}')),
-      );
+      _showError(e.toString());
     } finally {
       if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.red),
+            SizedBox(width: 8),
+            Text('Login Failed'),
+          ],
+        ),
+        content: Text(message, style: const TextStyle(fontSize: 15)),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _friendlyAuthError(String code) {
+    if (code.contains('user-not-found') || code.contains('invalid-credential') || code.contains('wrong-password')) {
+      return 'Email or password is incorrect. Please check your credentials and try again.';
+    } else if (code.contains('invalid-email')) {
+      return 'Please enter a valid email address.';
+    } else if (code.contains('too-many-requests')) {
+      return 'Too many failed attempts. Please wait a moment before trying again.';
+    } else if (code.contains('network-request-failed')) {
+      return 'No internet connection. Please check your network and try again.';
+    } else if (code.contains('operation-not-allowed')) {
+      return 'Email/password login is not enabled. Please contact support.';
+    } else {
+      return 'Login failed. $code';
     }
   }
 
@@ -131,16 +179,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 const SizedBox(height: 30),
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('OR', style: theme.textTheme.bodySmall),
-                    ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
+                Row(children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text('OR', style: theme.textTheme.bodySmall),
+                  ),
+                  const Expanded(child: Divider()),
+                ]),
                 const SizedBox(height: 30),
 
                 SizedBox(
@@ -159,11 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                         }
                       } catch (e) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Google sign-in failed: $e')),
-                          );
-                        }
+                        if (mounted) _showError('Google sign-in failed: $e');
                       }
                     },
                     icon: const Icon(Icons.g_mobiledata, size: 28),
@@ -191,5 +233,12 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 }

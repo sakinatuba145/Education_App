@@ -55,7 +55,8 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
   @override
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
-    final name = user?.displayName ?? 'Instructor';
+    final rawName = user?.displayName ?? 'Instructor';
+    final name = rawName.contains('|') ? rawName.split('|').first : rawName;
 
     return Scaffold(
       backgroundColor: _bg,

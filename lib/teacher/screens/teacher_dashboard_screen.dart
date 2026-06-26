@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/teacher/screens/course_creation_screen.dart';
@@ -7,9 +8,12 @@ import 'package:education_app/teacher/screens/course_editor_screen.dart';
 import 'package:education_app/teacher/screens/course_creation_screen_premium.dart';
 import 'package:education_app/teacher/screens/lesson_management_screen_premium.dart';
 import 'package:education_app/teacher/screens/content_upload_screen_premium.dart';
+import 'package:education_app/teacher/screens/student_submissions_screen.dart';
+import 'package:education_app/teacher/screens/quiz_results_screen.dart';
 import 'package:education_app/quiz/create_exam_screen.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/login_screen.dart';
+import 'package:education_app/core/constants/app_colors.dart';
 
 const _primary = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF3E0);
@@ -61,17 +65,6 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
     return raw.contains('|') ? raw.split('|').first : raw;
   }
 
-  // ── Portal title per tab ────────────────────────────────────────────────
-  String get _portalTitle {
-    switch (_portalIndex) {
-      case 1: return 'Create Course';
-      case 2: return 'Manage Lessons';
-      case 3: return 'Upload Content';
-      case 4: return 'Quiz Builder';
-      default: return 'Teacher Portal';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,8 +80,8 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
           _buildCoursesTab(),
           // Tab 1 — Create Course (premium multi-step)
           const CourseCreationScreenPremium(),
-          // Tab 2 — Lesson Management (premium reorderable)
-          const SizedBox.shrink(),
+          // Tab 2 — Lesson Management: pick a course first
+          _buildLessonManagementTab(),
           // Tab 3 — Content Upload (premium drag-drop)
           const ContentUploadScreenPremium(),
           // Tab 4 — Quiz Builder / Exam Creator
@@ -330,6 +323,22 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
                               ),
                             ).then((_) => _loadCourses()),
                           ),
+                          PopupMenuItem(
+                            child: const Row(children: [Icon(Icons.people, size: 18, color: Colors.blue), SizedBox(width: 8), Text('Students')]),
+                            onTap: () => Future.delayed(Duration.zero, () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StudentSubmissionsScreen(
+                                  courseId: course.id,
+                                  courseTitle: course.title,
+                                ),
+                              ),
+                            )),
+                          ),
+                          PopupMenuItem(
+                            child: const Row(children: [Icon(Icons.quiz, size: 18, color: Colors.purple), SizedBox(width: 8), Text('Quiz Results')]),
+                            onTap: () => Future.delayed(Duration.zero, () => _showCourseQuizResults(course)),
+                          ),
                           if (course.isDraft)
                             PopupMenuItem(
                               child: const Row(children: [Icon(Icons.public, size: 18, color: Colors.green), SizedBox(width: 8), Text('Publish')]),
@@ -417,9 +426,240 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
     }
   }
 
+  // ── Tab 2: Lesson Management — pick a course first ──────────────────────
+  Widget _buildLessonManagementTab() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: _primary));
+    }
+    if (_allCourses.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.video_library_outlined, size: 72, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text('No courses yet', style: TextStyle(fontSize: 16, color: Colors.grey[500])),
+            const SizedBox(height: 8),
+            Text('Create a course first, then manage its lessons here.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: Colors.grey[400])),
+          ],
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Text('Select a course to manage lessons',
+              style: TextStyle(fontSize: 14, color: Colors.grey)),
+        ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: _allCourses.length,
+            itemBuilder: (_, i) {
+              final course = _allCourses[i];
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))],
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  leading: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: _primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.video_library, color: _primary),
+                  ),
+                  title: Text(course.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
+                  subtitle: Text(
+                    '${course.totalLessons} lessons • ${course.status}',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text('Manage', style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600)),
+                  ),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LessonManagementScreenPremium(courseId: course.id),
+                    ),
+                  ).then((_) => _loadCourses()),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Quiz Results: load quizzes for course, pick one ─────────────────────
+  void _showCourseQuizResults(CourseModel course) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _CourseQuizPickerSheet(course: course),
+    );
+  }
+
   @override
   void dispose() {
     _courseTabController.dispose();
     super.dispose();
+  }
+}
+
+// ── Quiz picker: lists all quizzes for a course ───────────────────────────
+class _CourseQuizPickerSheet extends StatefulWidget {
+  final CourseModel course;
+  const _CourseQuizPickerSheet({required this.course});
+
+  @override
+  State<_CourseQuizPickerSheet> createState() => _CourseQuizPickerSheetState();
+}
+
+class _CourseQuizPickerSheetState extends State<_CourseQuizPickerSheet> {
+  final _firestore = FirebaseFirestore.instance;
+  List<Map<String, dynamic>> _quizzes = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final snap = await _firestore
+          .collectionGroup('quizzes')
+          .where('courseId', isEqualTo: widget.course.id)
+          .get();
+      setState(() {
+        _quizzes = snap.docs
+            .map((d) => {'id': d.id, ...d.data()})
+            .toList();
+        _loading = false;
+      });
+    } catch (_) {
+      setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.55,
+      maxChildSize: 0.9,
+      minChildSize: 0.3,
+      expand: false,
+      builder: (_, controller) => Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+            child: Row(
+              children: [
+                const Icon(Icons.quiz, color: _primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Quizzes — ${widget.course.title}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator(color: _primary))
+                : _quizzes.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.quiz_outlined, size: 48, color: Colors.grey[300]),
+                            const SizedBox(height: 12),
+                            Text('No quizzes found for this course',
+                                style: TextStyle(color: Colors.grey[500])),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: controller,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: _quizzes.length,
+                        itemBuilder: (_, i) {
+                          final quiz = _quizzes[i];
+                          final title = quiz['title'] as String? ?? 'Quiz ${i + 1}';
+                          final qCount = (quiz['questions'] as List?)?.length ?? 0;
+                          return ListTile(
+                            leading: Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: Colors.purple.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(Icons.quiz, color: Colors.purple, size: 20),
+                            ),
+                            title: Text(title,
+                                style: const TextStyle(fontWeight: FontWeight.w600)),
+                            subtitle: Text('$qCount question${qCount == 1 ? '' : 's'}',
+                                style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => QuizResultsScreen(
+                                    quizId: quiz['id'] as String,
+                                    quizTitle: title,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+          ),
+        ],
+      ),
+    );
   }
 }

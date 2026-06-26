@@ -240,7 +240,7 @@ class _StudentSubmissionsScreenState extends State<StudentSubmissionsScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'Progress: ${(s['progress'] as double * 100).toStringAsFixed(0)}%',
+                                                'Progress: ${((s['progress'] as double) * 100).toStringAsFixed(0)}%',
                                                 style: textTheme.labelSmall,
                                               ),
                                               const SizedBox(height: 4),

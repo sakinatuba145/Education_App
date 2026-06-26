@@ -19,8 +19,6 @@ import 'features/register_screen.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
 import 'teacher/screens/course_creation_screen.dart';
-import 'teacher/screens/lesson_management_screen.dart';
-import 'teacher/screens/content_upload_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,14 +32,10 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => CourseBloc(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ThemeProvider()..loadTheme(),
-        ),
+        ChangeNotifierProvider(create: (_) => CourseBloc()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()..loadTheme()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -55,21 +49,22 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode:themeProvider.themeMode,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.themeMode,
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
-        LoginScreen.id: (context) => LoginScreen(),
-        RegisterScreen.id: (context) => RegisterScreen(),
+        LoginScreen.id: (context) => const LoginScreen(),
+        RegisterScreen.id: (context) => const RegisterScreen(),
         ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
         DashboardScreen.id: (context) => DashboardScreen(),
-        TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
+        TeacherDashboardScreen.id: (context) => const TeacherDashboardScreen(),
+        CourseCreationScreen.id: (context) => const CourseCreationScreen(),
         CourseScreen.id: (context) => CourseScreen(),
-        QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),
+        QuizScreen.id: (context) => QuizScreen(
+              exam: ModalRoute.of(context)!.settings.arguments as ExamModel,
+            ),
       },
-
       initialRoute: WelcomeScreen.id,
     );
   }

@@ -1,20 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<bool> login({
-    required String username,
+  Future<Map<String, dynamic>?> loginWithEmail({
+    required String email,
     required String password,
   }) async {
-    await Future.delayed(const Duration(seconds: 2));
+    final credential = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    final user = credential.user;
+    if (user == null) return null;
 
-    if (username == "admin" && password == "1234") {
-      return true;
-    }
-
-    return false;
+    final doc = await _firestore.collection('users').doc(user.uid).get();
+    final role = doc.data()?['role'] ?? 'student';
+    return {'user': user, 'role': role};
   }
 
   Future<User?> register(
@@ -27,9 +32,25 @@ class AuthService {
       email: email,
       password: password,
     );
+    final user = credential.user;
+    if (user == null) return null;
 
-    await credential.user?.updateDisplayName(name);
-    return credential.user;
+    await user.updateDisplayName(name);
+
+    await _firestore.collection('users').doc(user.uid).set({
+      'uid': user.uid,
+      'name': name,
+      'email': email,
+      'role': role,
+      'createdAt': DateTime.now().toIso8601String(),
+    });
+
+    return user;
+  }
+
+  Future<String> getUserRole(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    return doc.data()?['role'] ?? 'student';
   }
 
   Future<User?> signInWithGoogle() async {
@@ -43,6 +64,27 @@ class AuthService {
     );
 
     final userCredential = await _auth.signInWithCredential(credential);
-    return userCredential.user;
+    final user = userCredential.user;
+
+    if (user != null) {
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (!doc.exists) {
+        await _firestore.collection('users').doc(user.uid).set({
+          'uid': user.uid,
+          'name': user.displayName ?? '',
+          'email': user.email ?? '',
+          'role': 'student',
+          'createdAt': DateTime.now().toIso8601String(),
+        });
+      }
+    }
+
+    return user;
   }
+
+  Future<void> logout() async {
+    await _auth.signOut();
+  }
+
+  User? get currentUser => _auth.currentUser;
 }

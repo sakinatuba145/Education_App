@@ -1,0 +1,2 @@
+- [Teacher module architecture](teacher-module.md) — full Coursera-like teacher flow built; auth role saved to Firestore on register; login routes by role
+- [Flutter Dart 3.8 gotchas](dart38-gotchas.md) — isScrollControlled only works in showModalBottomSheet not showDialog; const constructors must exist on class

@@ -6,9 +6,11 @@ import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/teacher/services/teacher_storage_service.dart';
 import 'package:education_app/teacher/constants/teacher_strings.dart';
 import 'package:education_app/teacher/constants/teacher_constants.dart';
+import 'package:education_app/teacher/screens/course_editor_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CourseCreationScreen extends StatefulWidget {
+  static String id = 'course_creation_screen';
   const CourseCreationScreen({super.key});
 
   @override
@@ -356,13 +358,16 @@ class _CourseCreationScreenState extends State<CourseCreationScreen> {
       );
 
       // Save to Firestore
-      await _courseService.createCourse(course: course);
+      final courseId = await _courseService.createCourse(course: course);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Course created successfully!')),
+          const SnackBar(content: Text('Course created! Now add your content.')),
         );
-        Navigator.pop(context);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => CourseEditorScreen(courseId: courseId)),
+        );
       }
     } catch (e) {
       if (mounted) {

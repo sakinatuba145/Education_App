@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/student/services/enrollment_service.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
+import 'package:education_app/student/screens/student_project_screen.dart';
 
 class CoursePlayerScreen extends StatefulWidget {
   final String courseId;
@@ -400,6 +401,49 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
                   ),
                 );
               },
+            ),
+          ),
+          // Final Project entry
+          InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => StudentProjectScreen(
+                  courseId: widget.courseId,
+                  courseTitle: _courseData['title'] ?? 'Course',
+                ),
+              ),
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.12),
+                border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                    ),
+                    child: const Icon(Icons.assignment_rounded, color: AppColors.primary, size: 16),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Final Project', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                        Text('Submit & get graded', style: TextStyle(color: Colors.white38, fontSize: 11)),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded, color: Colors.white38, size: 18),
+                ],
+              ),
             ),
           ),
         ],

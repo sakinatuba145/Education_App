@@ -7,7 +7,9 @@ import 'package:education_app/teacher/models/lesson_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/teacher/services/teacher_lesson_service.dart';
 import 'package:education_app/teacher/services/teacher_quiz_service.dart';
+import 'package:education_app/teacher/services/final_project_service.dart';
 import 'package:education_app/teacher/screens/quiz_builder_screen.dart';
+import 'package:education_app/teacher/screens/teacher_project_tab.dart';
 
 const _orange = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF8F0);
@@ -55,7 +57,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
     _loadAll();
   }
 
@@ -96,6 +98,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
       if (mounted) setState(() => _loading = false);
     }
   }
+
 
   Future<void> _loadStudents() async {
     try {
@@ -218,6 +221,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
             Tab(icon: Icon(Icons.quiz_rounded, size: 18), text: 'Quiz'),
             Tab(icon: Icon(Icons.people_alt_rounded, size: 18), text: 'Students'),
             Tab(icon: Icon(Icons.bar_chart_rounded, size: 18), text: 'Analytics'),
+            Tab(icon: Icon(Icons.assignment_rounded, size: 18), text: 'Project'),
           ],
         ),
       ),
@@ -231,6 +235,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
                 _buildQuizTab(),
                 _buildStudentsTab(),
                 _buildAnalyticsTab(),
+                _buildProjectTab(),
               ],
             ),
     );
@@ -1209,6 +1214,9 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
       ],
     );
   }
+
+  // ── TAB 5: PROJECT ────────────────────────────────────────────────────────
+  Widget _buildProjectTab() => TeacherProjectTab(courseId: widget.courseId);
 }
 
 // ── LESSON CARD with inline editor ──────────────────────────────────────────

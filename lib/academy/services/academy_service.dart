@@ -164,13 +164,14 @@ class AcademyService {
       final snap = await _db
           .collection('courses')
           .where('academyId', isEqualTo: _uid)
-          .orderBy('createdAt', descending: true)
           .get();
 
-      return snap.docs.map((doc) {
+      final courses = snap.docs.map((doc) {
         final data = {...doc.data(), 'id': doc.id};
         return CourseModel.fromJson(data);
       }).toList();
+      courses.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return courses;
     } catch (_) {
       return [];
     }
@@ -200,10 +201,9 @@ class AcademyService {
           .collection('academy_invites')
           .where('academyId', isEqualTo: _uid)
           .where('status', isEqualTo: 'pending')
-          .orderBy('createdAt', descending: true)
           .get();
 
-      return snap.docs.map((doc) {
+      final invites = snap.docs.map((doc) {
         final d = doc.data();
         return AcademyInvite(
           id: doc.id,
@@ -213,6 +213,8 @@ class AcademyService {
           createdAt: (d['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
         );
       }).toList();
+      invites.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return invites;
     } catch (_) {
       return [];
     }

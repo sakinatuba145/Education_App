@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CourseModel {
   final String id;
   final String teacherId;
@@ -59,6 +61,29 @@ class CourseModel {
     this.publishedAt,
   });
 
+  /// Handles Firestore Timestamp, ISO string, or null safely.
+  static DateTime _parseDate(dynamic value, {DateTime? fallback}) {
+    if (value == null) return fallback ?? DateTime.now();
+    if (value is DateTime) return value;
+    if (value is Timestamp) return value.toDate();
+    try {
+      return DateTime.parse(value.toString());
+    } catch (_) {
+      return fallback ?? DateTime.now();
+    }
+  }
+
+  static DateTime? _parseDateNullable(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    if (value is Timestamp) return value.toDate();
+    try {
+      return DateTime.parse(value.toString());
+    } catch (_) {
+      return null;
+    }
+  }
+
   factory CourseModel.fromJson(Map<String, dynamic> json) {
     return CourseModel(
       id: json['id'] ?? '',
@@ -73,28 +98,22 @@ class CourseModel {
       level: json['level'] ?? 'beginner',
       language: json['language'] ?? 'English',
       prerequisites: List<String>.from(json['prerequisites'] ?? []),
-      totalEnrolled: json['totalEnrolled'] ?? 0,
-      totalCompleted: json['totalCompleted'] ?? 0,
-      totalLessons: json['totalLessons'] ?? 0,
-      totalDurationHours: (json['totalDurationHours'] ?? 0).toDouble(),
-      averageRating: (json['averageRating'] ?? 0).toDouble(),
-      totalReviews: json['totalReviews'] ?? 0,
+      totalEnrolled: (json['totalEnrolled'] ?? 0) as int,
+      totalCompleted: (json['totalCompleted'] ?? 0) as int,
+      totalLessons: (json['totalLessons'] ?? 0) as int,
+      totalDurationHours: ((json['totalDurationHours'] ?? 0) as num).toDouble(),
+      averageRating: ((json['averageRating'] ?? 0) as num).toDouble(),
+      totalReviews: (json['totalReviews'] ?? json['totalRatings'] ?? 0) as int,
       isFree: json['isFree'] ?? true,
-      price: json['price']?.toDouble(),
-      totalRevenue: (json['totalRevenue'] ?? 0).toDouble(),
+      price: (json['price'] as num?)?.toDouble(),
+      totalRevenue: ((json['totalRevenue'] ?? 0) as num).toDouble(),
       status: json['status'] ?? 'draft',
       visibility: json['visibility'] ?? 'public',
       slug: json['slug'] ?? '',
       keywords: json['keywords'] ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'].toString())
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'].toString())
-          : DateTime.now(),
-      publishedAt: json['publishedAt'] != null
-          ? DateTime.parse(json['publishedAt'].toString())
-          : null,
+      createdAt: _parseDate(json['createdAt']),
+      updatedAt: _parseDate(json['updatedAt']),
+      publishedAt: _parseDateNullable(json['publishedAt']),
     );
   }
 

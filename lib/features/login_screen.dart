@@ -90,6 +90,32 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Future<void> _loginAsTeacherDemo() async {
+    setState(() => isLoading = true);
+    const email = 'demo.teacher@eduaf.com';
+    const password = 'TeacherDemo@123';
+    const name = 'Demo Teacher';
+    const role = 'teacher';
+    try {
+      // Try to sign in first; if user doesn't exist, create it
+      Map<String, dynamic>? result;
+      try {
+        result = await _authService.loginWithEmail(email: email, password: password);
+      } catch (_) {
+        // Account doesn't exist yet — create it
+        await _authService.register(name, email, password, role);
+        result = await _authService.loginWithEmail(email: email, password: password);
+      }
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
+    } catch (e) {
+      if (!mounted) return;
+      _showError('Demo login failed: ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
   String _friendlyAuthError(String code) {
     if (code.contains('user-not-found') || code.contains('invalid-credential') || code.contains('wrong-password')) {
       return 'Email or password is incorrect. Please check your credentials and try again.';
@@ -216,7 +242,40 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 24),
+
+                // Quick demo access
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: _primary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: _primary.withValues(alpha: 0.3)),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text('🚀 Quick Access for Testing',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 44,
+                        child: ElevatedButton.icon(
+                          onPressed: isLoading ? null : _loginAsTeacherDemo,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _primary,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          icon: const Icon(Icons.school, color: Colors.white, size: 18),
+                          label: const Text('Login as Teacher (Demo)',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

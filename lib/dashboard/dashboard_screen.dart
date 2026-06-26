@@ -14,10 +14,6 @@ import 'package:education_app/student/services/progress_service.dart';
 import 'package:education_app/student/screens/my_courses_screen.dart';
 import 'package:education_app/student/screens/course_player_screen.dart';
 import 'package:education_app/core/constants/app_colors.dart';
-import 'chart_painter.dart';
-import 'chartdata.dart';
-import 'course_page.dart';
-import 'data_dashboard.dart';
 
 class DashboardScreen extends StatefulWidget {
   static String id = 'dashboard_screen';
@@ -30,98 +26,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
   bool _isDarkMode = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final List<Course> courses = [
-    Course(
-      title: "Math",
-      icon: Icons.functions,
-      color: Colors.blue,
-      route: "/math",
-    ),
-    Course(
-      title: "Physics",
-      icon: Icons.rocket_launch,
-      color: Colors.red,
-      route: "/physics",
-    ),
-    Course(
-      title: "Chemistry",
-      icon: Icons.science,
-      color: Colors.green,
-      route: "/chemistry",
-    ),
-    Course(
-      title: "English",
-      icon: Icons.translate,
-      color: Colors.orange,
-      route: "/english",
-    ),
-    Course(
-      title: "Biology",
-      icon: Icons.biotech,
-      color: Colors.purple,
-      route: "/biology",
-    ),
-    Course(
-      title: "Computer",
-      icon: Icons.memory,
-      color: Colors.teal,
-      route: "/computer",
-    ),
-  ];
   final List<String> _pages = [
     'Home',
     'Explore',
     'Learn',
     'Profile',
   ];
-  final List<ChartData> _chartData = [
-    ChartData('Mon', 45, 30),
-    ChartData('Tue', 56, 40),
-    ChartData('Wed', 55, 35),
-    ChartData('Thu', 60, 50),
-    ChartData('Fri', 61, 60),
-    ChartData('Sat', 70, 65),
-    ChartData('Sun', 75, 70),
-  ];
   List<QuizResult> _recentQuizResults = [];
   bool _activitiesLoading = true;
-  final List<Student> students = [
-    Student(
-      firstName: "Sakina",
-      lastName: "Karimi",
-      grade: "Grade 10",
-      imageUrl: "assets/images/img.png",
-      score: 90,
-    ),
-    Student(
-      firstName: "Sakina",
-      lastName: "Ahmadi",
-      grade: "Grade 9",
-      imageUrl: "assets/images/img.png",
-      score: 100,
-    ),
-    Student(
-      firstName: "Sakina",
-      lastName: "Karimi",
-      grade: "Grade 10",
-      imageUrl: "assets/images/img.png",
-      score: 90,
-    ),
-    Student(
-      firstName: "Sakina",
-      lastName: "Karimi",
-      grade: "Grade 10",
-      imageUrl: "assets/images/img.png",
-      score: 90,
-    ),
-    Student(
-      firstName: "Sakina",
-      lastName: "Karimi",
-      grade: "Grade 10",
-      imageUrl: "assets/images/img.png",
-      score: 90,
-    ),
-  ];
+  int _enrolledCount = 0;
 
   @override
   void initState() {
@@ -131,8 +44,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _loadActivities() async {
     try {
-      final results = await ProgressService().getMyQuizResults();
-      if (mounted) setState(() { _recentQuizResults = results.take(10).toList(); _activitiesLoading = false; });
+      final results = await Future.wait([
+        ProgressService().getMyQuizResults(),
+        EnrollmentService().getMyEnrollments(),
+      ]);
+      final quizResults = results[0] as List<QuizResult>;
+      final enrolled = results[1] as List;
+      if (mounted) {
+        setState(() {
+          _recentQuizResults = quizResults.take(10).toList();
+          _enrolledCount = enrolled.length;
+          _activitiesLoading = false;
+        });
+      }
     } catch (_) {
       if (mounted) setState(() => _activitiesLoading = false);
     }
@@ -540,14 +464,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Expanded(
                 flex: 2,
-                child: _buildRevenueChart(isMobile, isTablet, isDesktop),
+                child: _buildLearningStats(isMobile),
               ),
               SizedBox(width: 16),
               Expanded(flex: 1, child: _buildRecentActivities()),
             ],
           )
         else ...[
-          _buildRevenueChart(isMobile, isTablet, isDesktop),
+          _buildLearningStats(isMobile),
           SizedBox(height: 16),
           _buildRecentActivities(),
         ],
@@ -556,35 +480,105 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
 
-  Widget _buildRevenueChart(bool isMobile, bool isTablet, bool isDesktop) {
+  Widget _buildLearningStats(bool isMobile) {
+    final quizCount = _recentQuizResults.length;
+    final passedCount = _recentQuizResults.where((r) => r.passed).length;
+    final avgScore = quizCount > 0
+        ? _recentQuizResults.fold(0.0, (s, r) => s + r.percentageInt) / quizCount
+        : 0.0;
+
     return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _isDarkMode ? Colors.grey[850] : Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: _isDarkMode
-                ? Colors.black.withAlpha(55)
-                : Colors.grey.withAlpha(55),
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
+        color: _isDarkMode ? Colors.grey[850] : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Learning Overview',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              const Text('Learning Stats', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+              const Spacer(),
+              if (_activitiesLoading)
+                const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+            ],
           ),
-          SizedBox(height: 20),
-          Container(
-            height: isMobile ? 200 : 300,
-            child: CustomPaint(
-              painter: ChartPainter(_chartData),
-              child: Container(),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: _statBox('Enrolled', '$_enrolledCount', Icons.school_rounded, Colors.blue)),
+              const SizedBox(width: 12),
+              Expanded(child: _statBox('Quizzes Taken', '$quizCount', Icons.quiz_rounded, Colors.purple)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(child: _statBox('Passed', '$passedCount', Icons.check_circle_rounded, Colors.green)),
+              const SizedBox(width: 12),
+              Expanded(child: _statBox('Avg Score', '${avgScore.toStringAsFixed(0)}%', Icons.star_rounded, Colors.orange)),
+            ],
+          ),
+          if (quizCount > 0) ...[
+            const SizedBox(height: 16),
+            const Text('Recent Quiz Performance',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey)),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 60,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: _recentQuizResults.reversed.take(7).toList().reversed.map((r) {
+                  final h = (r.percentageInt / 100 * 50).clamp(4.0, 50.0);
+                  final color = r.passed ? Colors.green : Colors.red;
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('${r.percentageInt}%',
+                              style: TextStyle(fontSize: 8, color: color, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 2),
+                          Container(
+                            height: h,
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: 0.8),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _statBox(String label, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+              Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+            ],
           ),
         ],
       ),
@@ -679,108 +673,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return '${dt.day}/${dt.month}';
   }
 
-  Widget _buildStudentProfile(bool isMobile, bool isTablet, bool isDesktop) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: _isDarkMode ? Colors.grey[800] : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: _isDarkMode
-                ? Colors.black.withAlpha(55)
-                : Colors.grey.withAlpha(55),
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Top Students',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 16),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: students.map((student) {
-                return Container(
-                  width: 150,
-                  margin: EdgeInsets.only(right: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          student.imageUrl,
-                          height: 100,
-                          width: 150,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        '${student.firstName}',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '${student.lastName}',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '${student.grade} Grad',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '${student.score} Score',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDefaultScreen() {
-    return const SizedBox.shrink();
-  }
-
-  Widget _buildDefaultScreenOld() {
-    return Container(
-      color: Colors.red,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.construction,
-              size: 100,
-              color: Theme.of(context).primaryColor,
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Page Under Construction',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   IconData _getIcon(int index) {
     const icons = [

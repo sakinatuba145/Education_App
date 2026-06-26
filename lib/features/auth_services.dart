@@ -126,6 +126,24 @@ class AuthService {
     return user;
   }
 
+  /// Saves/updates the role for the currently signed-in user.
+  /// Updates both displayName (primary) and Firestore (secondary).
+  Future<void> updateUserRole(String role) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    // Preserve the display name, update the role suffix
+    final currentName = _parseName(user).isNotEmpty ? _parseName(user) : (user.displayName ?? 'User');
+    await user.updateDisplayName(_encodeName(currentName, role));
+
+    try {
+      await _firestore.collection('users').doc(user.uid).set(
+        {'role': role},
+        SetOptions(merge: true),
+      );
+    } catch (_) {}
+  }
+
   Future<void> logout() async {
     await _auth.signOut();
   }

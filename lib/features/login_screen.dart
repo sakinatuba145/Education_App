@@ -18,9 +18,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   bool isLoading = false;
   bool obscurePass = true;
+  String _selectedRole = 'student';
   final AuthService _authService = AuthService();
 
   static const _primary = Color(0xFFFFA726);
+  static const _bg = Color(0xFFFFF3E0);
 
   Future<void> login() async {
     final email = emailController.text.trim();
@@ -41,7 +43,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      final role = result?['role'] ?? 'student';
+      // Use the role the user selected on this screen —
+      // this fixes old accounts that have no stored role.
+      String role = _selectedRole;
+
+      // If the stored role is teacher/academy, respect that over the toggle
+      final storedRole = result?['role'] ?? 'student';
+      if (storedRole == 'teacher' || storedRole == 'academy') {
+        role = storedRole;
+      }
+
+      // Persist the chosen role so next login remembers it
+      await _authService.updateUserRole(role);
+
+      if (!mounted) return;
 
       if (role == 'teacher' || role == 'academy') {
         Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
@@ -97,15 +112,13 @@ class _LoginScreenState extends State<LoginScreen> {
     const name = 'Demo Teacher';
     const role = 'teacher';
     try {
-      // Try to sign in first; if user doesn't exist, create it
-      Map<String, dynamic>? result;
       try {
-        result = await _authService.loginWithEmail(email: email, password: password);
+        await _authService.loginWithEmail(email: email, password: password);
       } catch (_) {
-        // Account doesn't exist yet — create it
         await _authService.register(name, email, password, role);
-        result = await _authService.loginWithEmail(email: email, password: password);
+        await _authService.loginWithEmail(email: email, password: password);
       }
+      await _authService.updateUserRole(role);
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
     } catch (e) {
@@ -147,28 +160,46 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Text('Welcome Back', style: theme.textTheme.headlineMedium),
                 const SizedBox(height: 8),
-                Text('Login to continue your learning journey.', style: theme.textTheme.bodyMedium),
-                const SizedBox(height: 40),
+                Text('Login to continue your journey.', style: theme.textTheme.bodyMedium),
+                const SizedBox(height: 32),
 
-                Text('Email', style: theme.textTheme.titleMedium),
+                // ── Role selector ──────────────────────────────────────────
+                Text('I am a...', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: _bg,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: _primary.withValues(alpha: 0.4)),
+                  ),
+                  child: Row(
+                    children: [
+                      _roleTab('student', Icons.school_outlined, 'Student'),
+                      _roleTab('teacher', Icons.cast_for_education_outlined, 'Teacher'),
+                      _roleTab('academy', Icons.business_outlined, 'Academy'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 28),
+
+                // ── Email ──────────────────────────────────────────────────
+                Text('Email', style: theme.textTheme.titleMedium),
+                const SizedBox(height: 10),
                 TextField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
-                  style: theme.textTheme.bodyLarge,
                   decoration: const InputDecoration(
                     hintText: 'Enter your email',
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 Text('Password', style: theme.textTheme.titleMedium),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 TextField(
                   controller: passwordController,
                   obscureText: obscurePass,
-                  style: theme.textTheme.bodyLarge,
                   onSubmitted: (_) => login(),
                   decoration: InputDecoration(
                     hintText: 'Enter your password',
@@ -180,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -189,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -200,11 +231,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 24, width: 24,
                             child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
                           )
-                        : const Text('Login'),
+                        : Text('Login as ${_selectedRole[0].toUpperCase()}${_selectedRole.substring(1)}'),
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 24),
                 Row(children: [
                   const Expanded(child: Divider()),
                   Padding(
@@ -213,69 +244,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const Expanded(child: Divider()),
                 ]),
-                const SizedBox(height: 30),
+                const SizedBox(height: 24),
 
+                // Demo button
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: 48,
                   child: OutlinedButton.icon(
-                    onPressed: () async {
-                      try {
-                        final user = await _authService.signInWithGoogle();
-                        if (user != null && mounted) {
-                          final role = await _authService.getUserRole(user.uid);
-                          if (role == 'teacher' || role == 'academy') {
-                            Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
-                          } else {
-                            Navigator.pushReplacementNamed(context, DashboardScreen.id);
-                          }
-                        }
-                      } catch (e) {
-                        if (mounted) _showError('Google sign-in failed: $e');
-                      }
-                    },
-                    icon: const Icon(Icons.g_mobiledata, size: 28),
-                    label: const Text('Continue with Google'),
+                    onPressed: isLoading ? null : _loginAsTeacherDemo,
                     style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      side: BorderSide(color: _primary),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
+                    icon: Icon(Icons.play_circle_outline, color: _primary),
+                    label: Text('Try Teacher Demo Account',
+                        style: TextStyle(color: _primary, fontWeight: FontWeight.bold)),
                   ),
                 ),
 
-                const SizedBox(height: 24),
-
-                // Quick demo access
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: _primary.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: _primary.withValues(alpha: 0.3)),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text('🚀 Quick Access for Testing',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 44,
-                        child: ElevatedButton.icon(
-                          onPressed: isLoading ? null : _loginAsTeacherDemo,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _primary,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          icon: const Icon(Icons.school, color: Colors.white, size: 18),
-                          label: const Text('Login as Teacher (Demo)',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -288,6 +275,36 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _roleTab(String role, IconData icon, String label) {
+    final selected = _selectedRole == role;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedRole = role),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.all(4),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: selected ? _primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: selected ? Colors.white : Colors.grey, size: 22),
+              const SizedBox(height: 4),
+              Text(label,
+                  style: TextStyle(
+                    color: selected ? Colors.white : Colors.grey,
+                    fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                    fontSize: 12,
+                  )),
+            ],
           ),
         ),
       ),

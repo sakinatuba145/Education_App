@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'edit_profile_screen.dart';
 import 'progress_screen.dart';
@@ -19,66 +19,90 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String name = "";
   String email = "";
-  String phone = "+971 000000000";
-  String university = "University of Kabul";
-  String bio = "Education App Student";
+  String phone = "";
+  String university = "";
+  String bio = "";
 
   XFile? profileImage;
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadFirebaseUser();
-    loadProfileData();
+    _loadFromFirebase();
   }
 
-  void _loadFirebaseUser() {
+  Future<void> _loadFromFirebase() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
+    if (user == null) {
+      setState(() => _loading = false);
+      return;
+    }
+
+    // Always get name + email from Firebase Auth (guaranteed real data)
+    String loadedName = user.displayName?.split('|').first ?? '';
+    if (loadedName.isEmpty) loadedName = user.email?.split('@').first ?? '';
+    String loadedEmail = user.email ?? '';
+    String loadedPhone = '';
+    String loadedUniversity = '';
+    String loadedBio = '';
+
+    // Load extra profile fields from Firestore if they exist
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (doc.exists) {
+        final data = doc.data()!;
+        // Only override name from Firestore if it's richer than Auth displayName
+        final fsName = (data['name'] as String? ?? '').split('|').first.trim();
+        if (fsName.isNotEmpty) loadedName = fsName;
+        loadedPhone = data['phone'] as String? ?? '';
+        loadedUniversity = data['university'] as String? ?? '';
+        loadedBio = data['bio'] as String? ?? '';
+      }
+    } catch (_) {}
+
+    if (mounted) {
       setState(() {
-        name = user.displayName?.split('|').first ?? user.email?.split('@').first ?? 'Student';
-        email = user.email ?? '';
+        name = loadedName;
+        email = loadedEmail;
+        phone = loadedPhone;
+        university = loadedUniversity;
+        bio = loadedBio;
+        _loading = false;
       });
     }
   }
 
-  Future<void> loadProfileData() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    setState(() {
-      final savedName = prefs.getString("name");
-      if (savedName != null && savedName.isNotEmpty) name = savedName;
-      final savedEmail = prefs.getString("email");
-      if (savedEmail != null && savedEmail.isNotEmpty) email = savedEmail;
-      phone = prefs.getString("phone") ?? phone;
-      university = prefs.getString("university") ?? university;
-      bio = prefs.getString("bio") ?? bio;
-
-      final imagePath = prefs.getString("profileImage");
-      if (imagePath != null) {
-        profileImage = XFile(imagePath);
-      }
-    });
-  }
-
   Future<void> saveProfileData() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString("name", name);
-    await prefs.setString("email", email);
-    await prefs.setString("phone", phone);
-    await prefs.setString("university", university);
-    await prefs.setString("bio", bio);
-
-    if (profileImage != null) {
-      await prefs.setString("profileImage", profileImage!.path);
-    }
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'university': university,
+        'bio': bio,
+      }, SetOptions(merge: true));
+    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     final textTheme = Theme.of(context).textTheme;
+
+    if (_loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -151,8 +175,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      bio,
-                      style: textTheme.bodyMedium,
+                      bio.isEmpty ? 'Add a bio...' : bio,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: bio.isEmpty ? Colors.grey : null,
+                        fontStyle: bio.isEmpty ? FontStyle.italic : null,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -196,11 +223,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 20),
 
-            _infoCard(context, Icons.email, "Email", email),
+            _infoCard(context, Icons.email, "Email", email.isEmpty ? 'Not set' : email),
             const SizedBox(height: 12),
-            _infoCard(context, Icons.phone, "Phone", phone),
+            _infoCard(context, Icons.phone, "Phone", phone.isEmpty ? 'Not set' : phone),
             const SizedBox(height: 12),
-            _infoCard(context, Icons.school, "University", university),
+            _infoCard(context, Icons.school, "University", university.isEmpty ? 'Not set' : university),
 
             const SizedBox(height: 20),
 

@@ -174,21 +174,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _statBox(
                   context,
                   icon: Icons.menu_book,
-                  number: "3",
+                  number: "0",
                   label: "Courses",
                 ),
                 const SizedBox(width: 10),
                 _statBox(
                   context,
                   icon: Icons.quiz,
-                  number: "5",
+                  number: "0",
                   label: "Quizzes",
                 ),
                 const SizedBox(width: 10),
                 _statBox(
                   context,
                   icon: Icons.workspace_premium,
-                  number: "70%",
+                  number: "0%",
                   label: "Progress",
                 ),
               ],
@@ -214,29 +214,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 12),
 
-            _achievementCard(
-              context,
-              icon: Icons.emoji_events,
-              title: "First Quiz Completed",
-              subtitle: "You completed your first quiz successfully.",
-            ),
-
-            const SizedBox(height: 10),
-
-            _achievementCard(
-              context,
-              icon: Icons.auto_stories,
-              title: "3 Courses Finished",
-              subtitle: "You are building your learning journey.",
-            ),
-
-            const SizedBox(height: 10),
-
-            _achievementCard(
-              context,
-              icon: Icons.star,
-              title: "Active Learner",
-              subtitle: "Keep learning and improving every day.",
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 28),
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Icon(Icons.emoji_events_outlined, size: 48, color: Colors.grey[300]),
+                  const SizedBox(height: 12),
+                  Text(
+                    'No achievements yet',
+                    style: TextStyle(color: Colors.grey[400], fontSize: 15),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Complete courses and quizzes to earn badges.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey[300], fontSize: 12),
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 20),

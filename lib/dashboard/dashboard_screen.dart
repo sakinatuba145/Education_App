@@ -78,50 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ChartData('Sat', 70, 65),
     ChartData('Sun', 75, 70),
   ];
-  final List<ActivityItem> _activities = [
-    ActivityItem(
-      title: 'Doing Homework',
-      subtitle: 'Math Chapter 5 completed',
-      time: '2 min ago',
-      icon: Icons.edit_note,
-      color: Colors.blue,
-    ),
-    ActivityItem(
-      title: 'Quiz Completed',
-      subtitle: 'Science Quiz Score: 18/20',
-      time: '20 min ago',
-      icon: Icons.quiz,
-      color: Colors.green,
-    ),
-    ActivityItem(
-      title: 'Lesson Watched',
-      subtitle: 'Physics: Newton Laws',
-      time: '1 hr ago',
-      icon: Icons.play_circle,
-      color: Colors.orange,
-    ),
-    ActivityItem(
-      title: 'PDF Viewed',
-      subtitle: 'Biology Book Chapter 3',
-      time: '2 hr ago',
-      icon: Icons.picture_as_pdf,
-      color: Colors.red,
-    ),
-    ActivityItem(
-      title: 'Homework Submitted',
-      subtitle: 'English Essay uploaded',
-      time: '5 hr ago',
-      icon: Icons.upload_file,
-      color: Colors.purple,
-    ),
-    ActivityItem(
-      title: 'Last Message',
-      subtitle: 'Teacher: Don’t forget exam',
-      time: '1 day ago',
-      icon: Icons.message,
-      color: Colors.teal,
-    ),
-  ];
+  final List<ActivityItem> _activities = [];
   final List<Student> students = [
     Student(
       firstName: "Sakina",
@@ -690,47 +647,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           SizedBox(height: 16),
 
-          ..._activities.map((act) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 14),
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: act.color.withAlpha(15),
-                      borderRadius: BorderRadius.circular(10),
+          if (_activities.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(Icons.history_rounded, size: 40, color: Colors.grey[300]),
+                    SizedBox(height: 10),
+                    Text(
+                      'No activity yet',
+                      style: TextStyle(color: Colors.grey[400], fontSize: 14),
                     ),
-                    child: Icon(act.icon, color: act.color),
-                  ),
-
-                  SizedBox(width: 12),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          act.title,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          act.subtitle,
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                      ],
+                    SizedBox(height: 4),
+                    Text(
+                      'Start a course or quiz to see your activity here.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey[300], fontSize: 12),
                     ),
-                  ),
-
-                  Text(
-                    act.time,
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            );
-          }).toList(),
+            )
+          else
+            ..._activities.map((act) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: act.color.withAlpha(15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(act.icon, color: act.color),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(act.title, style: TextStyle(fontWeight: FontWeight.bold)),
+                          SizedBox(height: 4),
+                          Text(act.subtitle, style: TextStyle(fontSize: 12, color: Colors.grey)),
+                        ],
+                      ),
+                    ),
+                    Text(act.time, style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  ],
+                ),
+              );
+            }).toList(),
         ],
       ),
     );

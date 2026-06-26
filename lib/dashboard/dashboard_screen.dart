@@ -64,12 +64,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ),
   ];
   final List<String> _pages = [
-    'Dashboard',
-    'Analytics',
-    'Library',
-    'Puzzle',
-    'Information',
-    'Settings',
+    'Home',
+    'Explore',
+    'Quizzes',
     'Profile',
   ];
   final List<ChartData> _chartData = [
@@ -278,11 +275,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 colors: [Colors.blue[900]!, Colors.blue[700]!],
               ),
             ),
-            accountName: Text('Sakina Karimi'),
-            accountEmail: Text('sakina@gmail.com'),
+            accountName: Text(user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student'),
+            accountEmail: Text(user?.email ?? ''),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('images/time.png'),
-              child: Text('SK'),
+              backgroundColor: Colors.blue[300],
+              child: Text(
+                (user?.displayName?.split('|').first ?? user?.email ?? 'S')[0].toUpperCase(),
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
           Expanded(
@@ -367,14 +367,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         if (isDesktop) ...[
           SizedBox(height: 10),
           Text(
-            'Sakina Karimi',
+            user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
           ),
-          Text('Admin', style: TextStyle(color: Colors.white70, fontSize: 18)),
+          Text('Student', style: TextStyle(color: Colors.white70, fontSize: 14)),
         ],
         SizedBox(height: 30),
         Expanded(
@@ -482,7 +482,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 Text(
-                  'Welcome back Sakina',
+                  'Welcome back, ${user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student'}',
                   style: TextStyle(
                     fontSize: isMobile ? 12 : 14,
                     color: Colors.grey[600],
@@ -657,7 +657,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Revenue Overview',
+            'Learning Overview',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 20),
@@ -836,15 +836,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   IconData _getIcon(int index) {
-    final icons = [
-      Icons.dashboard_rounded,
-      Icons.analytics_rounded,
-      Icons.menu_book_rounded,
-      Icons.extension_rounded,
-      Icons.info_outline_rounded,
-      Icons.settings,
-      Icons.person,
+    const icons = [
+      Icons.home_rounded,
+      Icons.explore_rounded,
+      Icons.quiz_rounded,
+      Icons.person_rounded,
     ];
+    if (index < 0 || index >= icons.length) return Icons.home_rounded;
     return icons[index];
   }
 }

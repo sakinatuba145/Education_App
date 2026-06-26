@@ -21,20 +21,20 @@ export 'services/teacher_validation_service.dart';
 
 // Constants
 export 'constants/teacher_constants.dart';
-export 'constants/teacher_routes.dart';
 export 'constants/teacher_strings.dart';
 
 // Screens
 export 'screens/teacher_dashboard_screen.dart';
 export 'screens/course_creation_screen.dart';
-export 'screens/lesson_management_screen.dart';
-export 'screens/content_upload_screen.dart';
-
-// Premium Screens
-export 'screens/teacher_dashboard_screen_premium.dart';
 export 'screens/course_creation_screen_premium.dart';
 export 'screens/lesson_management_screen_premium.dart';
 export 'screens/content_upload_screen_premium.dart';
+export 'screens/course_editor_screen.dart';
+export 'screens/lesson_editor_screen.dart';
+export 'screens/quiz_builder_screen.dart';
+export 'screens/quiz_results_screen.dart';
+export 'screens/student_submissions_screen.dart';
+export 'screens/academy_dashboard_screen.dart';
 
 // Widgets
 export 'widgets/course_card_widget.dart';

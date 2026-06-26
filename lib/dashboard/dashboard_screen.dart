@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/welcome_screen.dart';
 import 'package:education_app/courses/course_discovery_screen_premium.dart';
-import 'package:education_app/student/screens/student_quiz_browser_screen.dart';
+import 'package:education_app/student/screens/student_learn_hub_screen.dart';
 import 'package:education_app/profile/profile_screen.dart';
 import 'package:education_app/profile/settings_screen.dart';
 import 'package:education_app/profile/progress_screen.dart';
 import 'package:education_app/profile/favorites_screen.dart';
 import 'package:education_app/student/services/enrollment_service.dart';
+import 'package:education_app/student/services/progress_service.dart';
 import 'package:education_app/student/screens/my_courses_screen.dart';
 import 'package:education_app/student/screens/course_player_screen.dart';
 import 'package:education_app/core/constants/app_colors.dart';
@@ -70,7 +71,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<String> _pages = [
     'Home',
     'Explore',
-    'Quizzes',
+    'Learn',
     'Profile',
   ];
   final List<ChartData> _chartData = [
@@ -82,7 +83,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ChartData('Sat', 70, 65),
     ChartData('Sun', 75, 70),
   ];
-  final List<ActivityItem> _activities = [];
+  List<QuizResult> _recentQuizResults = [];
+  bool _activitiesLoading = true;
   final List<Student> students = [
     Student(
       firstName: "Sakina",
@@ -120,6 +122,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
       score: 90,
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadActivities();
+  }
+
+  Future<void> _loadActivities() async {
+    try {
+      final results = await ProgressService().getMyQuizResults();
+      if (mounted) setState(() { _recentQuizResults = results.take(10).toList(); _activitiesLoading = false; });
+    } catch (_) {
+      if (mounted) setState(() => _activitiesLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,8 +217,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     label: "Explore",
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.quiz_rounded),
-                    label: "Quizzes",
+                    icon: Icon(Icons.school_rounded),
+                    label: "Learn",
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person_rounded),
@@ -501,8 +518,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         // Explore / Course Discovery
         return const CourseDiscoveryScreenPremium();
       case 2:
-        // Quizzes
-        return const StudentQuizBrowserScreen();
+        // Learn hub
+        return const StudentLearnHubScreen();
       case 3:
         // Profile & Settings
         return const ProfileScreen();
@@ -576,69 +593,75 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildRecentActivities() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _isDarkMode ? Colors.grey[850] : Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: _isDarkMode ? Colors.grey[850] : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Student Activities',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Recent Activity', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+              if (_activitiesLoading)
+                const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              else
+                IconButton(icon: const Icon(Icons.refresh_rounded, size: 18), onPressed: _loadActivities, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+            ],
           ),
-
-          SizedBox(height: 16),
-
-          if (_activities.isEmpty)
+          const SizedBox(height: 12),
+          if (_activitiesLoading)
+            const Padding(padding: EdgeInsets.symmetric(vertical: 20), child: Center(child: CircularProgressIndicator()))
+          else if (_recentQuizResults.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               child: Center(
-                child: Column(
-                  children: [
-                    Icon(Icons.history_rounded, size: 40, color: Colors.grey[300]),
-                    SizedBox(height: 10),
-                    Text(
-                      'No activity yet',
-                      style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Start a course or quiz to see your activity here.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey[300], fontSize: 12),
-                    ),
-                  ],
-                ),
+                child: Column(children: [
+                  Icon(Icons.history_rounded, size: 40, color: Colors.grey[300]),
+                  const SizedBox(height: 10),
+                  Text('No activity yet', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                  const SizedBox(height: 4),
+                  Text('Take a quiz to see your activity here.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[300], fontSize: 12)),
+                ]),
               ),
             )
           else
-            ..._activities.map((act) {
+            ..._recentQuizResults.map((r) {
+              final pct = r.percentageInt;
+              final color = r.passed ? AppColors.success : AppColors.error;
+              final timeAgo = _formatTimeAgo(r.takenAt);
               return Padding(
-                padding: const EdgeInsets.only(bottom: 14),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
                   children: [
                     Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: act.color.withAlpha(15),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(act.icon, color: act.color),
+                      width: 44, height: 44,
+                      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                      child: Icon(Icons.quiz_rounded, color: color, size: 22),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(act.title, style: TextStyle(fontWeight: FontWeight.bold)),
-                          SizedBox(height: 4),
-                          Text(act.subtitle, style: TextStyle(fontSize: 12, color: Colors.grey)),
+                          Text(r.quizTitle.isNotEmpty ? r.quizTitle : 'Quiz', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 2),
+                          Row(children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                              child: Text('$pct%', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color)),
+                            ),
+                            const SizedBox(width: 6),
+                            Text('${r.score}/${r.totalQuestions} correct', style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+                          ]),
                         ],
                       ),
                     ),
-                    Text(act.time, style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text(timeAgo, style: TextStyle(fontSize: 11, color: Colors.grey[400])),
                   ],
                 ),
               );
@@ -646,6 +669,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
     );
+  }
+
+  String _formatTimeAgo(DateTime dt) {
+    final diff = DateTime.now().difference(dt);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    return '${dt.day}/${dt.month}';
   }
 
   Widget _buildStudentProfile(bool isMobile, bool isTablet, bool isDesktop) {
@@ -755,7 +786,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     const icons = [
       Icons.home_rounded,
       Icons.explore_rounded,
-      Icons.quiz_rounded,
+      Icons.school_rounded,
       Icons.person_rounded,
     ];
     if (index < 0 || index >= icons.length) return Icons.home_rounded;

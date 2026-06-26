@@ -1,0 +1,112 @@
+import 'package:flutter/material.dart';
+import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/student/screens/student_quiz_browser_screen.dart';
+import 'package:education_app/student/screens/flashcard_screen.dart';
+import 'package:education_app/student/screens/word_puzzle_screen.dart';
+import 'package:education_app/student/screens/leaderboard_screen.dart';
+
+class StudentLearnHubScreen extends StatefulWidget {
+  const StudentLearnHubScreen({super.key});
+
+  @override
+  State<StudentLearnHubScreen> createState() => _StudentLearnHubScreenState();
+}
+
+class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.lightBackground,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Custom tab bar header
+            Container(
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Learn',
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.dark,
+                          ),
+                        ),
+                        Text(
+                          'Quizzes, flashcards, puzzles & more',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TabBar(
+                    controller: _tabController,
+                    labelColor: AppColors.primary,
+                    unselectedLabelColor: Colors.grey.shade500,
+                    indicatorColor: AppColors.primary,
+                    indicatorWeight: 3,
+                    labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    unselectedLabelStyle: const TextStyle(fontSize: 12),
+                    tabs: const [
+                      Tab(icon: Icon(Icons.quiz_rounded, size: 20), text: 'Quizzes'),
+                      Tab(icon: Icon(Icons.style_rounded, size: 20), text: 'Flashcards'),
+                      Tab(icon: Icon(Icons.extension_rounded, size: 20), text: 'Puzzle'),
+                      Tab(icon: Icon(Icons.leaderboard_rounded, size: 20), text: 'Ranking'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: const [
+                  _QuizTab(),
+                  FlashcardScreen(),
+                  WordPuzzleScreen(),
+                  LeaderboardScreen(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Thin wrapper so StudentQuizBrowserScreen works inside TabBarView without its own Scaffold
+class _QuizTab extends StatelessWidget {
+  const _QuizTab();
+
+  @override
+  Widget build(BuildContext context) {
+    // StudentQuizBrowserScreen already has a Scaffold; return its body directly
+    return const StudentQuizBrowserScreen();
+  }
+}

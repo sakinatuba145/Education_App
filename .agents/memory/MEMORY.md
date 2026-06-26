@@ -1,3 +1,4 @@
+- [Student portal structure](student-portal.md) — Tab 0=Home, 1=Explore, 2=Learn(StudentLearnHubScreen), 3=Profile; LearnHub has 4 sub-tabs: Quizzes/Flashcards/Puzzle/Leaderboard.
 - [Quiz builder wiring](quiz-builder-wiring.md) — QuizBuilderScreen needs courseId+lessonId+quizId+quizTitle; quizId must be a real Firestore doc ID (new or existing), not auto-generated client-side.
 - [Quiz navigation pattern](quiz-navigation.md) — Any "open quiz" button must fetch-or-create the quiz doc first; _navigateToQuizBuilder() in TeacherCourseHubScreen is the reference impl.
 - [Teacher Tab 4 pattern](teacher-tab4-pattern.md) — Teacher dashboard Tab 4 uses 2-step course→lesson picker then _LessonQuizPickerSheet bottom sheet; _buildLessonManagementTab is the reference pattern.

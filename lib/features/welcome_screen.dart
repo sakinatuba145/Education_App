@@ -1,8 +1,10 @@
 import 'dart:ui';
-
+import '../core/constants/theme.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:education_app/features/login_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../core/constants/app_colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
   static String id = 'welcome_screen';
@@ -17,14 +19,14 @@ class WelcomeScreen extends StatelessWidget {
 
 
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xffFFF8F0),
-                  Color(0xffFFE0B2),
-                  Color(0xffFFD180),
+                  ThemeColors.gradient1,
+                  ThemeColors.gradient2,
+                  ThemeColors.gradient3,
                 ],
               ),
             ),
@@ -90,9 +92,12 @@ class WelcomeScreen extends StatelessWidget {
 
                   FadeInUp(
                     delay: const Duration(milliseconds: 300),
-                    child: const Text(
+                    child: Text(
                       "EduAf",
-                      style: TextStyle(
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineLarge
+                          ?.copyWith(
                         fontSize: 42,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.5,
@@ -104,13 +109,14 @@ class WelcomeScreen extends StatelessWidget {
 
                   FadeInUp(
                     delay: const Duration(milliseconds: 500),
-                    child: const Text(
+                    child:Text(
                       "Learn • Grow • Build Your Future",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -122,10 +128,7 @@ class WelcomeScreen extends StatelessWidget {
                     child: Text(
                       "Discover a new way of learning with modern courses, expert teachers and unlimited opportunities.",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 15,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
 
@@ -146,7 +149,7 @@ class WelcomeScreen extends StatelessWidget {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(22),
-                        color:Color(0xFFf5b400),
+                          color: ThemeColors.button,
 
                         ),
                         child: const Center(
@@ -175,12 +178,9 @@ class WelcomeScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 30),
-
                   Text(
                     "Powered by EduAf",
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
 
                   const SizedBox(height: 20),

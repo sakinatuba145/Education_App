@@ -4,16 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
 
-import '../teacher/screens/teacher_dashboard_screen.dart';
 import 'forgot_password.dart';
 import 'google_login.dart' as _authService;
 
 class LoginScreen extends StatefulWidget {
-  static String id='login_screen';
+  static String id = 'login_screen';
 
-  const LoginScreen({
-    super.key,
-  });
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -53,13 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Login Failed: ${e.toString()}',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login Failed: ${e.toString()}')));
     }
 
     setState(() {
@@ -72,184 +65,149 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFFf5b400),
-        title: Text(
-          "Login",
-          style: theme.textTheme.titleLarge,
-        ),
-      ),
+      appBar: AppBar(title: Text("Login", style: theme.textTheme.titleLarge)),
 
       body: SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xffFFF8F0),
-                Color(0xffFFE0B2),
-                Color(0xffFFD180),
-              ],
-            ),
-          ),
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Welcome Back ", style: theme.textTheme.headlineMedium),
 
-                  Text(
-                    "Welcome Back ",
-                    style: theme.textTheme.headlineMedium,
+                const SizedBox(height: 10),
+
+                Text(
+                  "Login to continue your learning journey.",
+                  style: theme.textTheme.bodyMedium,
+                ),
+
+                const SizedBox(height: 40),
+
+                Text("Email", style: theme.textTheme.titleMedium),
+
+                const SizedBox(height: 12),
+
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  style: theme.textTheme.bodyLarge,
+                  decoration: const InputDecoration(
+                    hintText: "Enter your email",
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
+                ),
 
-                  const SizedBox(height: 10),
+                const SizedBox(height: 24),
 
-                  Text(
-                    "Login to continue your learning journey.",
-                    style: theme.textTheme.bodyMedium,
+                Text("Password", style: theme.textTheme.titleMedium),
+
+                const SizedBox(height: 12),
+
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  style: theme.textTheme.bodyLarge,
+                  decoration: const InputDecoration(
+                    hintText: "Enter your password",
+                    prefixIcon: Icon(Icons.lock_outline),
                   ),
+                ),
 
-                  const SizedBox(height: 40),
+                const SizedBox(height: 16),
 
-                  Text(
-                    "Email",
-                    style: theme.textTheme.titleMedium,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, ForgotPasswordScreen.id);
+                    },
+                    child: const Text("Forgot Password?"),
                   ),
+                ),
 
-                  const SizedBox(height: 12),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, DashboardScreen.id);
+                    },
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text("Login"),
+                  ),
+                ),
 
-                  TextField(
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    style: theme.textTheme.bodyLarge,
-                    decoration: const InputDecoration(
-                      hintText: "Enter your email",
-                      prefixIcon: Icon(Icons.email_outlined),
+                const SizedBox(height: 30),
+
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text("OR", style: theme.textTheme.bodySmall),
                     ),
-                  ),
 
-                  const SizedBox(height: 24),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
 
-                  Text(
-                    "Password",
-                    style: theme.textTheme.titleMedium,
-                  ),
+                const SizedBox(height: 30),
 
-                  const SizedBox(height: 12),
-
-                  TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    style: theme.textTheme.bodyLarge,
-                    decoration: const InputDecoration(
-                      hintText: "Enter your password",
-                      prefixIcon: Icon(Icons.lock_outline),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {Navigator.pushNamed(context, ForgotPasswordScreen.id);},
-                      child: const Text("Forgot Password?"),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFf5b400)),
-                    onPressed: (){Navigator.pushNamed(context, TeacherDashboardScreen.id);},
-                      child:
-                      isLoading
-                          ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: Colors.white,
-                        ),
-                      )
-                          : const Text("Login"),
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Divider(),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      try {
+                        final userCredential = await _authService
+                            .signInWithGoogle();
+                        print(userCredential.user?.email);
+                      } catch (e) {
+                        print(e);
+                      }
+                      Navigator.pushNamed(context, DashboardScreen.id);
+                    },
+                    icon: const Icon(Icons.g_mobiledata),
+                    label: const Text("Continue with Google"),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
                       ),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                        ),
-                        child: Text(
-                          "OR",
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ),
-
-                      const Expanded(
-                        child: Divider(),
-                      ),
-                    ],
+                    ),
                   ),
+                ),
 
-                  const SizedBox(height: 30),
+                const SizedBox(height: 40),
 
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: OutlinedButton.icon(
-                      onPressed: () async {
-                        try {
-                          final userCredential =
-                          await _authService.signInWithGoogle();
-                          print(userCredential.user?.email);
-                        } catch (e) {
-                          print(e);
-                        }
-                        Navigator.pushNamed(context, DashboardScreen.id);
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don’t have an account? ",
+                      style: theme.textTheme.bodyMedium,
+                    ),
+
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, RegisterScreen.id);
                       },
-                      icon: const Icon(Icons.g_mobiledata),
-                      label: const Text("Continue with Google"),
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                      ),
+                      child: const Text("Register"),
                     ),
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Don’t have an account? ",
-                        style: theme.textTheme.bodyMedium,
-                      ),
-
-                      TextButton(
-                        onPressed: () {Navigator.pushNamed(context, RegisterScreen.id);},
-                        child: const Text("Register"),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),

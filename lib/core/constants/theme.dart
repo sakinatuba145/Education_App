@@ -5,52 +5,52 @@ class AppTheme {
     useMaterial3: true,
     brightness: Brightness.light,
     fontFamily: GoogleFonts.poppins().fontFamily,
-    scaffoldBackgroundColor: AppColors.background,
-    primaryColor: AppColors.primary,
+    scaffoldBackgroundColor: ThemeColors.background,
+    primaryColor: ThemeColors.primary,
     colorScheme: const ColorScheme.light(
-      primary: AppColors.primary,
-      secondary: AppColors.secondary,
+      primary: ThemeColors.primary,
+      secondary: ThemeColors.secondary,
       surface: Colors.white,
       onPrimary: Colors.white,
       onSecondary: Colors.black,
-      onSurface: AppColors.black,
+      onSurface: ThemeColors.black,
     ),
     appBarTheme: AppBarTheme(
       elevation: 0,
       centerTitle: true,
-      backgroundColor: AppColors.background,
-      foregroundColor: AppColors.black,
+      backgroundColor: ThemeColors.background,
+      foregroundColor: ThemeColors.black,
       titleTextStyle: GoogleFonts.playfairDisplay(
         fontSize: 24,
         fontWeight: FontWeight.w700,
-        color: AppColors.black,
+        color: ThemeColors.black,
       ),
     ),
     textTheme: TextTheme(
       headlineLarge: GoogleFonts.playfairDisplay(
         fontSize: 34,
         fontWeight: FontWeight.bold,
-        color: AppColors.black,
+        color: ThemeColors.black,
       ),
       headlineMedium: GoogleFonts.playfairDisplay(
         fontSize: 28,
         fontWeight: FontWeight.w700,
-        color: AppColors.black,
+        color: ThemeColors.black,
       ),
       titleLarge: GoogleFonts.playfairDisplay(
         fontSize: 22,
         fontWeight: FontWeight.w600,
-        color: AppColors.black,
+        color: ThemeColors.black,
       ),
       titleMedium: GoogleFonts.playfairDisplay(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: AppColors.black,
+        color: ThemeColors.black,
       ),
       bodyLarge: GoogleFonts.poppins(
         fontSize: 16,
         fontWeight: FontWeight.w500,
-        color: AppColors.black,
+        color: ThemeColors.black,
       ),
       bodyMedium: GoogleFonts.poppins(
         fontSize: 14,
@@ -65,7 +65,7 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: ThemeColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -80,7 +80,7 @@ class AppTheme {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: AppColors.primary,
+        foregroundColor: ThemeColors.primary,
         textStyle: GoogleFonts.poppins(
           fontSize: 15,
           fontWeight: FontWeight.w600,
@@ -95,7 +95,7 @@ class AppTheme {
       labelStyle: GoogleFonts.poppins(
         fontSize: 14,
         fontWeight: FontWeight.w500,
-        color: AppColors.black,
+        color: ThemeColors.black,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -108,7 +108,7 @@ class AppTheme {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: const BorderSide(
-          color: AppColors.primary,
+          color: ThemeColors.primary,
           width: 1.5,
         ),
       ),
@@ -121,13 +121,13 @@ class AppTheme {
       ),
     ),
     switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.all(AppColors.primary),
+      thumbColor: WidgetStateProperty.all(ThemeColors.primary),
       trackColor: WidgetStateProperty.all(
-        AppColors.primary.withValues(alpha: 0.3),
+        ThemeColors.primary.withValues(alpha: 0.3),
       ),
     ),
     iconTheme: const IconThemeData(
-      color: AppColors.primary,
+      color: ThemeColors.primary,
       size: 24,
     ),
     dividerTheme: const DividerThemeData(
@@ -141,10 +141,10 @@ class AppTheme {
     brightness: Brightness.dark,
     fontFamily: GoogleFonts.poppins().fontFamily,
     scaffoldBackgroundColor: AppDarkColors.background,
-    primaryColor: AppColors.primary,
+    primaryColor: ThemeColors.primary,
     colorScheme: const ColorScheme.dark(
-      primary: AppColors.primary,
-      secondary: AppColors.secondary,
+      primary: ThemeColors.primary,
+      secondary: ThemeColors.secondary,
       surface: AppDarkColors.card,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
@@ -200,7 +200,7 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: ThemeColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -230,7 +230,7 @@ class AppTheme {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: const BorderSide(
-          color: AppColors.primary,
+          color: ThemeColors.primary,
           width: 1.5,
         ),
       ),
@@ -243,7 +243,7 @@ class AppTheme {
       ),
     ),
     iconTheme: const IconThemeData(
-      color: AppColors.primary,
+      color: ThemeColors.primary,
       size: 24,
     ),
     dividerTheme: const DividerThemeData(
@@ -253,13 +253,21 @@ class AppTheme {
   );
 }
 
-class AppColors {
-  static const primary = Color(0xFFFFA726);
-  static const secondary = Color(0xFFFFCC80);
-  static const background = Color(0xFFFFF3E0);
-  static const white = Colors.white;
-  static const black = Colors.black;
-}
+ class ThemeColors {
+   static const primary = Color(0xFFFFA726);
+   static const secondary = Color(0xFFFFCC80);
+   static const background = Color(0xFFFFF3E0);
+
+
+   static const gradient1 = Color(0xFFFFF8F0);
+   static const gradient2 = Color(0xFFFFE0B2);
+   static const gradient3 = Color(0xFFFFD180);
+   static const button = Color(0xFFFf5b400);
+
+
+   static const white = Colors.white;
+   static const black = Colors.black;
+ }
 
 class AppDarkColors {
   static const background = Color(0xFF121212);

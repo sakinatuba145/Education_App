@@ -68,7 +68,7 @@ class _TeacherAddQuestionScreenState
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(
                     Icons.arrow_back_ios,
-                    color: AppColors.secondary,
+                    color: ThemeColors.secondary,
                   ),
                 ),
                 const SizedBox(width: 10),

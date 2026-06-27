@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen.dart';
-import 'package:education_app/teacher/screens/academy_dashboard_screen.dart';
 import 'package:education_app/dashboard/dashboard_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -49,8 +48,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // Navigate directly to the right dashboard — no need to log in again
         if (role == 'teacher') {
           Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
-        } else if (role == 'academy') {
-          Navigator.pushReplacementNamed(context, AcademyDashboardScreen.id);
         } else {
           Navigator.pushReplacementNamed(context, DashboardScreen.id);
         }
@@ -140,8 +137,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _roleChip('Student', 'student', Icons.school_outlined),
                   const SizedBox(width: 10),
                   _roleChip('Teacher', 'teacher', Icons.person_outline),
-                  const SizedBox(width: 10),
-                  _roleChip('Academy', 'academy', Icons.business_outlined),
                 ],
               ),
 
@@ -232,7 +227,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _roleName() {
     switch (role) {
       case 'teacher': return 'Teacher';
-      case 'academy': return 'Academy';
       default: return 'Student';
     }
   }

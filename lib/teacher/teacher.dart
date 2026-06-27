@@ -35,7 +35,6 @@ export 'screens/lesson_editor_screen.dart';
 export 'screens/quiz_builder_screen.dart';
 export 'screens/quiz_results_screen.dart';
 export 'screens/student_submissions_screen.dart';
-export 'screens/academy_dashboard_screen.dart';
 
 // Widgets
 export 'widgets/course_card_widget.dart';

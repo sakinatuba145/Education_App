@@ -87,7 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         end: Alignment.bottomCenter,
                         colors: _isDarkMode
                             ? [Colors.grey[900]!, Colors.grey[850]!]
-                            : [Colors.blue[900]!, Colors.blue[700]!],
+                            : [const Color(0xFF1A1A2E), const Color(0xFF16213E)],
                       ),
                     ),
                     child: _buildSideNavigation(isDesktop),
@@ -129,7 +129,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   });
                 },
                 type: BottomNavigationBarType.fixed,
-                selectedItemColor: Colors.blue[700],
+                selectedItemColor: AppColors.primary,
                 unselectedItemColor: Colors.grey,
                 items: const [
                   BottomNavigationBarItem(
@@ -172,15 +172,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Column(
         children: [
           UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.blue[900]!, Colors.blue[700]!],
+                colors: [Color(0xFF1A1A2E), Color(0xFFFF6B35)],
               ),
             ),
             accountName: Text(user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student'),
             accountEmail: Text(user?.email ?? ''),
             currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.blue[300],
+              backgroundColor: AppColors.primaryLight,
               child: Text(
                 (user?.displayName?.split('|').first ?? user?.email ?? 'S')[0].toUpperCase(),
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

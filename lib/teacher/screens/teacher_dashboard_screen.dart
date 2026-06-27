@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/teacher/screens/course_creation_screen_premium.dart';
-import 'package:education_app/teacher/screens/course_studio_screen.dart';
+import 'package:education_app/teacher/screens/teacher_course_hub_screen.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/login_screen.dart';
 import 'package:education_app/core/constants/app_colors.dart';
@@ -486,7 +486,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
 
   void _openCourseStudio(CourseModel course) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (_) => CourseStudioScreen(courseId: course.id)))
+        MaterialPageRoute(builder: (_) => TeacherCourseHubScreen(courseId: course.id)))
         .then((_) => _loadCourses());
   }
 

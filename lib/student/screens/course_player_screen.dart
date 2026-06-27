@@ -5,9 +5,10 @@ import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/student/services/enrollment_service.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
 import 'package:education_app/student/screens/student_project_screen.dart';
+import 'package:education_app/quiz/quiz_player_screen_premium.dart';
 
 // ─── brand tokens ────────────────────────────────────────────────────────────
-const _orange = AppColors.primary;        // #FF6B35
+const _orange = AppColors.primary;
 const _orangeLight = Color(0xFFFFF4EE);
 const _surface = Color(0xFFFAFAFA);
 const _sidebarBg = Colors.white;
@@ -34,6 +35,8 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
   List<LessonModel> _lessons = [];
   LessonModel? _currentLesson;
   Map<String, dynamic>? _currentContent;
+  Map<String, dynamic>? _currentQuizData;  // quiz for current lesson
+  bool _quizLoading = false;
   EnrolledCourse? _enrollment;
   Map<String, dynamic> _courseData = {};
   bool _loading = true;
@@ -83,13 +86,18 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
       }
 
       Map<String, dynamic>? content;
-      if (initial != null) content = await _loadContent(initial);
+      Map<String, dynamic>? quiz;
+      if (initial != null) {
+        content = await _loadContent(initial);
+        quiz = await _loadQuiz(initial);
+      }
 
       setState(() {
         _courseData = courseDoc.data() as Map<String, dynamic>? ?? {};
         _lessons = lessons;
         _currentLesson = initial;
         _currentContent = content;
+        _currentQuizData = quiz;
         _enrollment = enrollment;
         _loading = false;
       });
@@ -108,22 +116,78 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
         createdAt: DateTime.now(), updatedAt: DateTime.now(),
       );
 
+  // ── Content loader — no contentIds guard, tries multiple field names ───────
   Future<Map<String, dynamic>?> _loadContent(LessonModel lesson) async {
-    if (lesson.contentIds.isEmpty) return null;
     try {
+      // 1. Try content sub-collection
       final snap = await _firestore
           .collection('courses').doc(widget.courseId)
           .collection('lessons').doc(lesson.id)
           .collection('content')
           .orderBy('order').limit(1).get();
-      return snap.docs.isNotEmpty ? snap.docs.first.data() : null;
-    } catch (_) { return null; }
+      if (snap.docs.isNotEmpty) return snap.docs.first.data();
+
+      // 2. Fallback: check lesson doc itself for video URL fields
+      final lessonDoc = await _firestore
+          .collection('courses').doc(widget.courseId)
+          .collection('lessons').doc(lesson.id).get();
+      final data = lessonDoc.data() ?? {};
+      final url = data['videoUrl'] ?? data['youtubeUrl'] ?? data['url'] ?? data['video'];
+      if (url != null && url.toString().isNotEmpty) {
+        return {'url': url.toString(), 'type': 'video'};
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // ── Quiz loader — reads from lessons/{id}/quizzes sub-collection ──────────
+  Future<Map<String, dynamic>?> _loadQuiz(LessonModel lesson) async {
+    try {
+      // Try lesson sub-collection quizzes first
+      final snap = await _firestore
+          .collection('courses').doc(widget.courseId)
+          .collection('lessons').doc(lesson.id)
+          .collection('quizzes')
+          .limit(1).get();
+      if (snap.docs.isNotEmpty) {
+        return {'id': snap.docs.first.id, ...snap.docs.first.data()};
+      }
+
+      // Fallback: top-level quizzes collection using attachedQuizId
+      if (lesson.hasQuiz) {
+        final doc = await _firestore.collection('quizzes').doc(lesson.attachedQuizId).get();
+        if (doc.exists) {
+          return {'id': doc.id, ...doc.data()!};
+        }
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> _selectLesson(LessonModel lesson) async {
-    setState(() { _currentLesson = lesson; _currentContent = null; });
-    final content = await _loadContent(lesson);
-    if (mounted) setState(() => _currentContent = content);
+    setState(() {
+      _currentLesson = lesson;
+      _currentContent = null;
+      _currentQuizData = null;
+      _quizLoading = true;
+    });
+
+    final results = await Future.wait([
+      _loadContent(lesson),
+      _loadQuiz(lesson),
+    ]);
+
+    if (mounted) {
+      setState(() {
+        _currentContent = results[0] as Map<String, dynamic>?;
+        _currentQuizData = results[1] as Map<String, dynamic>?;
+        _quizLoading = false;
+      });
+    }
     _enrollmentService.updateLastAccessed(widget.courseId);
   }
 
@@ -165,6 +229,12 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
 
   bool _isCompleted(String lessonId) =>
       _enrollment?.completedLessons.contains(lessonId) ?? false;
+
+  // Lesson is locked if it's not the first AND the previous lesson isn't done
+  bool _isLocked(int index) {
+    if (index == 0) return false;
+    return !_isCompleted(_lessons[index - 1].id);
+  }
 
   int get _currentIdx =>
       _lessons.indexWhere((l) => l.id == _currentLesson?.id);
@@ -246,13 +316,11 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(4, 8, 12, 0),
               child: Row(children: [
-                // Back
                 IconButton(
                   icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
                   onPressed: () => Navigator.pop(context),
                   color: _dark,
                 ),
-                // Title
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,7 +342,6 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
                     ],
                   ),
                 ),
-                // Progress pill
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
@@ -291,7 +358,6 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
                     ),
                   ]),
                 ),
-                // Menu on mobile
                 if (!isWide) ...[
                   const SizedBox(width: 4),
                   IconButton(
@@ -302,7 +368,6 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
                 ],
               ]),
             ),
-            // Progress bar
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
               child: ClipRRect(
@@ -346,7 +411,6 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
     final pct = total > 0 ? (completed / total * 100).round() : 0;
 
     return Column(children: [
-      // Sidebar header
       Container(
         padding: const EdgeInsets.all(16),
         decoration: const BoxDecoration(
@@ -395,29 +459,45 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
               style: TextStyle(fontSize: 10, color: Colors.grey[400], letterSpacing: 0.5)),
         ]),
       ),
-      // Lesson list
       Expanded(
         child: ListView.builder(
           padding: EdgeInsets.zero,
-          itemCount: _lessons.length + 1, // +1 for final project
+          itemCount: _lessons.length + 1,
           itemBuilder: (_, i) {
             if (i == _lessons.length) return _finalProjectTile();
             final lesson = _lessons[i];
             final isCurrent = _currentLesson?.id == lesson.id;
             final isDone = _isCompleted(lesson.id);
-            return _lessonTile(lesson, i, isCurrent, isDone);
+            final locked = _isLocked(i);
+            return _lessonTile(lesson, i, isCurrent, isDone, locked);
           },
         ),
       ),
     ]);
   }
 
-  Widget _lessonTile(LessonModel lesson, int i, bool isCurrent, bool isDone) {
+  Widget _lessonTile(LessonModel lesson, int i, bool isCurrent, bool isDone, bool locked) {
     return InkWell(
-      onTap: () {
-        _selectLesson(lesson);
-        _scaffoldKey.currentState?.closeDrawer();
-      },
+      onTap: locked
+          ? () {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Row(children: [
+                  const Icon(Icons.lock_rounded, color: Colors.white, size: 16),
+                  const SizedBox(width: 8),
+                  Text('Complete "${_lessons[i - 1].title}" first',
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                ]),
+                backgroundColor: Colors.grey[800],
+                behavior: SnackBarBehavior.floating,
+                margin: const EdgeInsets.all(16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                duration: const Duration(seconds: 2),
+              ));
+            }
+          : () {
+              _selectLesson(lesson);
+              _scaffoldKey.currentState?.closeDrawer();
+            },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
@@ -431,30 +511,33 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
           ),
         ),
         child: Row(children: [
-          // Icon
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             width: 28, height: 28,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isDone
-                  ? const Color(0xFF2E7D32)
-                  : isCurrent
-                      ? _orange
-                      : Colors.grey[100],
-              border: isCurrent && !isDone
+              color: locked
+                  ? Colors.grey[200]
+                  : isDone
+                      ? const Color(0xFF2E7D32)
+                      : isCurrent
+                          ? _orange
+                          : Colors.grey[100],
+              border: isCurrent && !isDone && !locked
                   ? Border.all(color: _orange.withValues(alpha: 0.4), width: 2)
                   : null,
             ),
             child: Center(
-              child: isDone
-                  ? const Icon(Icons.check_rounded, color: Colors.white, size: 14)
-                  : isCurrent
-                      ? const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 14)
-                      : Text('${i + 1}',
-                          style: TextStyle(
-                              fontSize: 11, fontWeight: FontWeight.bold,
-                              color: Colors.grey[500])),
+              child: locked
+                  ? Icon(Icons.lock_rounded, size: 13, color: Colors.grey[500])
+                  : isDone
+                      ? const Icon(Icons.check_rounded, color: Colors.white, size: 14)
+                      : isCurrent
+                          ? const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 14)
+                          : Text('${i + 1}',
+                              style: TextStyle(
+                                  fontSize: 11, fontWeight: FontWeight.bold,
+                                  color: Colors.grey[500])),
             ),
           ),
           const SizedBox(width: 10),
@@ -465,11 +548,13 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w500,
-                  color: isDone
+                  color: locked
                       ? Colors.grey[400]
-                      : isCurrent
-                          ? _dark
-                          : Colors.grey[700],
+                      : isDone
+                          ? Colors.grey[400]
+                          : isCurrent
+                              ? _dark
+                              : Colors.grey[700],
                   decoration: isDone ? TextDecoration.lineThrough : null,
                   decorationColor: Colors.grey[400],
                 ),
@@ -482,7 +567,9 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
                 ),
             ]),
           ),
-          if (isDone)
+          if (locked)
+            Icon(Icons.lock_rounded, size: 13, color: Colors.grey[400])
+          else if (isDone)
             const Icon(Icons.check_circle_rounded, size: 14, color: Color(0xFF2E7D32)),
         ]),
       ),
@@ -543,8 +630,13 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
       );
     }
 
-    final videoUrl = _currentContent?['url'] as String?;
-    final contentType = _currentContent?['type'] as String? ?? 'text';
+    // Resolve video URL — check multiple field names
+    final rawUrl = _currentContent?['url']
+        ?? _currentContent?['videoUrl']
+        ?? _currentContent?['youtubeUrl']
+        ?? _currentContent?['video'];
+    final videoUrl = rawUrl as String?;
+    final contentType = (_currentContent?['type'] ?? _currentContent?['contentType'] ?? 'text') as String;
     final isCompleted = _isCompleted(_currentLesson!.id);
     final idx = _currentIdx;
     final hasPrev = idx > 0;
@@ -552,17 +644,16 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
 
     return SingleChildScrollView(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // ── Video / media zone ─────────────────────────────────────────────
-        if (videoUrl != null && (contentType == 'video' || contentType == 'image'))
+        // ── Video / media zone ───────────────────────────────────────────
+        if (videoUrl != null && videoUrl.isNotEmpty)
           _buildVideoZone(videoUrl, contentType)
         else
           _buildMediaPlaceholder(contentType),
 
-        // ── Lesson info ────────────────────────────────────────────────────
+        // ── Lesson info ──────────────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // Lesson badge
             Row(children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -608,13 +699,11 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
               ],
             ]),
             const SizedBox(height: 12),
-            // Title
             Text(
               _currentLesson!.title,
               style: const TextStyle(
                 fontSize: 24, fontWeight: FontWeight.bold, color: _dark, height: 1.2),
             ),
-            // Description
             if (_currentLesson!.description.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(
@@ -626,8 +715,8 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
           ]),
         ),
 
-        // ── Open video button ──────────────────────────────────────────────
-        if (videoUrl != null && contentType == 'video')
+        // ── Open video button (when video detected) ──────────────────────
+        if (videoUrl != null && videoUrl.isNotEmpty)
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
             child: OutlinedButton.icon(
@@ -642,7 +731,10 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
             ),
           ),
 
-        // ── Action buttons ─────────────────────────────────────────────────
+        // ── Quiz / Assignment section ─────────────────────────────────────
+        _buildQuizSection(),
+
+        // ── Mark Complete button ─────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
           child: SizedBox(
@@ -703,7 +795,7 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
           ),
         ),
 
-        // ── Prev / Next nav ────────────────────────────────────────────────
+        // ── Prev / Next nav ──────────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
           child: Row(children: [
@@ -729,15 +821,19 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
             if (hasNext)
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () => _selectLesson(_lessons[idx + 1]),
+                  onPressed: _isLocked(idx + 1)
+                      ? null
+                      : () => _selectLesson(_lessons[idx + 1]),
                   icon: Text(
                     _lessons[idx + 1].title,
                     maxLines: 1, overflow: TextOverflow.ellipsis,
                   ),
-                  label: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                  label: _isLocked(idx + 1)
+                      ? const Icon(Icons.lock_rounded, size: 14)
+                      : const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _orange,
-                    foregroundColor: Colors.white,
+                    backgroundColor: _isLocked(idx + 1) ? Colors.grey[300] : _orange,
+                    foregroundColor: _isLocked(idx + 1) ? Colors.grey[600] : Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     alignment: Alignment.centerRight,
@@ -750,14 +846,151 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
     );
   }
 
+  // ── Quiz / Assignment Section ────────────────────────────────────────────
+
+  Widget _buildQuizSection() {
+    if (_quizLoading) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[200]!),
+          ),
+          child: const Row(children: [
+            SizedBox(width: 18, height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2, color: _orange)),
+            SizedBox(width: 12),
+            Text('Loading quiz…', style: TextStyle(color: Colors.grey)),
+          ]),
+        ),
+      );
+    }
+
+    if (_currentQuizData == null) return const SizedBox.shrink();
+
+    final quizTitle = _currentQuizData!['title'] as String? ?? 'Lesson Quiz';
+    final questions = _currentQuizData!['questions'] as List? ?? [];
+    final questionCount = questions.length;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _orange.withValues(alpha: 0.25)),
+          boxShadow: [
+            BoxShadow(
+              color: _orange.withValues(alpha: 0.08),
+              blurRadius: 16, offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: _orangeLight,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            ),
+            child: Row(children: [
+              Container(
+                width: 36, height: 36,
+                decoration: BoxDecoration(
+                  color: _orange, borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.quiz_rounded, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Text('LESSON QUIZ',
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800,
+                          color: _orange, letterSpacing: 1.2)),
+                  Text(quizTitle,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold,
+                          color: _dark)),
+                ]),
+              ),
+              if (questionCount > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: _orange.withValues(alpha: 0.3)),
+                  ),
+                  child: Text(
+                    '$questionCount Q',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold,
+                        color: _orange),
+                  ),
+                ),
+            ]),
+          ),
+
+          // Body
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              if (questionCount > 0) ...[
+                Text(
+                  'Test your understanding of this lesson with $questionCount question${questionCount > 1 ? 's' : ''}.',
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600], height: 1.5),
+                ),
+                const SizedBox(height: 4),
+                Row(children: [
+                  Icon(Icons.check_circle_outline_rounded, size: 13, color: Colors.grey[400]),
+                  const SizedBox(width: 4),
+                  Text('Need 70% to pass',
+                      style: TextStyle(fontSize: 11, color: Colors.grey[400])),
+                ]),
+              ] else
+                Text('This lesson has an attached quiz.',
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+              const SizedBox(height: 14),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => QuizPlayerScreenPremium(
+                        courseId: widget.courseId,
+                        lessonId: _currentLesson!.id,
+                        quizId: _currentQuizData!['id'] as String?,
+                      ),
+                    ),
+                  ),
+                  icon: const Icon(Icons.play_arrow_rounded, size: 18),
+                  label: const Text('Start Quiz',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _orange,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            ]),
+          ),
+        ]),
+      ),
+    );
+  }
+
   // ── Video Zone ───────────────────────────────────────────────────────────
 
   Widget _buildVideoZone(String url, String type) {
-    // Try to embed YouTube
     final ytId = _extractYouTubeId(url);
-    if (ytId != null) return _buildYouTubeEmbed(ytId);
+    if (ytId != null) return _buildYouTubeEmbed(ytId, url);
 
-    // Generic video area
     return GestureDetector(
       onTap: () => launchUrl(Uri.parse(url)),
       child: Container(
@@ -775,7 +1008,6 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
                 ),
               ),
             ),
-            // Glow
             Container(
               width: 100, height: 100,
               decoration: BoxDecoration(
@@ -783,7 +1015,6 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
                 boxShadow: [BoxShadow(color: _orange.withValues(alpha: 0.4), blurRadius: 40)],
               ),
             ),
-            // Play button
             Container(
               width: 72, height: 72,
               decoration: BoxDecoration(
@@ -811,12 +1042,12 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
     );
   }
 
-  Widget _buildYouTubeEmbed(String videoId) {
+  Widget _buildYouTubeEmbed(String videoId, String originalUrl) {
     final thumbUrl = 'https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
     final watchUrl = 'https://www.youtube.com/watch?v=$videoId';
 
     return GestureDetector(
-      onTap: () => launchUrl(Uri.parse(watchUrl)),
+      onTap: () => launchUrl(Uri.parse(watchUrl), mode: LaunchMode.externalApplication),
       child: Container(
         width: double.infinity,
         color: Colors.black,
@@ -836,7 +1067,7 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
             ),
             // Dark overlay
             Container(color: Colors.black.withValues(alpha: 0.35)),
-            // Play button
+            // Red YouTube play button
             Container(
               width: 72, height: 72,
               decoration: BoxDecoration(
@@ -848,22 +1079,35 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
               ),
               child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 44),
             ),
-            // YouTube label
+            // "Watch on YouTube" pill
             Positioned(
-              bottom: 14,
-              right: 14,
+              bottom: 14, right: 14,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.7),
-                  borderRadius: BorderRadius.circular(6),
+                  color: Colors.black.withValues(alpha: 0.75),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.play_circle_fill_rounded, size: 14, color: Color(0xFFFF0000)),
-                  SizedBox(width: 4),
+                  SizedBox(width: 5),
                   Text('Watch on YouTube',
-                      style: TextStyle(color: Colors.white, fontSize: 11)),
+                      style: TextStyle(color: Colors.white, fontSize: 11,
+                          fontWeight: FontWeight.w600)),
                 ]),
+              ),
+            ),
+            // Tap hint
+            Positioned(
+              bottom: 14, left: 14,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.55),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text('Tap to open',
+                    style: TextStyle(color: Colors.white70, fontSize: 11)),
               ),
             ),
           ]),
@@ -919,6 +1163,7 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
       RegExp(r'youtu\.be/([a-zA-Z0-9_-]{11})'),
       RegExp(r'youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})'),
       RegExp(r'youtube\.com/embed/([a-zA-Z0-9_-]{11})'),
+      RegExp(r'youtube\.com/shorts/([a-zA-Z0-9_-]{11})'),
     ];
     for (final p in patterns) {
       final m = p.firstMatch(url);

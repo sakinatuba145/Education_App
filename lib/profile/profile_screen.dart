@@ -291,9 +291,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
 
               // ── Menu tiles ─────────────────────────────────────────────
-              _menuTile(context, icon: Icons.bar_chart, title: 'My Progress', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProgressScreen()))),
-              _menuTile(context, icon: Icons.favorite, title: 'Favorites', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen()))),
-              _menuTile(context, icon: Icons.settings, title: 'Settings', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()))),
+              _menuTile(context, icon: Icons.bar_chart, title: 'My Progress',
+                  onTap: () => Navigator.of(context, rootNavigator: true)
+                      .push(MaterialPageRoute(builder: (_) => const ProgressScreen()))),
+              _menuTile(context, icon: Icons.favorite, title: 'Favorites',
+                  onTap: () => Navigator.of(context, rootNavigator: true)
+                      .push(MaterialPageRoute(builder: (_) => const FavoritesScreen()))),
+              _menuTile(context, icon: Icons.settings, title: 'Settings',
+                  onTap: () => Navigator.of(context, rootNavigator: true)
+                      .push(MaterialPageRoute(builder: (_) => const SettingsScreen()))),
               _menuTile(
                 context,
                 icon: Icons.logout,
@@ -301,17 +307,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 showArrow: false,
                 onTap: () => showDialog(
                   context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text('Logout'),
+                  useRootNavigator: true,
+                  builder: (dialogCtx) => AlertDialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    title: const Text('Logout', style: TextStyle(fontWeight: FontWeight.bold)),
                     content: const Text('Are you sure you want to logout?'),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
                       TextButton(
+                        onPressed: () => Navigator.pop(dialogCtx),
+                        child: const Text('Cancel'),
+                      ),
+                      FilledButton(
                         onPressed: () async {
-                          Navigator.pop(context);
+                          Navigator.pop(dialogCtx);
                           await FirebaseAuth.instance.signOut();
+                          if (context.mounted) {
+                            Navigator.of(context, rootNavigator: true)
+                                .pushNamedAndRemoveUntil(
+                                    'login_screen', (route) => false);
+                          }
                         },
-                        child: const Text('Logout', style: TextStyle(color: Colors.red)),
+                        style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                        child: const Text('Logout'),
                       ),
                     ],
                   ),
@@ -322,15 +339,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: FilledButton.icon(
                   onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => EditProfileScreen(name: name, email: email, phone: phone, university: university, bio: bio, image: profileImage),
-                      ),
-                    );
-                    if (result != null) {
+                    final result = await Navigator.of(context, rootNavigator: true)
+                        .push(MaterialPageRoute(
+                          builder: (_) => EditProfileScreen(
+                              name: name,
+                              email: email,
+                              phone: phone,
+                              university: university,
+                              bio: bio,
+                              image: profileImage),
+                        ));
+                    if (result != null && mounted) {
                       setState(() {
                         name = result['name'];
                         email = result['email'];
@@ -342,7 +363,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       await saveProfileData();
                     }
                   },
-                  child: const Text('Edit Profile'),
+                  icon: const Icon(Icons.edit_rounded),
+                  label: const Text('Edit Profile'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
                 ),
               ),
 

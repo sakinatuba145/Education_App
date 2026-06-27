@@ -279,13 +279,13 @@ class TeacherCourseService {
 
   // Get public courses — no composite index needed; filter + sort client-side
   Future<List<CourseModel>> getPublicCourses({int limit = 20}) async {
-    // Try 1: query by status == published with a hard 10-second timeout
+    // Try 1: filtered query (default source = cache-then-server)
     try {
       final snapshot = await _firestore
           .collection(COURSES_COLLECTION)
           .where('status', isEqualTo: 'published')
-          .get(const GetOptions(source: Source.server))
-          .timeout(const Duration(seconds: 10));
+          .get()
+          .timeout(const Duration(seconds: 12));
 
       final courses = <CourseModel>[];
       for (final doc in snapshot.docs) {
@@ -295,29 +295,30 @@ class TeacherCourseService {
         } catch (_) {}
       }
       courses.sort((a, b) => b.totalEnrolled.compareTo(a.totalEnrolled));
-      return courses.take(limit).toList();
-    } catch (e) {
-      // Try 2: fetch all docs and filter in-memory (handles index/rules edge cases)
-      try {
-        final fallback = await _firestore
-            .collection(COURSES_COLLECTION)
-            .limit(limit * 3)
-            .get(const GetOptions(source: Source.server))
-            .timeout(const Duration(seconds: 10));
-        final results = <CourseModel>[];
-        for (final doc in fallback.docs) {
-          try {
-            final c = CourseModel.fromJson(doc.data());
-            if (c.status == 'published' && c.visibility != 'private') {
-              results.add(c);
-            }
-          } catch (_) {}
-        }
-        return results;
-      } catch (e2) {
-        // Rethrow the last meaningful error so the UI can display it
-        throw Exception('Could not load courses: $e2');
+      if (courses.isNotEmpty) return courses.take(limit).toList();
+      // If filtered query returned 0, fall through to full-collection scan
+    } catch (_) {}
+
+    // Try 2: full-collection scan filtered in-memory
+    try {
+      final fallback = await _firestore
+          .collection(COURSES_COLLECTION)
+          .limit(limit * 5)
+          .get()
+          .timeout(const Duration(seconds: 12));
+      final results = <CourseModel>[];
+      for (final doc in fallback.docs) {
+        try {
+          final c = CourseModel.fromJson(doc.data());
+          if (c.status == 'published' && c.visibility != 'private') {
+            results.add(c);
+          }
+        } catch (_) {}
       }
+      results.sort((a, b) => b.totalEnrolled.compareTo(a.totalEnrolled));
+      return results;
+    } catch (e2) {
+      throw Exception('Could not load courses: $e2');
     }
   }
 

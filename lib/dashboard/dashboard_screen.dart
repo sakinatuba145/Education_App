@@ -97,19 +97,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     children: [
                       _buildAppBar(isMobile, isTablet, isDesktop),
                       Expanded(
-                        child: Container(
-                          color: _isDarkMode
-                              ? Colors.grey[850]
-                              : Colors.grey[100],
-                          child: SingleChildScrollView(
-                            padding: EdgeInsets.all(isMobile ? 12 : 24),
-                            child: _buildPageContent(
-                              isMobile,
-                              isTablet,
-                              isDesktop,
-                            ),
-                          ),
-                        ),
+                        // Explore (1) and Learn (2) manage their own scroll/layout
+                        child: (_selectedIndex == 1 || _selectedIndex == 2)
+                            ? _buildPageContent(isMobile, isTablet, isDesktop)
+                            : Container(
+                                color: _isDarkMode
+                                    ? Colors.grey[850]
+                                    : Colors.grey[100],
+                                child: SingleChildScrollView(
+                                  padding: EdgeInsets.all(isMobile ? 12 : 24),
+                                  child: _buildPageContent(
+                                      isMobile, isTablet, isDesktop),
+                                ),
+                              ),
                       ),
                     ],
                   ),

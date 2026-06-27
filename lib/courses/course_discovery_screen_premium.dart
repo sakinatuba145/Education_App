@@ -322,27 +322,51 @@ class _CourseDiscoveryScreenPremiumState
           if (_filtered.isEmpty)
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(40),
+                padding: const EdgeInsets.fromLTRB(24, 40, 24, 40),
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(Icons.search_off,
-                          size: 60, color: Colors.grey[300]),
-                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.08),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          _searchQuery.isNotEmpty || _selectedCategory != 'All'
+                              ? Icons.search_off_rounded
+                              : Icons.school_outlined,
+                          size: 56,
+                          color: AppColors.primary.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       Text(
-                        'No courses found',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(color: Colors.grey[600]),
+                        _searchQuery.isNotEmpty || _selectedCategory != 'All'
+                            ? 'No courses match your search'
+                            : 'No published courses yet',
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Try a different search or category',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Colors.grey[400]),
+                        _searchQuery.isNotEmpty || _selectedCategory != 'All'
+                            ? 'Try a different search term or category.'
+                            : 'Teachers: publish your courses from the Teacher Dashboard so students can discover them here.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey[500], fontSize: 14, height: 1.5),
+                      ),
+                      const SizedBox(height: 20),
+                      OutlinedButton.icon(
+                        onPressed: _loadCourses,
+                        icon: const Icon(Icons.refresh_rounded, size: 16),
+                        label: const Text('Refresh'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          side: BorderSide(color: AppColors.primary.withValues(alpha: 0.4)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
                       ),
                     ],
                   ),

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'features/login_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
+import 'teacher/screens/academy_dashboard_screen.dart';
 
 class Wrapper extends StatelessWidget {
   const Wrapper({super.key});
@@ -42,7 +43,9 @@ class Wrapper extends StatelessWidget {
                 final position = userData?['position'] ?? 'student';
 
                 // Route based on user role
-                if (position == 'teacher' || position == 'admin') {
+                if (position == 'academy') {
+                  return const AcademyDashboardScreen();
+                } else if (position == 'teacher' || position == 'admin') {
                   return TeacherDashboardScreen();
                 } else {
                   return DashboardScreen();

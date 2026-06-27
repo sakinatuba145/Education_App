@@ -4,6 +4,7 @@ import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/teacher/services/teacher_lesson_service.dart';
+import 'package:education_app/teacher/services/final_project_service.dart';
 import 'package:education_app/teacher/screens/quiz_builder_screen.dart';
 import 'package:education_app/teacher/widgets/studio_submissions_hub.dart';
 import 'package:education_app/teacher/widgets/studio_analytics_hub.dart';
@@ -35,6 +36,7 @@ class _CourseStudioScreenState extends State<CourseStudioScreen> {
     _NavItem(Icons.tune_rounded, 'Overview'),
     _NavItem(Icons.video_library_rounded, 'Lessons'),
     _NavItem(Icons.quiz_rounded, 'Quizzes'),
+    _NavItem(Icons.assignment_rounded, 'Assignments'),
     _NavItem(Icons.grading_rounded, 'Submissions'),
     _NavItem(Icons.people_alt_rounded, 'Students'),
     _NavItem(Icons.bar_chart_rounded, 'Analytics'),
@@ -276,9 +278,10 @@ class _CourseStudioScreenState extends State<CourseStudioScreen> {
       case 0: return _StudioOverviewPanel(courseId: widget.courseId, course: _course, onSaved: _loadCourse);
       case 1: return _StudioLessonsPanel(courseId: widget.courseId);
       case 2: return _StudioQuizzesPanel(courseId: widget.courseId);
-      case 3: return StudioSubmissionsHub(courseId: widget.courseId);
-      case 4: return _StudioStudentsPanel(courseId: widget.courseId);
-      case 5: return StudioAnalyticsHub(courseId: widget.courseId);
+      case 3: return _StudioAssignmentsPanel(courseId: widget.courseId);
+      case 4: return StudioSubmissionsHub(courseId: widget.courseId);
+      case 5: return _StudioStudentsPanel(courseId: widget.courseId);
+      case 6: return StudioAnalyticsHub(courseId: widget.courseId);
       default: return _StudioLessonsPanel(courseId: widget.courseId);
     }
   }
@@ -1303,4 +1306,850 @@ String _formatDuration(Duration d) {
   if (d.inHours > 0) return '${d.inHours}h ${d.inMinutes.remainder(60)}m';
   if (d.inMinutes > 0) return '${d.inMinutes}m';
   return '${d.inSeconds}s';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PANEL 3: ASSIGNMENTS (Final Project)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _StudioAssignmentsPanel extends StatefulWidget {
+  final String courseId;
+  const _StudioAssignmentsPanel({required this.courseId});
+
+  @override
+  State<_StudioAssignmentsPanel> createState() => _StudioAssignmentsPanelState();
+}
+
+class _StudioAssignmentsPanelState extends State<_StudioAssignmentsPanel>
+    with SingleTickerProviderStateMixin {
+  final FinalProjectService _svc = FinalProjectService();
+  late TabController _tab;
+
+  // Setup form
+  final _titleCtrl = TextEditingController();
+  final _descCtrl = TextEditingController();
+  final _instrCtrl = TextEditingController();
+  final _maxScoreCtrl = TextEditingController(text: '100');
+  final _passScoreCtrl = TextEditingController(text: '60');
+  bool _isRequired = true;
+  bool _saving = false;
+  bool _loadingSetup = true;
+  bool _hasExisting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _tab = TabController(length: 2, vsync: this);
+    _loadSetup();
+  }
+
+  @override
+  void dispose() {
+    _tab.dispose();
+    _titleCtrl.dispose();
+    _descCtrl.dispose();
+    _instrCtrl.dispose();
+    _maxScoreCtrl.dispose();
+    _passScoreCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadSetup() async {
+    final data = await _svc.getProject(widget.courseId);
+    if (mounted) {
+      setState(() {
+        _loadingSetup = false;
+        if (data != null) {
+          _hasExisting = true;
+          _titleCtrl.text = data['title'] ?? '';
+          _descCtrl.text = data['description'] ?? '';
+          _instrCtrl.text = data['instructions'] ?? '';
+          _maxScoreCtrl.text = '${data['maxScore'] ?? 100}';
+          _passScoreCtrl.text = '${data['passingScore'] ?? 60}';
+          _isRequired = data['isRequired'] ?? true;
+        }
+      });
+    }
+  }
+
+  Future<void> _saveAssignment() async {
+    final title = _titleCtrl.text.trim();
+    final desc = _descCtrl.text.trim();
+    final instr = _instrCtrl.text.trim();
+    if (title.isEmpty || desc.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Title and description are required')));
+      return;
+    }
+    final max = int.tryParse(_maxScoreCtrl.text) ?? 100;
+    final pass = int.tryParse(_passScoreCtrl.text) ?? 60;
+    setState(() => _saving = true);
+    try {
+      await _svc.saveProject(widget.courseId,
+          title: title,
+          description: desc,
+          instructions: instr,
+          maxScore: max,
+          passingScore: pass,
+          isRequired: _isRequired);
+      if (mounted) {
+        setState(() { _saving = false; _hasExisting = true; });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(_hasExisting ? 'Assignment updated!' : 'Assignment created!'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+      }
+    }
+  }
+
+  Future<void> _deleteAssignment() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Delete Assignment?'),
+        content: const Text('This will remove the assignment definition. Existing submissions will remain.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await _svc.deleteProject(widget.courseId);
+    if (mounted) {
+      setState(() {
+        _hasExisting = false;
+        _titleCtrl.clear(); _descCtrl.clear(); _instrCtrl.clear();
+        _maxScoreCtrl.text = '100'; _passScoreCtrl.text = '60';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Assignment deleted'), backgroundColor: Colors.orange));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Header
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: _amber.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.assignment_rounded, color: _amber, size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Assignments', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('Create a final project for students to complete',
+                          style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    ],
+                  ),
+                  const Spacer(),
+                  if (_hasExisting)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.check_circle_rounded, size: 14, color: Colors.green),
+                          SizedBox(width: 4),
+                          Text('Active', style: TextStyle(fontSize: 12, color: Colors.green, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TabBar(
+                controller: _tab,
+                labelColor: _amber,
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: _amber,
+                indicatorWeight: 3,
+                tabs: const [
+                  Tab(text: 'Setup'),
+                  Tab(text: 'Submissions & Grading'),
+                ],
+              ),
+            ],
+          ),
+        ),
+        // Body
+        Expanded(
+          child: TabBarView(
+            controller: _tab,
+            children: [
+              _buildSetupTab(),
+              _buildSubmissionsTab(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Setup Tab ───────────────────────────────────────────────────────────────
+
+  Widget _buildSetupTab() {
+    if (_loadingSetup) {
+      return const Center(child: CircularProgressIndicator(color: _amber));
+    }
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!_hasExisting)
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline_rounded, color: Colors.blue, size: 18),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'No assignment yet. Fill in the form below and tap Save to create one.',
+                      style: TextStyle(fontSize: 13, color: Colors.blue),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          _sectionCard(
+            title: 'Basic Info',
+            icon: Icons.info_rounded,
+            children: [
+              _field('Assignment Title', _titleCtrl, hint: 'e.g. Final Project: Build a Mobile App'),
+              const SizedBox(height: 14),
+              _field('Description', _descCtrl, hint: 'Brief overview of what students will build', maxLines: 3),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _sectionCard(
+            title: 'Instructions',
+            icon: Icons.list_alt_rounded,
+            children: [
+              _field(
+                'Detailed Instructions',
+                _instrCtrl,
+                hint: 'Step-by-step instructions, requirements, deliverables…',
+                maxLines: 6,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _sectionCard(
+            title: 'Marking Scheme',
+            icon: Icons.grading_rounded,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Maximum Marks', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _maxScoreCtrl,
+                          keyboardType: TextInputType.number,
+                          decoration: _inputDec('e.g. 100'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Passing Marks', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _passScoreCtrl,
+                          keyboardType: TextInputType.number,
+                          decoration: _inputDec('e.g. 60'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Switch(
+                    value: _isRequired,
+                    activeColor: _amber,
+                    onChanged: (v) => setState(() => _isRequired = v),
+                  ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _isRequired ? 'Required to pass course' : 'Optional assignment',
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        _isRequired
+                            ? 'Students must complete this to get a certificate'
+                            : 'Students can skip this assignment',
+                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _saving ? null : _saveAssignment,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: _amber,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  icon: _saving
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Icon(Icons.save_rounded, color: Colors.white),
+                  label: Text(
+                    _saving ? 'Saving…' : (_hasExisting ? 'Update Assignment' : 'Save Assignment'),
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ),
+              ),
+              if (_hasExisting) ...[
+                const SizedBox(width: 12),
+                OutlinedButton.icon(
+                  onPressed: _deleteAssignment,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(color: Colors.red),
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  label: const Text('Delete'),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  // ── Submissions & Grading Tab ───────────────────────────────────────────────
+
+  Widget _buildSubmissionsTab() {
+    if (!_hasExisting && !_loadingSetup) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.assignment_outlined, size: 56, color: Colors.grey[300]),
+            const SizedBox(height: 12),
+            const Text('No assignment created yet',
+                style: TextStyle(fontSize: 16, color: Colors.grey)),
+            const SizedBox(height: 6),
+            const Text('Go to Setup tab to create one first',
+                style: TextStyle(fontSize: 13, color: Colors.grey)),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: () => _tab.animateTo(0),
+              child: const Text('Go to Setup'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: _svc.streamSubmissions(widget.courseId),
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(color: _amber));
+        }
+        final subs = snap.data ?? [];
+        if (subs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.inbox_rounded, size: 56, color: Colors.grey[300]),
+                const SizedBox(height: 12),
+                const Text('No submissions yet',
+                    style: TextStyle(fontSize: 16, color: Colors.grey)),
+                const SizedBox(height: 6),
+                const Text('Students will appear here once they submit',
+                    style: TextStyle(fontSize: 13, color: Colors.grey)),
+              ],
+            ),
+          );
+        }
+
+        final pending = subs.where((s) => s['status'] == 'submitted').length;
+        final graded = subs.where((s) => s['status'] != 'submitted').length;
+        final passed = subs.where((s) => s['passed'] == true).length;
+
+        return Column(
+          children: [
+            // Stats bar
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              child: Row(
+                children: [
+                  _submissionStat('${subs.length}', 'Total', Colors.blue),
+                  const SizedBox(width: 16),
+                  _submissionStat('$pending', 'Pending', Colors.orange),
+                  const SizedBox(width: 16),
+                  _submissionStat('$graded', 'Graded', Colors.purple),
+                  const SizedBox(width: 16),
+                  _submissionStat('$passed', 'Passed', Colors.green),
+                ],
+              ),
+            ),
+            // List
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: subs.length,
+                itemBuilder: (_, i) => _submissionCard(subs[i]),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _submissionStat(String value, String label, Color color) {
+    return Column(
+      children: [
+        Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+        Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+      ],
+    );
+  }
+
+  Widget _submissionCard(Map<String, dynamic> sub) {
+    final status = sub['status'] ?? 'submitted';
+    final isPending = status == 'submitted';
+    final passed = sub['passed'] == true;
+    final score = sub['score'];
+    final maxScore = sub['maxScore'] ?? int.tryParse(_maxScoreCtrl.text) ?? 100;
+    final passScore = int.tryParse(_passScoreCtrl.text) ?? 60;
+
+    Color statusColor;
+    String statusLabel;
+    if (isPending) { statusColor = Colors.orange; statusLabel = 'Pending Review'; }
+    else if (passed) { statusColor = Colors.green; statusLabel = 'Passed'; }
+    else { statusColor = Colors.red; statusLabel = 'Failed'; }
+
+    final submittedAt = sub['submittedAt'];
+    String dateStr = '';
+    if (submittedAt is Timestamp) {
+      final d = submittedAt.toDate();
+      dateStr = '${d.day}/${d.month}/${d.year}';
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: _amber.withValues(alpha: 0.15),
+                  child: Text(
+                    (sub['studentName'] ?? 'S').isNotEmpty
+                        ? (sub['studentName'] as String)[0].toUpperCase()
+                        : 'S',
+                    style: const TextStyle(color: _amber, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(sub['studentName'] ?? 'Student',
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      Text(sub['studentEmail'] ?? '', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(statusLabel,
+                      style: TextStyle(fontSize: 11, color: statusColor, fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
+            if ((sub['submissionText'] ?? '').toString().isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  sub['submissionText'] ?? '',
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 13, color: Colors.black87),
+                ),
+              ),
+            ],
+            if ((sub['submissionUrl'] ?? '').toString().isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  const Icon(Icons.link_rounded, size: 14, color: Colors.blue),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      sub['submissionUrl'] ?? '',
+                      style: const TextStyle(fontSize: 12, color: Colors.blue),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                if (dateStr.isNotEmpty)
+                  Text('Submitted $dateStr',
+                      style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                const Spacer(),
+                if (!isPending && score != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: passed
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Score: $score / $maxScore',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: passed ? Colors.green : Colors.red,
+                      ),
+                    ),
+                  ),
+                const SizedBox(width: 8),
+                FilledButton.icon(
+                  onPressed: () => _openGradeDialog(sub, maxScore, passScore),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: isPending ? _amber : Colors.grey[200],
+                    foregroundColor: isPending ? Colors.white : Colors.black54,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  icon: Icon(isPending ? Icons.grading_rounded : Icons.edit_rounded, size: 15),
+                  label: Text(isPending ? 'Grade' : 'Re-grade',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
+            if (!isPending && (sub['feedback'] ?? '').toString().isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.15)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.comment_rounded, size: 13, color: Colors.blue),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        sub['feedback'] ?? '',
+                        style: const TextStyle(fontSize: 12, color: Colors.black87),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openGradeDialog(Map<String, dynamic> sub, int maxScore, int passScore) {
+    final scoreCtrl = TextEditingController(text: '${sub['score'] ?? ''}');
+    final feedbackCtrl = TextEditingController(text: sub['feedback'] ?? '');
+    bool grading = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              const Icon(Icons.grading_rounded, color: _amber),
+              const SizedBox(width: 8),
+              Expanded(child: Text('Grade: ${sub['studentName'] ?? 'Student'}',
+                  style: const TextStyle(fontSize: 16))),
+            ],
+          ),
+          content: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline, size: 14, color: Colors.grey),
+                      const SizedBox(width: 6),
+                      Text('Max: $maxScore marks · Passing: $passScore marks',
+                          style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+                const Text('Score Awarded', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: scoreCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: _inputDec('Enter score (0–$maxScore)'),
+                ),
+                const SizedBox(height: 14),
+                const Text('Feedback to Student', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: feedbackCtrl,
+                  maxLines: 4,
+                  decoration: _inputDec('Write constructive feedback…'),
+                ),
+                const SizedBox(height: 8),
+                Builder(builder: (_) {
+                  final s = int.tryParse(scoreCtrl.text) ?? 0;
+                  final willPass = s >= passScore;
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: (willPass ? Colors.green : Colors.red).withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(willPass ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                            size: 15, color: willPass ? Colors.green : Colors.red),
+                        const SizedBox(width: 6),
+                        Text(
+                          willPass
+                              ? 'Student will PASS and receive a certificate'
+                              : 'Student will FAIL — certificate not issued',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: willPass ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: grading ? null : () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: _amber),
+              onPressed: grading
+                  ? null
+                  : () async {
+                      final score = int.tryParse(scoreCtrl.text);
+                      if (score == null || score < 0 || score > maxScore) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Enter a score between 0 and $maxScore'),
+                          backgroundColor: Colors.red,
+                        ));
+                        return;
+                      }
+                      setLocal(() => grading = true);
+                      try {
+                        await _svc.gradeSubmission(
+                          widget.courseId,
+                          sub['studentId'] ?? sub['id'],
+                          score: score,
+                          maxScore: maxScore,
+                          passingScore: passScore,
+                          feedback: feedbackCtrl.text.trim(),
+                        );
+                        if (ctx.mounted) Navigator.pop(ctx);
+                        final passed = score >= passScore;
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(passed
+                                ? '✓ Graded — student passed and certificate issued!'
+                                : 'Graded — student did not pass'),
+                            backgroundColor: passed ? Colors.green : Colors.orange,
+                            behavior: SnackBarBehavior.floating,
+                          ));
+                        }
+                      } catch (e) {
+                        setLocal(() => grading = false);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                        }
+                      }
+                    },
+              child: grading
+                  ? const SizedBox(width: 18, height: 18,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : const Text('Submit Grade'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+
+  Widget _sectionCard({required String title, required IconData icon, required List<Widget> children}) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 17, color: _amber),
+              const SizedBox(width: 6),
+              Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  Widget _field(String label, TextEditingController ctrl, {String hint = '', int maxLines = 1}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 6),
+        TextField(
+          controller: ctrl,
+          maxLines: maxLines,
+          decoration: _inputDec(hint),
+        ),
+      ],
+    );
+  }
+
+  InputDecoration _inputDec(String hint) => InputDecoration(
+    hintText: hint,
+    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
+    filled: true,
+    fillColor: Colors.grey[50],
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Colors.grey[200]!),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Colors.grey[200]!),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: _amber, width: 1.5),
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+  );
 }

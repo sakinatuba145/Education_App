@@ -41,7 +41,7 @@ class TeacherCourseService {
         throw Exception('Course not found');
       }
 
-      return CourseModel.fromJson(doc.data()!);
+      return CourseModel.fromJson({...doc.data()!, 'id': doc.id});
     } catch (e) {
       throw Exception('Failed to get course: ${e.toString()}');
     }
@@ -290,7 +290,7 @@ class TeacherCourseService {
       final courses = <CourseModel>[];
       for (final doc in snapshot.docs) {
         try {
-          final course = CourseModel.fromJson(doc.data());
+          final course = CourseModel.fromJson({...doc.data(), 'id': doc.id});
           if (course.visibility != 'private') courses.add(course);
         } catch (_) {}
       }
@@ -309,7 +309,7 @@ class TeacherCourseService {
       final results = <CourseModel>[];
       for (final doc in fallback.docs) {
         try {
-          final c = CourseModel.fromJson(doc.data());
+          final c = CourseModel.fromJson({...doc.data(), 'id': doc.id});
           if (c.status == 'published' && c.visibility != 'private') {
             results.add(c);
           }

@@ -1,4 +1,7 @@
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:education_app/core/constants/app_colors.dart';
@@ -10,6 +13,7 @@ import 'package:education_app/teacher/services/teacher_quiz_service.dart';
 import 'package:education_app/teacher/services/final_project_service.dart';
 import 'package:education_app/teacher/screens/quiz_builder_screen.dart';
 import 'package:education_app/teacher/screens/teacher_project_tab.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 const _orange = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF8F0);
@@ -46,6 +50,11 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
   String _selectedLevel = 'beginner';
   bool _isFree = true;
   bool _overviewSaving = false;
+
+  // Thumbnail upload state
+  Uint8List? _thumbBytes;
+  bool _uploadingThumb = false;
+  double _thumbProgress = 0;
 
   static const _categories = [
     'Programming', 'Web Development', 'Mobile Development',
@@ -249,15 +258,83 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Thumbnail preview
-          if (_thumbCtrl.text.isNotEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(_thumbCtrl.text, height: 160, width: double.infinity,
-                  fit: BoxFit.cover, errorBuilder: (_, __, ___) => _thumbPlaceholder()),
-            )
-          else
-            _thumbPlaceholder(),
+          // ── Thumbnail upload area ─────────────────────────────────────────
+          GestureDetector(
+            onTap: _uploadingThumb ? null : _pickAndUploadThumb,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              height: 170,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: _thumbBytes != null
+                      ? _orange
+                      : Colors.grey.withValues(alpha: 0.3),
+                  width: 2,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Stack(fit: StackFit.expand, children: [
+                  // Preview: newly-picked bytes > existing URL > placeholder
+                  if (_thumbBytes != null)
+                    Image.memory(_thumbBytes!, fit: BoxFit.cover)
+                  else if (_thumbCtrl.text.isNotEmpty)
+                    Image.network(_thumbCtrl.text, fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _thumbPlaceholder())
+                  else
+                    _thumbPlaceholder(),
+
+                  // Upload progress overlay
+                  if (_uploadingThumb)
+                    Container(
+                      color: Colors.black.withValues(alpha: 0.55),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 48, height: 48,
+                            child: CircularProgressIndicator(
+                              value: _thumbProgress > 0 ? _thumbProgress : null,
+                              color: Colors.white, strokeWidth: 3),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            _thumbProgress > 0
+                                ? 'Uploading… ${(_thumbProgress * 100).toInt()}%'
+                                : 'Preparing…',
+                            style: const TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+
+                  // Edit badge
+                  if (!_uploadingThumb)
+                    Positioned(
+                      bottom: 10, right: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.60),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                          Icon(Icons.edit_rounded, size: 13, color: Colors.white),
+                          SizedBox(width: 4),
+                          Text('Change cover',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 11,
+                                  fontWeight: FontWeight.w600)),
+                        ]),
+                      ),
+                    ),
+                ]),
+              ),
+            ),
+          ),
 
           const SizedBox(height: 20),
           _sectionLabel('Course Info'),
@@ -268,8 +345,6 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
           _field(_subtitleCtrl, 'Subtitle / Tagline', Icons.subtitles_outlined),
           const SizedBox(height: 12),
           _field(_descCtrl, 'Description', Icons.description_outlined, maxLines: 4),
-          const SizedBox(height: 12),
-          _field(_thumbCtrl, 'Thumbnail URL (optional)', Icons.image_outlined),
           const SizedBox(height: 16),
 
           _sectionLabel('Details'),
@@ -362,6 +437,70 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
         ],
       ),
     );
+  }
+
+  Future<void> _pickAndUploadThumb() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+      withData: true,
+    );
+    if (result == null || result.files.isEmpty) return;
+    final file = result.files.first;
+    final bytes = file.bytes;
+    if (bytes == null) return;
+
+    setState(() {
+      _thumbBytes = bytes;
+      _uploadingThumb = true;
+      _thumbProgress = 0;
+    });
+
+    try {
+      final ext = file.name.split('.').last.toLowerCase();
+      final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
+      final ts = DateTime.now().millisecondsSinceEpoch;
+      final path =
+          'uploads/teacher_courses/${user.uid}/thumbnails/${widget.courseId}_${ts}_thumb.$ext';
+
+      final task = FirebaseStorage.instance
+          .ref(path)
+          .putData(bytes, SettableMetadata(contentType: contentType));
+
+      task.snapshotEvents.listen((snap) {
+        if (mounted) {
+          setState(() =>
+              _thumbProgress = snap.bytesTransferred / snap.totalBytes);
+        }
+      });
+
+      await task;
+      final url =
+          await FirebaseStorage.instance.ref(path).getDownloadURL();
+
+      if (mounted) {
+        setState(() {
+          _thumbCtrl.text = url;
+          _uploadingThumb = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Cover image uploaded — tap Save Changes to apply'),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() { _uploadingThumb = false; _thumbBytes = null; });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Upload failed: $e'),
+          backgroundColor: AppColors.error,
+        ));
+      }
+    }
   }
 
   Future<void> _saveOverview() async {

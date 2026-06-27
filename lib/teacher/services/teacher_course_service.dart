@@ -279,34 +279,31 @@ class TeacherCourseService {
 
   // Get public courses — no composite index needed; filter + sort client-side
   Future<List<CourseModel>> getPublicCourses({int limit = 20}) async {
+    // Try 1: query by status == published with a hard 10-second timeout
     try {
       final snapshot = await _firestore
           .collection(COURSES_COLLECTION)
           .where('status', isEqualTo: 'published')
-          .get();
+          .get(const GetOptions(source: Source.server))
+          .timeout(const Duration(seconds: 10));
 
       final courses = <CourseModel>[];
       for (final doc in snapshot.docs) {
         try {
           final course = CourseModel.fromJson(doc.data());
-          // Accept public courses OR courses where visibility was never explicitly set private
-          if (course.visibility != 'private') {
-            courses.add(course);
-          }
-        } catch (_) {
-          // Skip malformed documents silently
-        }
+          if (course.visibility != 'private') courses.add(course);
+        } catch (_) {}
       }
-
       courses.sort((a, b) => b.totalEnrolled.compareTo(a.totalEnrolled));
       return courses.take(limit).toList();
     } catch (e) {
-      // Fallback: try fetching all courses if status filter fails
+      // Try 2: fetch all docs and filter in-memory (handles index/rules edge cases)
       try {
         final fallback = await _firestore
             .collection(COURSES_COLLECTION)
-            .limit(limit)
-            .get();
+            .limit(limit * 3)
+            .get(const GetOptions(source: Source.server))
+            .timeout(const Duration(seconds: 10));
         final results = <CourseModel>[];
         for (final doc in fallback.docs) {
           try {
@@ -317,8 +314,9 @@ class TeacherCourseService {
           } catch (_) {}
         }
         return results;
-      } catch (_) {
-        return [];
+      } catch (e2) {
+        // Rethrow the last meaningful error so the UI can display it
+        throw Exception('Could not load courses: $e2');
       }
     }
   }

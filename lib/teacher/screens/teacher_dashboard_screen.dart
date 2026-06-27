@@ -6,7 +6,7 @@ import 'package:education_app/teacher/constants/teacher_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class TeacherDashboardScreen extends StatefulWidget {
-  const TeacherDashboardScreen({super.key});
+  static String id='teacher_dashboard_screen';
 
   @override
   State<TeacherDashboardScreen> createState() => _TeacherDashboardScreenState();

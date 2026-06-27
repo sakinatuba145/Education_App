@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:education_app/teacher/models/course_content_model.dart';
 import 'package:education_app/teacher/services/teacher_content_service.dart';
 import 'package:education_app/teacher/services/teacher_storage_service.dart';
@@ -242,10 +242,10 @@ class _ContentUploadScreenState extends State<ContentUploadScreen> {
   }
 
   Future<void> _pickFile() async {
+
     try {
       final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: _getAllowedExtensions(_selectedTab),
+
       );
 
       if (result != null && result.files.isNotEmpty) {

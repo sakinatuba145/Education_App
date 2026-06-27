@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dashboard/dashboard_screen.dart';
+import 'features/login_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
 
 class Wrapper extends StatelessWidget {
@@ -17,7 +18,7 @@ class Wrapper extends StatelessWidget {
           if (snapshot.hasData) {
             final user = snapshot.data;
             if (user == null) {
-              return LoginScreen(toggleTheme: () {});
+              return LoginScreen();
             }
 
             // Get user role from Firestore
@@ -42,14 +43,14 @@ class Wrapper extends StatelessWidget {
 
                 // Route based on user role
                 if (position == 'teacher' || position == 'admin') {
-                  return const TeacherDashboardScreen();
+                  return TeacherDashboardScreen();
                 } else {
-                  return const DashboardScreen();
+                  return DashboardScreen();
                 }
               },
             );
           } else {
-            return LoginScreen(toggleTheme: () {});
+            return LoginScreen();
           }
         },
       ),

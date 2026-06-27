@@ -55,7 +55,7 @@ class ResultScreen extends StatelessWidget {
                   Text(
                     "$score / $total",
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      color: AppColors.primary,
+                      color: ThemeColors.primary,
                     ),
                   ),
                   Text(

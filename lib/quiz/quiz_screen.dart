@@ -4,6 +4,7 @@ import 'result_screen.dart';
 import 'package:education_app/core/constants/theme.dart';
 
 class QuizScreen extends StatefulWidget {
+  static String id='quiz_screen';
   final ExamModel exam;
 
   const QuizScreen({super.key, required this.exam});
@@ -104,11 +105,11 @@ class _QuizScreenState extends State<QuizScreen> {
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: selected
-                          ? AppColors.primary.withOpacity(0.15)
+                          ? ThemeColors.primary.withOpacity(0.15)
                           : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: AppColors.primary,
+                        color: ThemeColors.primary,
                       ),
                     ),
                     child: Text(

@@ -5,7 +5,7 @@ import 'course_list.dart';
 import 'course_model.dart';
 
 class CourseScreen extends StatefulWidget {
-  const CourseScreen({super.key});
+  static String id='course_screen';
 
   @override
   State<CourseScreen> createState() => _CourseScreenState();
@@ -38,7 +38,7 @@ class _CourseScreenState extends State<CourseScreen> {
               courses: bloc.courses,
               onDelete: (id) => bloc.deleteCourse(id),
               onTap: (course){
-                Navigator.push(context, MaterialPageRoute(builder: (_) => LessonScreen(course: course)));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => LessonScreen()));
               },
             ),
           ),
@@ -83,17 +83,13 @@ class _CourseScreenState extends State<CourseScreen> {
   }
 }
 class LessonScreen extends StatefulWidget {
-  final  course;
-
-  const LessonScreen({super.key, required this.course});
-
+  const LessonScreen({super.key,});
   @override
   State<LessonScreen> createState() => _LessonScreenState();
 }
-
 class _LessonScreenState extends State<LessonScreen> {
   @override
   Widget build(BuildContext context) {
-    return LessonScreen(course: context,);
+    return LessonScreen();
   }
 }

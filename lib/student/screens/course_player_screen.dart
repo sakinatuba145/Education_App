@@ -1121,78 +1121,15 @@ class _YoutubeInlinePlayer extends StatelessWidget {
   const _YoutubeInlinePlayer({required this.videoId});
 
   void _openOverlay() {
-    final embedSrc =
-        'https://www.youtube-nocookie.com/embed/$videoId'
-        '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
-
-    // ── Outer darkened backdrop ──────────────────────────────────────────────
-    final backdrop = html.DivElement()
-      ..id = 'yt_overlay_$videoId'
-      ..style.position = 'fixed'
-      ..style.top = '0'
-      ..style.left = '0'
-      ..style.right = '0'
-      ..style.bottom = '0'
-      ..style.backgroundColor = 'rgba(0,0,0,0.92)'
-      ..style.zIndex = '2147483647'
-      ..style.display = 'flex'
-      ..style.flexDirection = 'column'
-      ..style.alignItems = 'center'
-      ..style.justifyContent = 'center';
-
-    // ── Close button (top-right) ─────────────────────────────────────────────
-    final closeBtn = html.ButtonElement()
-      ..text = '✕  Close'
-      ..style.alignSelf = 'flex-end'
-      ..style.marginRight = '16px'
-      ..style.marginBottom = '12px'
-      ..style.background = 'rgba(255,255,255,0.12)'
-      ..style.color = 'white'
-      ..style.border = '1px solid rgba(255,255,255,0.35)'
-      ..style.borderRadius = '8px'
-      ..style.padding = '8px 18px'
-      ..style.fontSize = '15px'
-      ..style.fontFamily = 'sans-serif'
-      ..style.cursor = 'pointer';
-
-    void dismiss() {
-      final el = html.document.getElementById('yt_overlay_$videoId');
-      el?.remove();
-    }
-
-    closeBtn.onClick.listen((_) => dismiss());
-
-    // ── Responsive iframe wrapper ────────────────────────────────────────────
-    final wrapper = html.DivElement()
-      ..style.width = '90vw'
-      ..style.maxWidth = '960px'
-      ..style.aspectRatio = '16/9'
-      ..style.borderRadius = '12px'
-      ..style.overflow = 'hidden'
-      ..style.boxShadow = '0 24px 80px rgba(0,0,0,0.7)';
-
-    final iframe = html.IFrameElement()
-      ..src = embedSrc
-      ..style.width = '100%'
-      ..style.height = '100%'
-      ..style.border = 'none'
-      ..allow =
-          'accelerometer; autoplay; clipboard-write; encrypted-media; '
-          'gyroscope; picture-in-picture; web-share; fullscreen'
-      ..allowFullscreen = true;
-
-    wrapper.append(iframe);
-
-    // Tap backdrop (outside the video) to close
-    backdrop.onClick.listen((e) {
-      if (e.target == backdrop) dismiss();
-    });
-
-    backdrop
-      ..append(closeBtn)
-      ..append(wrapper);
-
-    html.document.body!.append(backdrop);
+    // Open video in a new browser tab — triggered by user gesture so popup
+    // blockers don't fire. The original tab stays open (user keeps their place).
+    // YouTube iframe embedding is blocked inside Replit's sandboxed preview;
+    // on a deployed app it would be possible to embed, but new-tab is reliable
+    // everywhere and keeps the app open in the background tab.
+    html.window.open(
+      'https://www.youtube.com/watch?v=$videoId',
+      '_blank',
+    );
   }
 
   @override

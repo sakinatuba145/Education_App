@@ -1121,15 +1121,130 @@ class _YoutubeInlinePlayer extends StatelessWidget {
   const _YoutubeInlinePlayer({required this.videoId});
 
   void _openOverlay() {
-    // Open video in a new browser tab — triggered by user gesture so popup
-    // blockers don't fire. The original tab stays open (user keeps their place).
-    // YouTube iframe embedding is blocked inside Replit's sandboxed preview;
-    // on a deployed app it would be possible to embed, but new-tab is reliable
-    // everywhere and keeps the app open in the background tab.
-    html.window.open(
-      'https://www.youtube.com/watch?v=$videoId',
-      '_blank',
-    );
+    final watchUrl = 'https://www.youtube.com/watch?v=$videoId';
+    final embedSrc =
+        'https://www.youtube-nocookie.com/embed/$videoId'
+        '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+
+    final overlayId = 'yt_overlay_$videoId';
+
+    void dismiss() {
+      html.document.getElementById(overlayId)?.remove();
+    }
+
+    // ── Darkened full-screen backdrop ──────────────────────────────────────
+    final backdrop = html.DivElement()
+      ..id = overlayId
+      ..style.position = 'fixed'
+      ..style.top = '0'
+      ..style.left = '0'
+      ..style.right = '0'
+      ..style.bottom = '0'
+      ..style.backgroundColor = 'rgba(0,0,0,0.92)'
+      ..style.zIndex = '2147483647'
+      ..style.display = 'flex'
+      ..style.flexDirection = 'column'
+      ..style.alignItems = 'center'
+      ..style.justifyContent = 'center';
+
+    // ── Top bar: close button ──────────────────────────────────────────────
+    final topBar = html.DivElement()
+      ..style.width = '92vw'
+      ..style.maxWidth = '960px'
+      ..style.display = 'flex'
+      ..style.justifyContent = 'flex-end'
+      ..style.marginBottom = '10px';
+
+    final closeBtn = html.ButtonElement()
+      ..text = '✕  Close'
+      ..style.background = 'rgba(255,255,255,0.12)'
+      ..style.color = 'white'
+      ..style.border = '1px solid rgba(255,255,255,0.3)'
+      ..style.borderRadius = '8px'
+      ..style.padding = '8px 20px'
+      ..style.fontSize = '15px'
+      ..style.fontFamily = 'sans-serif'
+      ..style.cursor = 'pointer';
+    closeBtn.onClick.listen((_) => dismiss());
+    topBar.append(closeBtn);
+
+    // ── 16:9 iframe wrapper ────────────────────────────────────────────────
+    final wrapper = html.DivElement()
+      ..style.width = '92vw'
+      ..style.maxWidth = '960px'
+      ..style.aspectRatio = '16/9'
+      ..style.borderRadius = '14px'
+      ..style.overflow = 'hidden'
+      ..style.boxShadow = '0 24px 80px rgba(0,0,0,0.7)'
+      ..style.position = 'relative'
+      ..style.background = '#111';
+
+    final iframe = html.IFrameElement()
+      ..src = embedSrc
+      ..style.width = '100%'
+      ..style.height = '100%'
+      ..style.border = 'none'
+      ..allow =
+          'accelerometer; autoplay; clipboard-write; encrypted-media; '
+          'gyroscope; picture-in-picture; web-share; fullscreen'
+      ..allowFullscreen = true;
+
+    // ── Fallback shown if browser blocks the iframe ────────────────────────
+    final fallback = html.DivElement()
+      ..style.position = 'absolute'
+      ..style.top = '0'
+      ..style.left = '0'
+      ..style.right = '0'
+      ..style.bottom = '0'
+      ..style.display = 'none'
+      ..style.flexDirection = 'column'
+      ..style.alignItems = 'center'
+      ..style.justifyContent = 'center'
+      ..style.background = '#111'
+      ..style.color = 'white'
+      ..style.fontFamily = 'sans-serif'
+      ..style.gap = '16px';
+
+    final fallbackText = html.ParagraphElement()
+      ..text = 'Video could not be embedded.'
+      ..style.margin = '0'
+      ..style.opacity = '0.7'
+      ..style.fontSize = '14px';
+
+    final fallbackBtn = html.AnchorElement()
+      ..href = watchUrl
+      ..target = '_blank'
+      ..text = '▶  Watch on YouTube'
+      ..style.background = '#FF0000'
+      ..style.color = 'white'
+      ..style.padding = '12px 28px'
+      ..style.borderRadius = '8px'
+      ..style.textDecoration = 'none'
+      ..style.fontWeight = 'bold'
+      ..style.fontSize = '15px';
+
+    fallback
+      ..append(fallbackText)
+      ..append(fallbackBtn);
+
+    iframe.onError.listen((_) {
+      fallback.style.display = 'flex';
+      iframe.style.display = 'none';
+    });
+
+    wrapper
+      ..append(iframe)
+      ..append(fallback);
+
+    backdrop.onClick.listen((e) {
+      if (e.target == backdrop) dismiss();
+    });
+
+    backdrop
+      ..append(topBar)
+      ..append(wrapper);
+
+    html.document.body!.append(backdrop);
   }
 
   @override

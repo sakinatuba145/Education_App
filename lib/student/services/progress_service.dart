@@ -6,6 +6,7 @@ class QuizResult {
   final String quizId;
   final String quizTitle;
   final String courseId;
+  final String lessonId;
   final int score;
   final int totalQuestions;
   final DateTime takenAt;
@@ -15,6 +16,7 @@ class QuizResult {
     required this.quizId,
     required this.quizTitle,
     required this.courseId,
+    required this.lessonId,
     required this.score,
     required this.totalQuestions,
     required this.takenAt,
@@ -26,6 +28,7 @@ class QuizResult {
       quizId: map['quizId'] ?? '',
       quizTitle: map['quizTitle'] ?? 'Quiz',
       courseId: map['courseId'] ?? '',
+      lessonId: map['lessonId'] ?? '',
       score: map['score'] ?? 0,
       totalQuestions: map['totalQuestions'] ?? 1,
       takenAt: (map['takenAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -65,28 +68,102 @@ class ProgressService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String? get _uid => _auth.currentUser?.uid;
+  String get _displayName =>
+      _auth.currentUser?.displayName?.split('|').first ??
+      _auth.currentUser?.email?.split('@').first ??
+      'Student';
+  String get _email => _auth.currentUser?.email ?? '';
 
   Future<void> saveQuizResult({
     required String quizId,
     required String quizTitle,
     required String courseId,
+    required String lessonId,
     required int score,
     required int totalQuestions,
   }) async {
     if (_uid == null) return;
-    await _firestore
+
+    final now = Timestamp.now();
+    final percentage = totalQuestions > 0 ? (score / totalQuestions * 100).round() : 0;
+    final passed = percentage >= 70;
+
+    final batch = _firestore.batch();
+
+    // 1. Save to student's quiz_results (existing)
+    final resultRef = _firestore
         .collection('users')
         .doc(_uid)
         .collection('quiz_results')
-        .add({
+        .doc();
+    batch.set(resultRef, {
       'quizId': quizId,
       'quizTitle': quizTitle,
       'courseId': courseId,
+      'lessonId': lessonId,
       'score': score,
       'totalQuestions': totalQuestions,
-      'takenAt': Timestamp.now(),
+      'percentage': percentage,
+      'passed': passed,
+      'takenAt': now,
       'userId': _uid,
     });
+
+    // 2. Mark quiz as completed on the lesson quiz document
+    if (courseId.isNotEmpty && lessonId.isNotEmpty && quizId.isNotEmpty) {
+      final responseRef = _firestore
+          .collection('courses')
+          .doc(courseId)
+          .collection('lessons')
+          .doc(lessonId)
+          .collection('quizzes')
+          .doc(quizId)
+          .collection('responses')
+          .doc(_uid);
+      batch.set(responseRef, {
+        'studentId': _uid,
+        'studentName': _displayName,
+        'studentEmail': _email,
+        'score': score,
+        'totalQuestions': totalQuestions,
+        'percentage': percentage,
+        'passed': passed,
+        'takenAt': now,
+      });
+    }
+
+    // 3. Teacher notification — written to course's notifications subcollection
+    if (courseId.isNotEmpty) {
+      final notifRef = _firestore
+          .collection('courses')
+          .doc(courseId)
+          .collection('quizNotifications')
+          .doc();
+      batch.set(notifRef, {
+        'type': 'quiz_completed',
+        'studentId': _uid,
+        'studentName': _displayName,
+        'studentEmail': _email,
+        'lessonId': lessonId,
+        'quizId': quizId,
+        'quizTitle': quizTitle,
+        'score': score,
+        'totalQuestions': totalQuestions,
+        'percentage': percentage,
+        'passed': passed,
+        'takenAt': now,
+        'read': false,
+      });
+
+      // 4. Update course analytics counters
+      final courseRef = _firestore.collection('courses').doc(courseId);
+      batch.update(courseRef, {
+        'totalQuizzesTaken': FieldValue.increment(1),
+        'lastActivityAt': now,
+      });
+    }
+
+    await batch.commit();
   }
 
   Future<List<QuizResult>> getMyQuizResults() async {
@@ -100,6 +177,20 @@ class ProgressService {
     return snapshot.docs
         .map((d) => QuizResult.fromMap(d.id, d.data()))
         .toList();
+  }
+
+  /// Returns a map of `courseId_lessonId` → best QuizResult for quick lookups.
+  Future<Map<String, QuizResult>> getCompletedQuizMap() async {
+    final results = await getMyQuizResults();
+    final map = <String, QuizResult>{};
+    for (final r in results) {
+      final key = '${r.courseId}_${r.lessonId}';
+      // Keep highest score
+      if (!map.containsKey(key) || r.percentageInt > map[key]!.percentageInt) {
+        map[key] = r;
+      }
+    }
+    return map;
   }
 
   Future<StudentStats> getStudentStats() async {

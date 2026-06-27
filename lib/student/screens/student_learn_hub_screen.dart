@@ -4,6 +4,7 @@ import 'package:education_app/student/screens/student_quiz_browser_screen.dart';
 import 'package:education_app/student/screens/flashcard_screen.dart';
 import 'package:education_app/student/screens/word_puzzle_screen.dart';
 import 'package:education_app/student/screens/leaderboard_screen.dart';
+import 'package:education_app/student/screens/student_assignments_tab.dart';
 
 class StudentLearnHubScreen extends StatefulWidget {
   const StudentLearnHubScreen({super.key});
@@ -19,7 +20,7 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -37,24 +38,22 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
           children: [
             Container(
               color: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TabBar(
-                    controller: _tabController,
-                    labelColor: AppColors.primary,
-                    unselectedLabelColor: Colors.grey.shade500,
-                    indicatorColor: AppColors.primary,
-                    indicatorWeight: 3,
-                    labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                    unselectedLabelStyle: const TextStyle(fontSize: 12),
-                    tabs: const [
-                      Tab(icon: Icon(Icons.quiz_rounded, size: 20), text: 'Quizzes'),
-                      Tab(icon: Icon(Icons.style_rounded, size: 20), text: 'Flashcards'),
-                      Tab(icon: Icon(Icons.extension_rounded, size: 20), text: 'Puzzle'),
-                      Tab(icon: Icon(Icons.leaderboard_rounded, size: 20), text: 'Ranking'),
-                    ],
-                  ),
+              child: TabBar(
+                controller: _tabController,
+                labelColor: AppColors.primary,
+                unselectedLabelColor: Colors.grey.shade500,
+                indicatorColor: AppColors.primary,
+                indicatorWeight: 3,
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                unselectedLabelStyle: const TextStyle(fontSize: 12),
+                tabs: const [
+                  Tab(icon: Icon(Icons.quiz_rounded, size: 20), text: 'Quizzes'),
+                  Tab(icon: Icon(Icons.assignment_rounded, size: 20), text: 'Assignments'),
+                  Tab(icon: Icon(Icons.style_rounded, size: 20), text: 'Flashcards'),
+                  Tab(icon: Icon(Icons.extension_rounded, size: 20), text: 'Puzzle'),
+                  Tab(icon: Icon(Icons.leaderboard_rounded, size: 20), text: 'Ranking'),
                 ],
               ),
             ),
@@ -63,6 +62,7 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
                 controller: _tabController,
                 children: const [
                   _QuizTab(),
+                  StudentAssignmentsTab(),
                   FlashcardScreen(),
                   WordPuzzleScreen(),
                   LeaderboardScreen(),
@@ -82,7 +82,6 @@ class _QuizTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // StudentQuizBrowserScreen already has a Scaffold; return its body directly
     return const StudentQuizBrowserScreen();
   }
 }

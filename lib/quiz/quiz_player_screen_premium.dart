@@ -189,6 +189,7 @@ class _QuizPlayerScreenPremiumState extends State<QuizPlayerScreenPremium>
       quizId: _quizId ?? 'unknown',
       quizTitle: _quizTitle ?? 'Quiz',
       courseId: widget.courseId ?? '',
+      lessonId: widget.lessonId ?? '',
       score: _correctCount,
       totalQuestions: _quizzes.length,
     );

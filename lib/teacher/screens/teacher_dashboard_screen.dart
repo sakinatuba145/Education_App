@@ -7,6 +7,8 @@ import 'package:education_app/teacher/screens/course_studio_screen.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/login_screen.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/profile/profile_screen.dart';
+import 'package:education_app/profile/settings_screen.dart';
 
 const _primary = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF8F0);
@@ -26,6 +28,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   List<CourseModel> _allCourses = [];
   bool _isLoading = true;
   String _filter = 'all'; // all | published | draft
+  int _selectedTab = 0; // 0=Courses, 1=Profile, 2=Settings
 
   @override
   void initState() {
@@ -73,24 +76,58 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _bg,
-      body: SafeArea(
-        child: Column(
+      body: SafeArea(child: _buildBody()),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedTab,
+        onTap: (i) => setState(() => _selectedTab = i),
+        selectedItemColor: _primary,
+        unselectedItemColor: Colors.grey,
+        backgroundColor: Colors.white,
+        elevation: 8,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book_rounded),
+            label: 'Courses',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_rounded),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_rounded),
+            label: 'Settings',
+          ),
+        ],
+      ),
+      floatingActionButton: _selectedTab == 0
+          ? FloatingActionButton.extended(
+              onPressed: _openCreateCourse,
+              backgroundColor: _primary,
+              icon: const Icon(Icons.add_rounded, color: Colors.white),
+              label: const Text('New Course',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            )
+          : null,
+    );
+  }
+
+  Widget _buildBody() {
+    switch (_selectedTab) {
+      case 1:
+        return const ProfileScreen();
+      case 2:
+        return const SettingsScreen();
+      default:
+        return Column(
           children: [
             _buildHeader(),
             _buildStatsRow(),
             _buildFilterRow(),
             Expanded(child: _buildCourseList()),
           ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openCreateCourse,
-        backgroundColor: _primary,
-        icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: const Text('New Course',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-      ),
-    );
+        );
+    }
   }
 
   Widget _buildHeader() {

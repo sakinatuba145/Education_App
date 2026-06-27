@@ -35,35 +35,11 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // Custom tab bar header
             Container(
               color: Colors.white,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Learn',
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.dark,
-                          ),
-                        ),
-                        Text(
-                          'Quizzes, flashcards, puzzles & more',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   TabBar(
                     controller: _tabController,
                     labelColor: AppColors.primary,

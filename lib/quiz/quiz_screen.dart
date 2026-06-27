@@ -4,7 +4,7 @@ import 'result_screen.dart';
 import 'package:education_app/core/constants/theme.dart';
 
 class QuizScreen extends StatefulWidget {
-  static String id='quiz_screen';
+  static String id = 'quiz_screen';
   final ExamModel exam;
 
   const QuizScreen({super.key, required this.exam});
@@ -56,110 +56,92 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_ios),
-                ),
-                Text(
-                  "Q ${currentIndex + 1}/${widget.exam.questions.length}",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
+      appBar: AppBar(
+        title: Text("Q ${currentIndex + 1}/${widget.exam.questions.length}"),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: ThemeColors.black),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(22),
             ),
-
-            const SizedBox(height: 20),
-
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(22),
-              ),
-              child: Text(
-                q.question,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+            child: Text(
+              q.question,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-            q.type == QuestionType.mcq
-                ? ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: q.options.length,
-              itemBuilder: (context, i) {
-                final selected = answers[currentIndex] == i;
+          q.type == QuestionType.mcq
+              ? ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: q.options.length,
+            itemBuilder: (context, i) {
+              final selected = answers[currentIndex] == i;
 
-                return GestureDetector(
-                  onTap: () => selectAnswer(i),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: selected
-                          ? ThemeColors.primary.withOpacity(0.15)
-                          : Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: ThemeColors.primary,
-                      ),
-                    ),
-                    child: Text(
-                      q.options[i],
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
+              return GestureDetector(
+                onTap: () => selectAnswer(i),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? ThemeColors.primary.withOpacity(0.15)
+                        : Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: ThemeColors.primary),
                   ),
-                );
-              },
-            )
-                : TextField(
-              onChanged: (val) => answers[currentIndex] = val,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                hintText: "Write answer...",
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: currentIndex > 0
-                        ? () => setState(() => currentIndex--)
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                    ),
-                    child: const Text("Previous"),
+                  child: Text(
+                    q.options[i],
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
-
-                const SizedBox(width: 10),
-
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: isLast
-                        ? submitQuiz
-                        : () => setState(() => currentIndex++),
-                    child: Text(
-                      isLast ? "Submit" : "Next",
-                    ),
-                  ),
-                ),
-              ],
+              );
+            },
+          )
+              : TextField(
+            onChanged: (val) => answers[currentIndex] = val,
+            maxLines: 5,
+            decoration: const InputDecoration(
+              hintText: "Write answer...",
             ),
-          ],
-        ),
+          ),
+
+          const SizedBox(height: 20),
+
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: currentIndex > 0
+                      ? () => setState(() => currentIndex--)
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                  ),
+                  child: const Text("Previous"),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: isLast
+                      ? submitQuiz
+                      : () => setState(() => currentIndex++),
+                  child: Text(isLast ? "Submit" : "Next"),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

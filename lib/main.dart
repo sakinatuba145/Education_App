@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
         QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),
       },
 
-      initialRoute: WelcomeScreen.id,
+      initialRoute: TeacherDashboardScreen.id,
     );
   }
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/theme.dart';
-
 import 'quiz_model.dart';
 import 'quiz_data.dart';
+import 'question_model.dart';
 
 class TeacherCreateExamScreen extends StatefulWidget {
+  static const String id = 'create_exam_screen';
+
   const TeacherCreateExamScreen({super.key});
 
   @override
@@ -28,90 +30,148 @@ class _TeacherCreateExamScreenState extends State<TeacherCreateExamScreen> {
       ),
     );
 
+    titleController.clear();
+    subjectController.clear();
+
     setState(() {});
+  }
+
+  InputDecoration input(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      prefixIcon: const Icon(Icons.edit),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      // ✅ USE THEME BACKGROUND ONLY
-      backgroundColor: theme.scaffoldBackgroundColor,
+      body: AppBackground(
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 20),
 
-      appBar: AppBar(
-        title: const Text("Create Exam"),
-      ),
+                            /// HEADER (LIKE REGISTER SCREEN)
+                            Text(
+                              "Create Exam",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge,
+                            ),
 
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // CARD uses theme.cardTheme automatically
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: titleController,
-                    decoration: const InputDecoration(
-                      hintText: "Exam Title",
+                            const SizedBox(height: 8),
+
+                            Text(
+                              "Add exam title and subject",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+
+                            const SizedBox(height: 30),
+
+                            /// CARD CONTAINER (REGISTER STYLE)
+                            Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(22),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 10,
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  TextField(
+                                    controller: titleController,
+                                    decoration: input("Exam Title"),
+                                  ),
+
+                                  const SizedBox(height: 16),
+
+                                  TextField(
+                                    controller: subjectController,
+                                    decoration: input("Subject"),
+                                  ),
+
+                                  const SizedBox(height: 22),
+
+                                  /// BUTTON (THEME CORRECT)
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 56,
+                                    child: ElevatedButton(
+                                      onPressed: createExam,
+                                      child: const Text("Create Exam"),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 25),
+
+                            /// LIST OF EXAMS
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: QuizData.exams.length,
+                              itemBuilder: (context, index) {
+                                final exam = QuizData.exams[index];
+
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: ListTile(
+                                    title: Text(exam.title),
+                                    subtitle: Text(exam.subject),
+                                    trailing: const Icon(Icons.arrow_forward_ios),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              TeacherAddQuestionScreen(
+                                                  exam: exam),
+                                        ),
+                                      ).then((_) => setState(() {}));
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  TextField(
-                    controller: subjectController,
-                    decoration: const InputDecoration(
-                      hintText: "Subject",
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // ✅ THEMED BUTTON (from AppTheme elevatedButtonTheme)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: createExam,
-                      child: const Text("Create Exam"),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // LIST
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: QuizData.exams.length,
-            itemBuilder: (context, index) {
-              final exam = QuizData.exams[index];
-
-              return Card(
-                child: ListTile(
-                  title: Text(
-                    exam.title,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                  subtitle: Text(
-                    exam.subject,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    color: theme.iconTheme.color,
                   ),
                 ),
               );
             },
           ),
-        ],
+        ),
       ),
     );
   }

@@ -55,93 +55,138 @@ class _QuizScreenState extends State<QuizScreen> {
     final isLast = currentIndex == widget.exam.questions.length - 1;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text("Q ${currentIndex + 1}/${widget.exam.questions.length}"),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Text(
+          "Q ${currentIndex + 1}/${widget.exam.questions.length}",
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: ThemeColors.black),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Text(
-              q.question,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
 
-          const SizedBox(height: 20),
+      body: AppBackground(
+        child: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: ListView(
+                padding: const EdgeInsets.all(24),
+                children: [
 
-          q.type == QuestionType.mcq
-              ? ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: q.options.length,
-            itemBuilder: (context, i) {
-              final selected = answers[currentIndex] == i;
-
-              return GestureDetector(
-                onTap: () => selectAnswer(i),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: selected
-                        ? ThemeColors.primary.withOpacity(0.15)
-                        : Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: ThemeColors.primary),
+                  /// QUESTION CARD
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                        )
+                      ],
+                    ),
+                    child: Text(
+                      q.question,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                   ),
-                  child: Text(
-                    q.options[i],
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-              );
-            },
-          )
-              : TextField(
-            onChanged: (val) => answers[currentIndex] = val,
-            maxLines: 5,
-            decoration: const InputDecoration(
-              hintText: "Write answer...",
-            ),
-          ),
 
-          const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: currentIndex > 0
-                      ? () => setState(() => currentIndex--)
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
+                  /// OPTIONS
+                  q.type == QuestionType.mcq
+                      ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: q.options.length,
+                    itemBuilder: (context, i) {
+                      final selected = answers[currentIndex] == i;
+
+                      return GestureDetector(
+                        onTap: () => selectAnswer(i),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: selected
+                                ? ThemeColors.secondary.withOpacity(0.3)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: ThemeColors.primary),
+                          ),
+                          child: Text(
+                            q.options[i],
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                      : TextField(
+                    onChanged: (val) =>
+                    answers[currentIndex] = val,
+                    maxLines: 5,
+                    decoration: const InputDecoration(
+                      hintText: "Write answer...",
+                    ),
                   ),
-                  child: const Text("Previous"),
-                ),
+
+                  const SizedBox(height: 20),
+
+                  /// BUTTONS
+                  Row(
+                    children: [
+
+                      /// PREVIOUS
+                      Expanded(
+                        child: SizedBox(
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: currentIndex > 0
+                                ? () => setState(() => currentIndex--)
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey.shade400,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text(
+                              "Previous",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      /// NEXT / SUBMIT
+                      Expanded(
+                        child: SizedBox(
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: isLast
+                                ? submitQuiz
+                                : () => setState(() => currentIndex++),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ThemeColors.button,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: Text(
+                              isLast ? "Submit" : "Next",
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: isLast
-                      ? submitQuiz
-                      : () => setState(() => currentIndex++),
-                  child: Text(isLast ? "Submit" : "Next"),
-                ),
-              ),
-            ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

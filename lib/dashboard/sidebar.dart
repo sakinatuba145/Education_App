@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import '../auth/user_models.dart';
-import 'user_model.dart';
 import 'menu_items.dart';
 
 class Sidebar extends StatelessWidget {

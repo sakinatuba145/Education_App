@@ -16,10 +16,10 @@ class StudentModel {
 }
 class TopStudentsWidget extends StatelessWidget {
   final List<StudentModel> students;
-
   const TopStudentsWidget({
     super.key,
     required this.students,
+
   });
 
   @override
@@ -46,7 +46,8 @@ class TopStudentsWidget extends StatelessWidget {
                 CircleAvatar(
                   radius: 35,
                   backgroundImage:
-                  NetworkImage(student.image),
+                    AssetImage(student.image),
+                  // NetworkImage(student.image),
                 ),
 
                 SizedBox(height: 10),

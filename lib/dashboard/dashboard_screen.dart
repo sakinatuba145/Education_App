@@ -41,7 +41,7 @@ class DashboardHome extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          TopStudentsWidget(students: topStudents!),
+          TopStudentsWidget(students: topStudents ?? []),
         ],
       ),
     );

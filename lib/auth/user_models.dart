@@ -23,7 +23,8 @@ final String? imageUrl;
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       position: json['position'] ?? '',
-      role: json['role'],
+      // role: json['role'],
+        role: json['role'] ?? '',
       imageUrl: json['imageUrl']
 
     );

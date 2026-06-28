@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
 import 'forgot_password.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'google_login.dart' as _authService;
 
 class LoginScreen extends StatefulWidget {
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.primary,
+        backgroundColor: Color(0xFFFFA726),
         title: Text(
           "Login",
           style: theme.textTheme.titleLarge,
@@ -79,162 +80,178 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
 
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+              ThemeColors.gradient1,
+              ThemeColors.gradient2,
+              ThemeColors.gradient3,
+            ])
+          ),
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
 
-                Text(
-                  "Welcome Back ",
-                  style: theme.textTheme.headlineMedium,
-                ),
-
-                const SizedBox(height: 10),
-
-                Text(
-                  "Login to continue your learning journey.",
-                  style: theme.textTheme.bodyMedium,
-                ),
-
-                const SizedBox(height: 40),
-
-                Text(
-                  "Email",
-                  style: theme.textTheme.titleMedium,
-                ),
-
-                const SizedBox(height: 12),
-
-                TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: theme.textTheme.bodyLarge,
-                  decoration: const InputDecoration(
-                    hintText: "Enter your email",
-                    prefixIcon: Icon(Icons.email_outlined),
+                  Text(
+                    "Welcome Back ",
+                    style: theme.textTheme.headlineMedium,
                   ),
-                ),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 10),
 
-                Text(
-                  "Password",
-                  style: theme.textTheme.titleMedium,
-                ),
-
-                const SizedBox(height: 12),
-
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  style: theme.textTheme.bodyLarge,
-                  decoration: const InputDecoration(
-                    hintText: "Enter your password",
-                    prefixIcon: Icon(Icons.lock_outline),
+                  Text(
+                    "Login to continue your learning journey.",
+                    style: theme.textTheme.bodyMedium,
                   ),
-                ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 40),
 
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {Navigator.pushNamed(context, ForgotPasswordScreen.id);},
-                    child: const Text("Forgot Password?"),
+                  Text(
+                    "Email",
+                    style: theme.textTheme.titleMedium,
                   ),
-                ),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 12),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                  onPressed: (){Navigator.pushNamed(context, DashboardHome.id);},
-                    child:
-                    isLoading
-                        ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: Colors.white,
+                  TextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    style: theme.textTheme.bodyLarge,
+                    decoration: const InputDecoration(
+                      hintText: "Enter your email",
+                      prefixIcon: Icon(Icons.email_outlined),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  Text(
+                    "Password",
+                    style: theme.textTheme.titleMedium,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    style: theme.textTheme.bodyLarge,
+                    decoration: const InputDecoration(
+                      hintText: "Enter your password",
+                      prefixIcon: Icon(Icons.lock_outline),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {Navigator.pushNamed(context, ForgotPasswordScreen.id);},
+                      child: const Text("Forgot Password?"),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFFFD180),foregroundColor: Colors.white,
+
                       ),
-                    )
-                        : const Text("Login"),
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Divider(),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                      ),
-                      child: Text(
-                        "OR",
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ),
-
-                    const Expanded(
-                      child: Divider(),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 30),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton.icon(
-                    onPressed: () async {
-                      try {
-                        final userCredential =
-                        await _authService.signInWithGoogle();
-                        print(userCredential.user?.email);
-                      } catch (e) {
-                        print(e);
-                      }
-                      Navigator.pushNamed(context, DashboardHome.id);
-                    },
-
-                    icon: const Icon(Icons.g_mobiledata),
-                    label: const Text("Continue with Google"),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
+                    onPressed: (){Navigator.pushNamed(context, DashboardHome.id);},
+                      child:
+                      isLoading
+                          ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                          : const Text("Login"),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 40),
+                  const SizedBox(height: 30),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don’t have an account? ",
-                      style: theme.textTheme.bodyMedium,
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Divider(),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                        ),
+                        child: Text(
+                          "OR",
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ),
+
+                      const Expanded(
+                        child: Divider(),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        try {
+                          final userCredential =
+                          await _authService.signInWithGoogle();
+                          print(userCredential.user?.email);
+                        } catch (e) {
+                          print(e);
+                        }
+                        Navigator.pushNamed(context, DashboardHome.id);
+                      },
+
+                      icon: const Icon(Icons.g_mobiledata),
+                      label: const Text("Continue with Google"),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
                     ),
+                  ),
 
-                    TextButton(
-                      onPressed: () {Navigator.pushNamed(context, RegisterScreen.id);},
-                      child: const Text("Register"),
-                    ),
-                  ],
-                ),
-              ],
+                  const SizedBox(height: 40),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Don’t have an account? ",
+                        style: theme.textTheme.bodyMedium,
+                      ),
+
+                      TextButton(
+                        onPressed: () {Navigator.pushNamed(context, RegisterScreen.id);},
+                        child: const Text("Register"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

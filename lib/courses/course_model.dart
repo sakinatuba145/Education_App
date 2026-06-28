@@ -19,7 +19,7 @@ class CourseModel {
       image: map['image'],
       title: map['title'] ?? '',
       teacher: map['teacher'] ?? '',
-      progress: (map['progress'] ?? 0).toDouble(),
+      progress: (map['progress'] ?? 0).toString(),
     );
   }
 

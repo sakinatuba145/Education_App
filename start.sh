@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "Fetching dependencies..."
+flutter pub get
+
 echo "Building Flutter web app..."
 flutter build web --release
 

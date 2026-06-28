@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
         LoginScreen.id: (context) => LoginScreen(),
         RegisterScreen.id: (context) => RegisterScreen(),
         ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
-        DashboardScreen.id: (context) => DashboardScreen(),
+        DashboardHome.id: (context) => DashboardHome(),
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
         QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),

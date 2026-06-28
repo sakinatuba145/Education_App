@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                  onPressed: (){Navigator.pushNamed(context, DashboardScreen.id);},
+                  onPressed: (){Navigator.pushNamed(context, DashboardHome.id);},
                     child:
                     isLoading
                         ? const SizedBox(
@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       } catch (e) {
                         print(e);
                       }
-                      Navigator.pushNamed(context, DashboardScreen.id);
+                      Navigator.pushNamed(context, DashboardHome.id);
                     },
                     icon: const Icon(Icons.g_mobiledata),
                     label: const Text("Continue with Google"),

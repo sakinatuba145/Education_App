@@ -35,7 +35,7 @@ class Wrapper extends StatelessWidget {
                 }
 
                 if (userSnapshot.hasError || !userSnapshot.hasData) {
-                  return DashboardScreen(); // Default to student dashboard
+                  return DashboardHome(); // Default to student dashboard
                 }
 
                 final userData = userSnapshot.data?.data() as Map<String, dynamic>?;
@@ -45,7 +45,7 @@ class Wrapper extends StatelessWidget {
                 if (position == 'teacher' || position == 'admin') {
                   return TeacherDashboardScreen();
                 } else {
-                  return DashboardScreen();
+                  return DashboardHome();
                 }
               },
             );

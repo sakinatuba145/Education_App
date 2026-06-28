@@ -3,7 +3,6 @@ import 'package:education_app/features/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
-
 import 'forgot_password.dart';
 import 'google_login.dart' as _authService;
 
@@ -72,6 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.primary,
         title: Text(
           "Login",
           style: theme.textTheme.titleLarge,
@@ -207,6 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                       Navigator.pushNamed(context, DashboardHome.id);
                     },
+
                     icon: const Icon(Icons.g_mobiledata),
                     label: const Text("Continue with Google"),
                     style: OutlinedButton.styleFrom(

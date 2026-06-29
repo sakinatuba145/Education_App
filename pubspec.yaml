@@ -54,8 +54,6 @@ dependencies:
 
   shared_preferences_helper: ^0.0.3
   google_fonts: ^8.1.0
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,6 +1,7 @@
 import 'package:education_app/courses/course_screen.dart';
 import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
+import 'package:education_app/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ import 'features/login_screen.dart';
 import 'features/register_screen.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +51,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      home: const Wrapper(),
 
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),

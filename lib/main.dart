@@ -4,14 +4,11 @@ import 'package:education_app/quiz/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-
+import 'dashboard/dashboard_content.dart';
 import 'features/forgot_password.dart';
 import 'firebase_options.dart';
-
 import 'courses/course_bloc.dart';
 import 'theme_provider.dart';
-
-import 'core/constants/theme.dart';
 import 'core/helpers/shared_preferences_helper.dart';
 import 'features/welcome_screen.dart';
 import 'features/login_screen.dart';
@@ -62,6 +59,7 @@ class MyApp extends StatelessWidget {
         RegisterScreen.id: (context) => RegisterScreen(),
         ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
         DashboardHome.id: (context) => DashboardHome(),
+        DashboardContent.id: (context) => DashboardContent(),
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
         QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),

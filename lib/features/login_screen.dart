@@ -1,3 +1,4 @@
+import 'package:education_app/dashboard/dashboard_content.dart';
 import 'package:education_app/dashboard/dashboard_screen.dart';
 import 'package:education_app/features/register_screen.dart';
 import 'package:flutter/material.dart';
@@ -168,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         backgroundColor: Color(0xFFFFD180),foregroundColor: Colors.white,
 
                       ),
-                    onPressed: (){Navigator.pushNamed(context, DashboardHome.id);},
+                    onPressed: (){Navigator.pushNamed(context, DashboardContent.id);},
                       child:
                       isLoading
                           ? const SizedBox(

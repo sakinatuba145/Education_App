@@ -27,7 +27,7 @@ class DashboardHome extends StatelessWidget {
               title: "Flutter",
               teacher: "Anne",
               progress: "10 Month",
-              image: "assets/image/flutter.png",
+              image: "assets/images/flutter.png",
             ),
           ),
 

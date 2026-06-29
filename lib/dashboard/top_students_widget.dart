@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class StudentModel {
@@ -33,7 +32,7 @@ class TopStudentsWidget extends StatelessWidget {
           final student = students[index];
 
           return Container(
-            width: 170,
+            width: 200,
             margin: EdgeInsets.only(right: 16),
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(

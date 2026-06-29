@@ -36,28 +36,30 @@ class StudentActivityWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Color(0xffFFE0B2),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: activities.map((act) {
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor:
-              act.color.withOpacity(.2),
-              child: Icon(
-                act.icon,
-                color: act.color,
+    return Material(
+      color: Color(0xffFFE0B2),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        height: 200,
+        width: 400,
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: activities.map((act) {
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundColor:
+                act.color.withOpacity(.2),
+                child: Icon(
+                  act.icon,
+                  color: act.color,
+                ),
               ),
-            ),
-            title: Text(act.title),
-            subtitle: Text(act.subtitle),
-            trailing: Text(act.time),
-          );
-        }).toList(),
+              title: Text(act.title),
+              subtitle: Text(act.subtitle),
+              trailing: Text(act.time),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

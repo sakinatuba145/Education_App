@@ -2,10 +2,12 @@ import 'package:education_app/dashboard/sidebar.dart';
 import 'package:education_app/dashboard/top_students_widget.dart';
 import 'package:flutter/material.dart';
 import '../auth/user_models.dart';
+import '../core/constants/theme.dart';
 import 'appbar_actions.dart';
 import 'dashboard_screen.dart';
 
 class DashboardContent extends StatefulWidget {
+  static String id = 'dashboard_content';
   const DashboardContent({super.key});
 
   @override
@@ -31,13 +33,13 @@ class _DashboardContentState extends State<DashboardContent> {
       name: "Ali",
       grade: "A",
       score: 95,
-      image: "assets/image/flutter.png",
+      image: "assets/images/flutter.png",
     ),
     StudentModel(
       name: "Sara",
       grade: "A+",
       score: 88,
-      image: "assets/image/flutter.png",
+      image: "assets/images/flutter.png",
     ),
   ];
 
@@ -83,9 +85,16 @@ class _DashboardContentState extends State<DashboardContent> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xffFFF8F0), Color(0xffFFE0B2), Color(0xffFFD180)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              ThemeColors.gradient1,
+              ThemeColors.gradient2,
+              ThemeColors.gradient3,
+              ThemeColors.gradient2,
+            ],
           ),
         ),
         child: isDesktop
@@ -111,6 +120,7 @@ class _DashboardContentState extends State<DashboardContent> {
             ? DashboardHome(topStudents: topStudents)
             : pages[selectedIndex - 1],
       ),
+
     );
   }
 }

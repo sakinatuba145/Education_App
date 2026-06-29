@@ -2,10 +2,8 @@ import 'package:education_app/dashboard/student_activity_widget.dart';
 import 'package:education_app/dashboard/top_students_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/dashboard/course_card.dart';
-
-
 import '../courses/course_model.dart';
-import 'course_card.dart';
+
 
 class DashboardHome extends StatelessWidget {
   static String id='dashboard_screen';

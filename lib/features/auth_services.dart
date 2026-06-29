@@ -46,3 +46,4 @@ class AuthService {
     return userCredential.user;
   }
 }
+

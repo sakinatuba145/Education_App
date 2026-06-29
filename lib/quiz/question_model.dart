@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'quiz_model.dart';
 import 'quiz_screen.dart';
 import 'package:education_app/core/constants/theme.dart';
 
+/// 3.26 ADD QUESTION SCREEN
+/// Allows teachers to add questions.
+
 class TeacherAddQuestionScreen extends StatefulWidget {
-  final ExamModel exam;
+  final String examId;
 
   const TeacherAddQuestionScreen({
     super.key,
-    required this.exam,
+    required this.examId,
   });
 
   @override
@@ -16,28 +20,33 @@ class TeacherAddQuestionScreen extends StatefulWidget {
       _TeacherAddQuestionScreenState();
 }
 
-class _TeacherAddQuestionScreenState
-    extends State<TeacherAddQuestionScreen> {
+class _TeacherAddQuestionScreenState extends State<TeacherAddQuestionScreen> {
+  /// 3.27 QUESTION DATA
+  /// Stores the question, answer options, and question type.
   final questionController = TextEditingController();
   final options = List.generate(4, (_) => TextEditingController());
 
   QuestionType selectedType = QuestionType.mcq;
   int correctIndex = 0;
-
-  void addQuestion() {
+  /// 3.28 ADD QUESTION
+  /// Saves the question and its answers to Firestore.
+  void addQuestion() async {
     if (questionController.text.isEmpty) return;
 
-    widget.exam.questions.add(
-      QuizModel(
-        id: DateTime.now().toString(),
-        question: questionController.text,
-        options: selectedType == QuestionType.mcq
-            ? options.map((e) => e.text).toList()
-            : [],
-        correctIndex: selectedType == QuestionType.mcq ? correctIndex : -1,
-        type: selectedType,
-      ),
-    );
+    await FirebaseFirestore.instance
+        .collection('quizzes')
+        .doc(widget.examId)
+        .collection('questions')
+        .add({
+      "question": questionController.text,
+      "type": selectedType.toString(),
+      "options":
+      selectedType == QuestionType.mcq
+          ? options.map((e) => e.text).toList()
+          : [],
+      "correctIndex":
+      selectedType == QuestionType.mcq ? correctIndex : -1,
+    });
 
     questionController.clear();
     for (var o in options) {
@@ -46,9 +55,20 @@ class _TeacherAddQuestionScreenState
 
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: AppBackground(
         child: SafeArea(
           child: LayoutBuilder(
@@ -56,16 +76,17 @@ class _TeacherAddQuestionScreenState
               return SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
+                  constraints:
+                  BoxConstraints(minHeight: constraints.maxHeight),
                   child: Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 420),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          crossAxisAlignment:
+                          CrossAxisAlignment.stretch,
                           children: [
                             const SizedBox(height: 20),
 
@@ -82,7 +103,9 @@ class _TeacherAddQuestionScreenState
                             Text(
                               "Create questions for this exam",
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium,
                             ),
 
                             const SizedBox(height: 30),
@@ -91,7 +114,8 @@ class _TeacherAddQuestionScreenState
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(22),
+                                borderRadius:
+                                BorderRadius.circular(22),
                                 boxShadow: const [
                                   BoxShadow(
                                     color: Colors.black12,
@@ -101,12 +125,15 @@ class _TeacherAddQuestionScreenState
                               ),
                               child: Column(
                                 children: [
+                                  /// 3.29 QUESTION TYPE
+                                  /// Teacher chooses whether the question is MCQ or Text.
                                   Row(
                                     children: [
                                       ChoiceChip(
                                         label: const Text("MCQ"),
                                         selected:
-                                        selectedType == QuestionType.mcq,
+                                        selectedType ==
+                                            QuestionType.mcq,
                                         onSelected: (_) {
                                           setState(() {
                                             selectedType =
@@ -118,7 +145,8 @@ class _TeacherAddQuestionScreenState
                                       ChoiceChip(
                                         label: const Text("Text"),
                                         selected:
-                                        selectedType == QuestionType.text,
+                                        selectedType ==
+                                            QuestionType.text,
                                         onSelected: (_) {
                                           setState(() {
                                             selectedType =
@@ -146,7 +174,8 @@ class _TeacherAddQuestionScreenState
                                       QuestionType.mcq) ...[
                                     ...List.generate(4, (i) {
                                       return Padding(
-                                        padding: const EdgeInsets.only(
+                                        padding:
+                                        const EdgeInsets.only(
                                             bottom: 10),
                                         child: TextField(
                                           controller: options[i],
@@ -162,8 +191,6 @@ class _TeacherAddQuestionScreenState
 
                                     DropdownButtonFormField<int>(
                                       value: correctIndex,
-                                      decoration:
-                                      const InputDecoration(),
                                       items: List.generate(4, (i) {
                                         return DropdownMenuItem(
                                           value: i,
@@ -186,17 +213,19 @@ class _TeacherAddQuestionScreenState
                                     height: 56,
                                     child: ElevatedButton(
                                       onPressed: addQuestion,
-                                      child: const Text(
-                                        "Add Question",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                        ThemeColors.button,
+                                        foregroundColor:
+                                        Colors.white,
                                       ),
+                                      child: const Text("Add Question"),
                                     ),
                                   ),
 
                                   const SizedBox(height: 12),
-
+                                  /// PREVIEW QUIZ
+                                  /// Opens the quiz so the teacher can test it before publishing.
                                   SizedBox(
                                     width: double.infinity,
                                     height: 56,
@@ -205,9 +234,10 @@ class _TeacherAddQuestionScreenState
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (_) => QuizScreen(
-                                              exam: widget.exam,
-                                            ),
+                                            builder: (_) =>
+                                                QuizScreen(
+                                                  examId: widget.examId,
+                                                ),
                                           ),
                                         );
                                       },

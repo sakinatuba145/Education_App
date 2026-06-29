@@ -65,10 +65,11 @@ class MyApp extends StatelessWidget {
         DashboardScreen.id: (context) => DashboardScreen(),
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
-        QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),
-      },
+        QuizScreen.id: (context) => QuizScreen(
+          examId: ModalRoute.of(context)!.settings.arguments as String,
+        ),      },
 
-      initialRoute: TeacherDashboardScreen.id,
+      initialRoute: WelcomeScreen.id,
     );
   }
 }

@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'quiz_model.dart';
 import 'package:education_app/core/constants/theme.dart';
-
+/// 3.34 RESULT SCREEN
+/// Shows final quiz score and percentage after submission.
 class ResultScreen extends StatelessWidget {
+  /// Receives score, total questions, and user answers.
   final int score;
   final int total;
-  final ExamModel exam;
   final Map<int, dynamic> answers;
 
   const ResultScreen({
     super.key,
     required this.score,
     required this.total,
-    required this.exam,
     required this.answers,
   });
 
   @override
   Widget build(BuildContext context) {
+    /// Converts score into percentage value.
     final percentage = ((score / total) * 100).round();
 
     return Scaffold(
@@ -37,7 +37,6 @@ class ResultScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(24),
                 children: [
 
-                  /// TITLE
                   Text(
                     "Your Result",
                     textAlign: TextAlign.center,
@@ -45,8 +44,7 @@ class ResultScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 20),
-
-                  /// SCORE CARD
+                  /// Shows score and percentage in a styled card.
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -79,63 +77,14 @@ class ResultScreen extends StatelessWidget {
 
                   const SizedBox(height: 25),
 
-                  /// QUESTIONS REVIEW
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: exam.questions.length,
-                    itemBuilder: (context, i) {
-                      final q = exam.questions[i];
-                      final userAnswer = answers[i];
-
-                      final isCorrect = q.type == QuestionType.mcq
-                          ? userAnswer == q.correctIndex
-                          : (userAnswer ?? "").toString().isNotEmpty;
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color: isCorrect
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 6,
-                            )
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              q.question,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              isCorrect ? "Correct" : "Wrong",
-                              style: TextStyle(
-                                color: isCorrect
-                                    ? Colors.green
-                                    : Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                  const Center(
+                    child: Text(
+                      "Review removed in Firestore version",
+                    ),
                   ),
 
                   const SizedBox(height: 20),
 
-                  /// BUTTON (MATCH CREATE EXAM STYLE)
                   SizedBox(
                     height: 56,
                     child: ElevatedButton(
@@ -146,18 +95,10 @@ class ResultScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ThemeColors.button,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
                       ),
-                      child: const Text(
-                        "Back to Home",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: const Text("Back to Home"),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
                 ],
               ),
             ),

@@ -5,11 +5,17 @@ import 'package:education_app/teacher/widgets/course_card_widget.dart';
 import 'package:education_app/teacher/constants/teacher_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// 👇 ADD THIS IMPORT (IMPORTANT)
+import 'package:education_app/quiz/create_exam_screen.dart';
+
 class TeacherDashboardScreen extends StatefulWidget {
-  static String id='teacher_dashboard_screen';
+  static String id = 'teacher_dashboard_screen';
+
+  const TeacherDashboardScreen({super.key});
 
   @override
-  State<TeacherDashboardScreen> createState() => _TeacherDashboardScreenState();
+  State<TeacherDashboardScreen> createState() =>
+      _TeacherDashboardScreenState();
 }
 
 class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
@@ -72,107 +78,30 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Courses'),
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () {
-              // Profile/Settings
-            },
-            icon: const Icon(Icons.person),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Tab bar
-          TabBar(
-            controller: _tabController,
-            labelColor: Colors.orange,
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: Colors.orange,
-            tabs: [
-              Tab(text: '${TeacherStrings.activeCourses} (${_activeCourses.length})'),
-              Tab(text: '${TeacherStrings.draftCourses} (${_draftCourses.length})'),
-              Tab(text: '${TeacherStrings.archivedCourses} (${_archivedCourses.length})'),
-            ],
-          ),
-          // Content
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildCoursesList(_activeCourses),
-                      _buildCoursesList(_draftCourses),
-                      _buildCoursesList(_archivedCourses),
-                    ],
-                  ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createNewCourse,
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  Widget _buildCoursesList(List<CourseModel> courses) {
-    if (courses.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+  // ⭐ NEW: Bottom sheet menu
+  void _showTeacherActions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Wrap(
           children: [
-            Icon(Icons.school, size: 64, color: Colors.grey[300]),
-            const SizedBox(height: 16),
-            Text(
-              TeacherStrings.noCoursesYet,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+            ListTile(
+              leading: const Icon(Icons.book),
+              title: const Text("Create Course"),
+              onTap: () {
+                Navigator.pop(context);
+                _createNewCourse();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.quiz),
+              title: const Text("Create Exam"),
+              onTap: () {
+                Navigator.pop(context);
+                _createExam();
+              },
             ),
           ],
-        ),
-      );
-    }
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.75,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemCount: courses.length,
-      itemBuilder: (context, index) {
-        final course = courses[index];
-
-        return CourseCardWidget(
-          course: course,
-          onTap: () {
-            // Navigate to course editor
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Open course: ${course.title}')),
-            );
-          },
-          onEdit: () {
-            // Edit course
-          },
-          onDelete: () {
-            _showDeleteConfirmation(course);
-          },
-          onPublish: course.isDraft ? () {
-            _publishCourse(course);
-          } : null,
         );
       },
     );
@@ -181,6 +110,16 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
   void _createNewCourse() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Navigate to course creation screen')),
+    );
+  }
+
+  // ⭐ NEW: Exam navigation
+  void _createExam() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const TeacherCreateExamScreen(),
+      ),
     );
   }
 
@@ -220,7 +159,10 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
               Navigator.pop(context);
               _deleteCourse(course);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -243,6 +185,100 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
         );
       }
     }
+  }
+
+  Widget _buildCoursesList(List<CourseModel> courses) {
+    if (courses.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.school, size: 64, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text(
+              TeacherStrings.noCoursesYet,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.75,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: courses.length,
+      itemBuilder: (context, index) {
+        final course = courses[index];
+
+        return CourseCardWidget(
+          course: course,
+          onTap: () {},
+          onEdit: () {},
+          onDelete: () {
+            _showDeleteConfirmation(course);
+          },
+          onPublish: course.isDraft
+              ? () {
+            _publishCourse(course);
+          }
+              : null,
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Courses'),
+        elevation: 0,
+      ),
+
+      // ⭐ UPDATED FAB
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showTeacherActions,
+        child: const Icon(Icons.add),
+      ),
+
+      body: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            labelColor: Colors.orange,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: Colors.orange,
+            tabs: [
+              Tab(text: 'Active (${_activeCourses.length})'),
+              Tab(text: 'Draft (${_draftCourses.length})'),
+              Tab(text: 'Archived (${_archivedCourses.length})'),
+            ],
+          ),
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : TabBarView(
+              controller: _tabController,
+              children: [
+                _buildCoursesList(_activeCourses),
+                _buildCoursesList(_draftCourses),
+                _buildCoursesList(_archivedCourses),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

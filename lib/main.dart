@@ -5,6 +5,7 @@ import 'package:education_app/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'core/constants/theme.dart';
 import 'dashboard/dashboard_content.dart';
 import 'features/forgot_password.dart';
 import 'firebase_options.dart';
@@ -53,9 +54,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const Wrapper(),
 
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode:themeProvider.themeMode,
+
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.themeMode,
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
         LoginScreen.id: (context) => LoginScreen(),
@@ -65,8 +67,9 @@ class MyApp extends StatelessWidget {
         DashboardContent.id: (context) => DashboardContent(),
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
-        QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),
-      },
+        QuizScreen.id: (context) => QuizScreen(
+          examId: ModalRoute.of(context)!.settings.arguments as String,
+        ),      },
 
       initialRoute: WelcomeScreen.id,
     );

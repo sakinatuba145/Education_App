@@ -1,4 +1,4 @@
- import 'dart:ui';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -296,21 +296,21 @@ class AppTheme {
   );
 }
 
- class ThemeColors {
-   static const primary = Color(0xFFFFA726);
-   static const secondary = Color(0xFFFFCC80);
-   static const background = Color(0xFFFFF3E0);
+class ThemeColors {
+  static const primary = Color(0xFFFFA726);
+  static const secondary = Color(0xFFFFCC80);
+  static const background = Color(0xFFFFF3E0);
 
 
-   static const gradient1 = Color(0xFFFFF8F0);
-   static const gradient2 = Color(0xFFFFE0B2);
-   static const gradient3 = Color(0xFFFFD180);
-   static const button = Color(0xFFFf5b400);
+  static const gradient1 = Color(0xFFFFF8F0);
+  static const gradient2 = Color(0xFFFFE0B2);
+  static const gradient3 = Color(0xFFFFD180);
+  static const button = Color(0xFFFf5b400);
 
 
-   static const white = Colors.white;
-   static const black = Colors.black;
- }
+  static const white = Colors.white;
+  static const black = Colors.black;
+}
 
 class AppDarkColors {
   static const background = Color(0xFF121212);
@@ -318,57 +318,57 @@ class AppDarkColors {
   static const input = Color(0xFF2A2A2A);
 }
 
- class AppBackground extends StatelessWidget {
-   final Widget child;
+class AppBackground extends StatelessWidget {
+  final Widget child;
 
-   const AppBackground({super.key, required this.child});
+  const AppBackground({super.key, required this.child});
 
-   static Widget _blurCircle(double size, Color color) {
-     return ImageFiltered(
-       imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-       child: Container(
-         height: size,
-         width: size,
-         decoration: BoxDecoration(
-           shape: BoxShape.circle,
-           color: color.withOpacity(0.25),
-         ),
-       ),
-     );
-   }
+  static Widget _blurCircle(double size, Color color) {
+    return ImageFiltered(
+      imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+      child: Container(
+        height: size,
+        width: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withOpacity(0.25),
+        ),
+      ),
+    );
+  }
 
-   @override
-   Widget build(BuildContext context) {
-     return Stack(
-       children: [
-         Container(
-           decoration: const BoxDecoration(
-             gradient: LinearGradient(
-               begin: Alignment.topLeft,
-               end: Alignment.bottomRight,
-               colors: [
-                 ThemeColors.gradient1,
-                 ThemeColors.gradient2,
-                 ThemeColors.gradient3,
-               ],
-             ),
-           ),
-         ),
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                ThemeColors.gradient1,
+                ThemeColors.gradient2,
+                ThemeColors.gradient3,
+              ],
+            ),
+          ),
+        ),
 
-         Positioned(
-           top: -80,
-           right: -50,
-           child: _blurCircle(220, Colors.orange),
-         ),
+        Positioned(
+          top: -80,
+          right: -50,
+          child: _blurCircle(220, Colors.orange),
+        ),
 
-         Positioned(
-           bottom: -100,
-           left: -60,
-           child: _blurCircle(250, Colors.orange),
-         ),
+        Positioned(
+          bottom: -100,
+          left: -60,
+          child: _blurCircle(250, Colors.orange),
+        ),
 
-         child,
-       ],
-     );
-   }
- }
+        child,
+      ],
+    );
+  }
+}

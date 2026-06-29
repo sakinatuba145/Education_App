@@ -61,10 +61,11 @@ class _CourseScreenState extends State<CourseScreen> {
                 ElevatedButton(
                   onPressed: () {
                     final course = CourseModel(
+                      image: 'imageUrl',
                       id: '',
                       title: titleController.text,
                       teacher: teacherController.text,
-                      progress: 0.0,
+                      progress: '10 Month',
                     );
 
                     bloc.addCourse(course);

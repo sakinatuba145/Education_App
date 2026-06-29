@@ -4,8 +4,6 @@ import 'package:animate_do/animate_do.dart';
 import 'package:education_app/features/login_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
-
 class WelcomeScreen extends StatelessWidget {
   static String id = 'welcome_screen';
 

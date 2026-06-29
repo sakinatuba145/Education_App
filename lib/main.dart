@@ -1,23 +1,23 @@
 import 'package:education_app/courses/course_screen.dart';
 import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
+import 'package:education_app/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-
+import 'core/constants/theme.dart';
+import 'dashboard/dashboard_content.dart';
 import 'features/forgot_password.dart';
 import 'firebase_options.dart';
-
 import 'courses/course_bloc.dart';
 import 'theme_provider.dart';
-
-import 'core/constants/theme.dart';
 import 'core/helpers/shared_preferences_helper.dart';
 import 'features/welcome_screen.dart';
 import 'features/login_screen.dart';
 import 'features/register_screen.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +52,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      home: const Wrapper(),
 
 
       theme: AppTheme.lightTheme,
@@ -62,7 +63,8 @@ class MyApp extends StatelessWidget {
         LoginScreen.id: (context) => LoginScreen(),
         RegisterScreen.id: (context) => RegisterScreen(),
         ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
-        DashboardScreen.id: (context) => DashboardScreen(),
+        DashboardHome.id: (context) => DashboardHome(),
+        DashboardContent.id: (context) => DashboardContent(),
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
         QuizScreen.id: (context) => QuizScreen(

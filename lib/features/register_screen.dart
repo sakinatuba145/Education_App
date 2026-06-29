@@ -34,13 +34,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   bool isLoading = false;
   /// 3.5 PASSWORD VISIBILITY
-  /// Controls show/hide password icon
+ /// Controls show/hide password icon
   bool obscurePassword = true;
   /// 3.6 REGISTER FUNCTION (CORE LOGIC)
   /// 1. First checks if form is valid
   /// 2. Sends data to AuthService (Firebase)
-  /// 3. Creates user in Authentication + Firestore
-  /// 4. Then returns user back to login screen
+   /// 3. Creates user in Authentication + Firestore
+   /// 4. Then returns user back to login screen
   Future<void> register() async {
 
     if (!_formKey.currentState!.validate()) return;

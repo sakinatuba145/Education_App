@@ -25,7 +25,6 @@ import 'profile/settings_screen.dart';
 import 'profile/progress_screen.dart';
 import 'profile/favorites_screen.dart';
 import 'student/screens/certificate_preview_screen.dart';
-import 'academy/academy_dashboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,7 +76,6 @@ class MyApp extends StatelessWidget {
               exam: ModalRoute.of(context)!.settings.arguments as ExamModel,
             ),
         CertificatePreviewScreen.id: (context) => const CertificatePreviewScreen(),
-        AcademyDashboardScreen.id: (context) => const AcademyDashboardScreen(),
       },
       initialRoute: WelcomeScreen.id,
     );

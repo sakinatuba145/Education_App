@@ -157,6 +157,10 @@ class FinalProjectService {
       final courseDoc = await _db.collection('courses').doc(courseId).get();
       final courseData = courseDoc.data() ?? {};
       final certId = 'CERT-${courseId.substring(0, 6).toUpperCase()}-${studentId.substring(0, 6).toUpperCase()}';
+      final rawTeacherName = teacher?.displayName ?? '';
+      final teacherName = rawTeacherName.contains('|')
+          ? rawTeacherName.split('|').first
+          : (rawTeacherName.isNotEmpty ? rawTeacherName : 'Instructor');
       await _db
           .collection('users').doc(studentId)
           .collection('certificates').doc(courseId).set({
@@ -168,6 +172,7 @@ class FinalProjectService {
         'passed': true,
         'issuedAt': FieldValue.serverTimestamp(),
         'teacherId': teacher?.uid ?? '',
+        'teacherName': teacherName,
       });
       // Also increment course completed count
       await _db.collection('courses').doc(courseId).update({

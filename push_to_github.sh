@@ -36,7 +36,7 @@ OTHER:
 - Added TEACHER_MODULE_DOCUMENTATION.md and TEACHER_MODULE_DEFENSE.md" 2>/dev/null || echo "(nothing new to commit — existing commits will be pushed)"
 
 echo "=== Pushing to teacher-features-husna branch ==="
-git push leader HEAD:teacher-features-husna --force-with-lease
+git push leader HEAD:teacher-features-husna --force
 
 echo ""
 echo "SUCCESS — pushed to teacher-features-husna on sakinatuba145/Education_App"

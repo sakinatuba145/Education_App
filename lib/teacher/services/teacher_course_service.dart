@@ -41,7 +41,7 @@ class TeacherCourseService {
         throw Exception('Course not found');
       }
 
-      return CourseModel.fromJson(doc.data()!);
+      return CourseModel.fromJson({...doc.data()!, 'id': doc.id});
     } catch (e) {
       throw Exception('Failed to get course: ${e.toString()}');
     }
@@ -54,32 +54,31 @@ class TeacherCourseService {
     String sortBy = 'updated', // 'created', 'updated', 'popular', 'earnings'
   }) async {
     try {
+      // Use only a single-field filter — no orderBy — to avoid requiring composite indexes.
+      // Sorting is done client-side.
       Query query = _firestore
           .collection(COURSES_COLLECTION)
           .where('teacherId', isEqualTo: teacherId);
 
-      // Filter by status
       if (status != 'all') {
         query = query.where('status', isEqualTo: status);
       }
 
-      // Sort
-      if (sortBy == 'created') {
-        query = query.orderBy('createdAt', descending: true);
-      } else if (sortBy == 'popular') {
-        query = query.orderBy('totalEnrolled', descending: true);
-      } else if (sortBy == 'earnings') {
-        query = query.orderBy('totalRevenue', descending: true);
-      } else {
-        // default: 'updated'
-        query = query.orderBy('updatedAt', descending: true);
-      }
-
       final snapshot = await query.get();
 
-      return snapshot.docs
+      final courses = snapshot.docs
           .map((doc) => CourseModel.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
+
+      // Sort client-side
+      courses.sort((a, b) {
+        if (sortBy == 'created') return b.createdAt.compareTo(a.createdAt);
+        if (sortBy == 'popular') return b.totalEnrolled.compareTo(a.totalEnrolled);
+        if (sortBy == 'earnings') return b.totalRevenue.compareTo(a.totalRevenue);
+        return b.updatedAt.compareTo(a.updatedAt); // default: updated
+      });
+
+      return courses;
     } catch (e) {
       throw Exception('Failed to get courses: ${e.toString()}');
     }
@@ -278,22 +277,48 @@ class TeacherCourseService {
     }
   }
 
-  // Get public courses
+  // Get public courses — no composite index needed; filter + sort client-side
   Future<List<CourseModel>> getPublicCourses({int limit = 20}) async {
+    // Try 1: filtered query (default source = cache-then-server)
     try {
       final snapshot = await _firestore
           .collection(COURSES_COLLECTION)
-          .where('visibility', isEqualTo: 'public')
           .where('status', isEqualTo: 'published')
-          .orderBy('totalEnrolled', descending: true)
-          .limit(limit)
-          .get();
+          .get()
+          .timeout(const Duration(seconds: 12));
 
-      return snapshot.docs
-          .map((doc) => CourseModel.fromJson(doc.data()))
-          .toList();
-    } catch (e) {
-      throw Exception('Failed to get public courses: ${e.toString()}');
+      final courses = <CourseModel>[];
+      for (final doc in snapshot.docs) {
+        try {
+          final course = CourseModel.fromJson({...doc.data(), 'id': doc.id});
+          if (course.visibility != 'private') courses.add(course);
+        } catch (_) {}
+      }
+      courses.sort((a, b) => b.totalEnrolled.compareTo(a.totalEnrolled));
+      if (courses.isNotEmpty) return courses.take(limit).toList();
+      // If filtered query returned 0, fall through to full-collection scan
+    } catch (_) {}
+
+    // Try 2: full-collection scan filtered in-memory
+    try {
+      final fallback = await _firestore
+          .collection(COURSES_COLLECTION)
+          .limit(limit * 5)
+          .get()
+          .timeout(const Duration(seconds: 12));
+      final results = <CourseModel>[];
+      for (final doc in fallback.docs) {
+        try {
+          final c = CourseModel.fromJson({...doc.data(), 'id': doc.id});
+          if (c.status == 'published' && c.visibility != 'private') {
+            results.add(c);
+          }
+        } catch (_) {}
+      }
+      results.sort((a, b) => b.totalEnrolled.compareTo(a.totalEnrolled));
+      return results;
+    } catch (e2) {
+      throw Exception('Could not load courses: $e2');
     }
   }
 

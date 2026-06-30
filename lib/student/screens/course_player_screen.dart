@@ -1125,8 +1125,15 @@ class _YoutubeInlinePlayer extends StatelessWidget {
     final embedSrc =
         'https://www.youtube-nocookie.com/embed/$videoId'
         '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+    final thumbUrl =
+        'https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
 
     final overlayId = 'yt_overlay_$videoId';
+
+    // Detect if running inside a nested iframe (e.g. Replit preview pane).
+    // YouTube blocks embedding inside nested iframes, so we show a rich
+    // thumbnail UI instead. In a real browser (production) we embed inline.
+    final isNested = html.window.self != html.window.top;
 
     void dismiss() {
       html.document.getElementById(overlayId)?.remove();
@@ -1168,7 +1175,7 @@ class _YoutubeInlinePlayer extends StatelessWidget {
     closeBtn.onClick.listen((_) => dismiss());
     topBar.append(closeBtn);
 
-    // ── 16:9 iframe wrapper ────────────────────────────────────────────────
+    // ── Video area ─────────────────────────────────────────────────────────
     final wrapper = html.DivElement()
       ..style.width = '92vw'
       ..style.maxWidth = '960px'
@@ -1179,62 +1186,99 @@ class _YoutubeInlinePlayer extends StatelessWidget {
       ..style.position = 'relative'
       ..style.background = '#111';
 
-    final iframe = html.IFrameElement()
-      ..src = embedSrc
-      ..style.width = '100%'
-      ..style.height = '100%'
-      ..style.border = 'none'
-      ..allow =
-          'accelerometer; autoplay; clipboard-write; encrypted-media; '
-          'gyroscope; picture-in-picture; web-share; fullscreen'
-      ..allowFullscreen = true;
+    if (isNested) {
+      // ── Nested context: show thumbnail + big play button ────────────────
+      // (YouTube iframe is always blocked here; show a clean UI instead.)
+      final thumb = html.ImageElement()
+        ..src = thumbUrl
+        ..style.width = '100%'
+        ..style.height = '100%'
+        ..style.objectFit = 'cover'
+        ..style.position = 'absolute'
+        ..style.top = '0'
+        ..style.left = '0';
 
-    // ── Fallback shown if browser blocks the iframe ────────────────────────
-    final fallback = html.DivElement()
-      ..style.position = 'absolute'
-      ..style.top = '0'
-      ..style.left = '0'
-      ..style.right = '0'
-      ..style.bottom = '0'
-      ..style.display = 'none'
-      ..style.flexDirection = 'column'
-      ..style.alignItems = 'center'
-      ..style.justifyContent = 'center'
-      ..style.background = '#111'
-      ..style.color = 'white'
-      ..style.fontFamily = 'sans-serif'
-      ..style.gap = '16px';
+      final dim = html.DivElement()
+        ..style.position = 'absolute'
+        ..style.top = '0'
+        ..style.left = '0'
+        ..style.right = '0'
+        ..style.bottom = '0'
+        ..style.background = 'rgba(0,0,0,0.45)';
 
-    final fallbackText = html.ParagraphElement()
-      ..text = 'Video could not be embedded.'
-      ..style.margin = '0'
-      ..style.opacity = '0.7'
-      ..style.fontSize = '14px';
+      final playBtn = html.AnchorElement()
+        ..href = watchUrl
+        ..target = '_blank'
+        ..style.position = 'absolute'
+        ..style.top = '50%'
+        ..style.left = '50%'
+        ..style.transform = 'translate(-50%,-50%)'
+        ..style.width = '88px'
+        ..style.height = '88px'
+        ..style.borderRadius = '50%'
+        ..style.background = '#FF0000'
+        ..style.display = 'flex'
+        ..style.alignItems = 'center'
+        ..style.justifyContent = 'center'
+        ..style.textDecoration = 'none'
+        ..style.boxShadow = '0 8px 32px rgba(0,0,0,0.6)'
+        ..style.cursor = 'pointer';
 
-    final fallbackBtn = html.AnchorElement()
-      ..href = watchUrl
-      ..target = '_blank'
-      ..text = '▶  Watch on YouTube'
-      ..style.background = '#FF0000'
-      ..style.color = 'white'
-      ..style.padding = '12px 28px'
-      ..style.borderRadius = '8px'
-      ..style.textDecoration = 'none'
-      ..style.fontWeight = 'bold'
-      ..style.fontSize = '15px';
+      final playIcon = html.SpanElement()
+        ..text = '▶'
+        ..style.color = 'white'
+        ..style.fontSize = '36px'
+        ..style.marginLeft = '6px';
 
-    fallback
-      ..append(fallbackText)
-      ..append(fallbackBtn);
+      playBtn.append(playIcon);
 
-    iframe.onError.listen((_) {
-      fallback.style.display = 'flex';
-      iframe.style.display = 'none';
-    });
+      final label = html.DivElement()
+        ..style.position = 'absolute'
+        ..style.bottom = '20px'
+        ..style.left = '0'
+        ..style.right = '0'
+        ..style.textAlign = 'center'
+        ..style.color = 'white'
+        ..style.fontFamily = 'sans-serif'
+        ..style.fontSize = '14px'
+        ..style.opacity = '0.85'
+        ..text = 'Tap ▶ to watch — opens in a new tab';
 
-    wrapper
-      ..append(iframe)
-      ..append(fallback);
+      wrapper
+        ..append(thumb)
+        ..append(dim)
+        ..append(playBtn)
+        ..append(label);
+    } else {
+      // ── Production / direct URL: embed YouTube inline ───────────────────
+      final iframe = html.IFrameElement()
+        ..src = embedSrc
+        ..style.width = '100%'
+        ..style.height = '100%'
+        ..style.border = 'none'
+        ..allow =
+            'accelerometer; autoplay; clipboard-write; encrypted-media; '
+            'gyroscope; picture-in-picture; web-share; fullscreen'
+        ..allowFullscreen = true;
+
+      // Bottom fallback link always visible under the iframe
+      final bottomLink = html.AnchorElement()
+        ..href = watchUrl
+        ..target = '_blank'
+        ..text = '▶  Open in YouTube'
+        ..style.position = 'absolute'
+        ..style.bottom = '12px'
+        ..style.right = '14px'
+        ..style.color = 'rgba(255,255,255,0.6)'
+        ..style.fontFamily = 'sans-serif'
+        ..style.fontSize = '12px'
+        ..style.textDecoration = 'underline'
+        ..style.cursor = 'pointer';
+
+      wrapper
+        ..append(iframe)
+        ..append(bottomLink);
+    }
 
     backdrop.onClick.listen((e) {
       if (e.target == backdrop) dismiss();

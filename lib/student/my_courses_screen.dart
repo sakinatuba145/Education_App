@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
-import 'package:education_app/student/services/enrollment_service.dart';
-import 'package:education_app/student/screens/course_player_screen.dart';
+import 'package:education_app/student/enrollment_service.dart';
+import 'package:education_app/student/course_player_screen.dart';
 
 class MyCoursesScreen extends StatefulWidget {
   const MyCoursesScreen({super.key});

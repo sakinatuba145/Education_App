@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/core/constants/app_dimensions.dart';
 import 'package:education_app/core/widgets/animated_button.dart';
-import 'package:education_app/student/services/enrollment_service.dart';
+import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
 
 class LessonPlayerScreenPremium extends StatefulWidget {

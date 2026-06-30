@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
-import 'package:education_app/student/services/enrollment_service.dart';
-import 'package:education_app/student/services/progress_service.dart';
+import 'package:education_app/student/enrollment_service.dart';
+import 'package:education_app/student/progress_service.dart';
 import 'package:education_app/quiz/quiz_player_screen_premium.dart';
 
 const _orange = AppColors.primary;

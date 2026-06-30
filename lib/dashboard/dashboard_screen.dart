@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/welcome_screen.dart';
 import 'package:education_app/courses/course_discovery_screen_premium.dart';
-import 'package:education_app/student/screens/student_learn_hub_screen.dart';
+import 'package:education_app/student/student_learn_hub_screen.dart';
 import 'package:education_app/profile/profile_screen.dart';
 import 'package:education_app/profile/settings_screen.dart';
 import 'package:education_app/profile/progress_screen.dart';
 import 'package:education_app/profile/favorites_screen.dart';
-import 'package:education_app/student/services/enrollment_service.dart';
-import 'package:education_app/student/services/progress_service.dart';
-import 'package:education_app/student/screens/my_courses_screen.dart';
-import 'package:education_app/student/screens/course_player_screen.dart';
+import 'package:education_app/student/enrollment_service.dart';
+import 'package:education_app/student/progress_service.dart';
+import 'package:education_app/student/my_courses_screen.dart';
+import 'package:education_app/student/course_player_screen.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 
 class DashboardScreen extends StatefulWidget {

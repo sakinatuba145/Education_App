@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
-import 'package:education_app/student/services/enrollment_service.dart';
+import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/courses/course_detail_screen_premium.dart';

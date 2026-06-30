@@ -23,7 +23,7 @@ import 'profile/profile_screen.dart';
 import 'profile/settings_screen.dart';
 import 'profile/progress_screen.dart';
 import 'profile/favorites_screen.dart';
-import 'student/screens/certificate_preview_screen.dart';
+import 'student/certificate_preview_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

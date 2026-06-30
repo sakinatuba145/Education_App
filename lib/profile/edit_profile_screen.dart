@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -145,7 +145,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             radius: 58,
                             backgroundColor: primary.withOpacity(0.15),
                             backgroundImage: selectedImage != null
-                                ? FileImage(File(selectedImage!.path))
+                                ? NetworkImage(selectedImage!.path)
+                                    as ImageProvider
                                 : null,
                             child: selectedImage == null
                                 ? Icon(

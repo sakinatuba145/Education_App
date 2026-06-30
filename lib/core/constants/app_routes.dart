@@ -5,7 +5,6 @@ class AppRoutes {
 
   static const studentHome = "/studentHome";
   static const teacherHome = "/teacherHome";
-  static const academyHome = "/academyHome";
 
   // Teacher Module Routes
   static const teacherDashboard = '/teacher/dashboard';

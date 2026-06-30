@@ -1,11 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-/// 3.30 QUIZ DATA SERVICE
-/// Handles communication with the quizzes collection in Firestore.
-class QuizData {
-  static final FirebaseFirestore firestore = FirebaseFirestore.instance;
+import 'quiz_model.dart';
 
-  /// Stream all exams (LIVE DATA)
-  static Stream<QuerySnapshot> getExams() {
-    return firestore.collection('quizzes').snapshots();
-  }
+class QuizData {
+  static List<ExamModel> exams = [];
 }

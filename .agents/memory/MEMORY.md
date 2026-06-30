@@ -1,9 +1,0 @@
-- [Student portal structure](student-portal.md) — Tab 0=Home, 1=Explore, 2=Learn(StudentLearnHubScreen), 3=Profile; LearnHub has 4 sub-tabs: Quizzes/Flashcards/Puzzle/Leaderboard.
-- [Quiz builder wiring](quiz-builder-wiring.md) — QuizBuilderScreen needs courseId+lessonId+quizId+quizTitle; quizId must be a real Firestore doc ID (new or existing), not auto-generated client-side.
-- [Quiz navigation pattern](quiz-navigation.md) — Any "open quiz" button must fetch-or-create the quiz doc first; _openQuizBuilder() in TeacherCourseHubScreen is the reference impl.
-- [Firestore seed accounts](firestore-seed-accounts.md) — Three test accounts exist in Firebase Auth and Firestore users collection; roles encoded in displayName as "Name|role".
-- [CourseModel instructorName](course-model-decisions.md) — instructorName added as optional field to CourseModel; course creation saves teacher displayName split by |; enrollInCourse uses instructorName with teacherId fallback.
-- [Firestore Timestamp parsing](firestore-timestamp-parsing.md) — Both CourseModel and LessonModel use _parseDate() helper; handles Timestamp.toDate() and DateTime.parse(). Must apply same pattern to any model with createdAt/updatedAt from Firestore.
-- [Dead legacy files](dead-code.md) — dashboard_services.dart, quiz_services.dart, quiz_repository.dart, course_bloc.dart are unused dead code; course_screen.dart now redirects to CourseDiscoveryScreenPremium.
-- [Teacher Course Studio](teacher-course-studio.md) — TeacherCourseHubScreen is 5-tab Course Studio (Overview/Content/Quiz/Students/Analytics); TeacherDashboardScreen is course list + FAB only; LessonEditorScreen exists but is no longer navigated to from hub.
-- [Lesson YouTube inline](lesson-youtube.md) — youtubeUrl/notes/assignmentTitle/assignmentInstructions stored directly on lesson Firestore doc; _LessonCard in TeacherCourseHubScreen reads/writes these inline without going through LessonModel.

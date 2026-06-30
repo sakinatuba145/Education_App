@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
-import 'package:education_app/student/services/enrollment_service.dart';
+import 'package:education_app/student/enrollment_service.dart';
 
 class WordPuzzleScreen extends StatefulWidget {
   const WordPuzzleScreen({super.key});

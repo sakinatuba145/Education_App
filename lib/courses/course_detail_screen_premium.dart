@@ -6,8 +6,8 @@ import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/teacher/services/teacher_lesson_service.dart';
-import 'package:education_app/student/services/enrollment_service.dart';
-import 'package:education_app/student/screens/course_player_screen.dart';
+import 'package:education_app/student/enrollment_service.dart';
+import 'package:education_app/student/course_player_screen.dart';
 
 class CourseDetailScreenPremium extends StatefulWidget {
   final String courseId;

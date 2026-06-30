@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:education_app/student/services/progress_service.dart';
+import 'package:education_app/student/progress_service.dart';
 import 'edit_profile_screen.dart';
 import 'progress_screen.dart';
 import 'favorites_screen.dart';

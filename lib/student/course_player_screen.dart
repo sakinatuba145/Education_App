@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:education_app/core/constants/app_colors.dart';
-import 'package:education_app/student/services/enrollment_service.dart';
+import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
-import 'package:education_app/student/screens/student_project_screen.dart';
+import 'package:education_app/student/student_project_screen.dart';
 import 'package:education_app/quiz/quiz_player_screen_premium.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/teacher/services/final_project_service.dart';
-import 'package:education_app/student/screens/certificate_screen.dart';
+import 'package:education_app/student/certificate_screen.dart';
 
 class StudentProjectScreen extends StatefulWidget {
   final String courseId;

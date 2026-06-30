@@ -5,7 +5,7 @@ import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/core/constants/app_dimensions.dart';
 import 'package:education_app/core/widgets/animated_button.dart';
 import 'package:education_app/core/widgets/animated_progress_indicators.dart';
-import 'package:education_app/student/services/progress_service.dart';
+import 'package:education_app/student/progress_service.dart';
 
 class Quiz {
   final String id;

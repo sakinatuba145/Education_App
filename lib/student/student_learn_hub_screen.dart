@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
-import 'package:education_app/student/screens/student_quiz_browser_screen.dart';
-import 'package:education_app/student/screens/flashcard_screen.dart';
-import 'package:education_app/student/screens/word_puzzle_screen.dart';
-import 'package:education_app/student/screens/leaderboard_screen.dart';
-import 'package:education_app/student/screens/student_assignments_tab.dart';
+import 'package:education_app/student/student_quiz_browser_screen.dart';
+import 'package:education_app/student/flashcard_screen.dart';
+import 'package:education_app/student/word_puzzle_screen.dart';
+import 'package:education_app/student/leaderboard_screen.dart';
+import 'package:education_app/student/student_assignments_tab.dart';
 
 class StudentLearnHubScreen extends StatefulWidget {
   const StudentLearnHubScreen({super.key});

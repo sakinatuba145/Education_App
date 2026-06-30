@@ -3,6 +3,7 @@ import 'package:education_app/features/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen.dart';
+import 'package:education_app/academy/academy_dashboard_screen.dart';
 import 'forgot_password.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -88,6 +89,9 @@ class _LoginScreenState extends State<LoginScreen> {
       case 'teacher':
         Navigator.pushReplacementNamed(context, TeacherDashboardScreen.id);
         break;
+      case 'academy':
+        Navigator.pushReplacementNamed(context, AcademyDashboardScreen.id);
+        break;
       default:
         Navigator.pushReplacementNamed(context, DashboardScreen.id);
     }
@@ -97,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
     switch (role) {
       case 'teacher': return 'Teacher';
       case 'student': return 'Student';
+      case 'academy': return 'Academy';
       default: return role;
     }
   }
@@ -222,6 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       _roleTab('student', Icons.school_outlined, 'Student'),
                       _roleTab('teacher', Icons.cast_for_education_outlined, 'Teacher'),
+                      _roleTab('academy', Icons.account_balance_rounded, 'Academy'),
                     ],
                   ),
                 ),

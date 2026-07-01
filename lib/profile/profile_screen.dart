@@ -1,15 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:education_app/student/progress_service.dart';
 import 'edit_profile_screen.dart';
 import 'progress_screen.dart';
 import 'favorites_screen.dart';
 import 'settings_screen.dart';
-import 'package:education_app/core/constants/app_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,96 +15,82 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  String name = '';
-  String email = '';
-  String phone = '';
-  String university = '';
-  String bio = '';
-  String _memberSince = '';
-
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
+  String name = "Zeynab";
+  String email = "zeynab@gmail.com";
+  String phone = "+971 555555555";
+  String university = "University of Kabul";
+  String bio = "Education App Student";
   XFile? profileImage;
-  bool _loading = true;
-  StudentStats? _stats;
 
-  final _progress = ProgressService();
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    loadProfileData();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 950),
+    )..forward();
   }
 
-  Future<void> _load() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) { setState(() => _loading = false); return; }
+  Future<void> loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
 
-    String loadedName = user.displayName?.split('|').first ?? '';
-    if (loadedName.isEmpty) loadedName = user.email?.split('@').first ?? '';
-    String loadedEmail = user.email ?? '';
-    String loadedPhone = '';
-    String loadedUniversity = '';
-    String loadedBio = '';
+    setState(() {
+      name = prefs.getString("name") ?? name;
+      email = prefs.getString("email") ?? email;
+      phone = prefs.getString("phone") ?? phone;
+      university = prefs.getString("university") ?? university;
+      bio = prefs.getString("bio") ?? bio;
 
-    // Member since
-    final created = user.metadata.creationTime;
-    if (created != null) {
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      _memberSince = 'Member since ${months[created.month - 1]} ${created.year}';
-    }
-
-    try {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-      if (doc.exists) {
-        final data = doc.data()!;
-        final fsName = (data['name'] as String? ?? '').split('|').first.trim();
-        if (fsName.isNotEmpty) loadedName = fsName;
-        loadedPhone = data['phone'] as String? ?? '';
-        loadedUniversity = data['university'] as String? ?? '';
-        loadedBio = data['bio'] as String? ?? '';
+      final imagePath = prefs.getString("profileImage");
+      if (imagePath != null) {
+        profileImage = XFile(imagePath);
       }
-    } catch (_) {}
-
-    StudentStats? stats;
-    try {
-      stats = await _progress.getStudentStats();
-    } catch (_) {}
-
-    if (mounted) {
-      setState(() {
-        name = loadedName;
-        email = loadedEmail;
-        phone = loadedPhone;
-        university = loadedUniversity;
-        bio = loadedBio;
-        _stats = stats;
-        _loading = false;
-      });
-    }
+    });
   }
 
   Future<void> saveProfileData() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
-        {'name': name, 'email': email, 'phone': phone, 'university': university, 'bio': bio},
-        SetOptions(merge: true),
-      );
-    } catch (_) {}
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString("name", name);
+    await prefs.setString("email", email);
+    await prefs.setString("phone", phone);
+    await prefs.setString("university", university);
+    await prefs.setString("bio", bio);
+
+    if (profileImage != null) {
+      await prefs.setString("profileImage", profileImage!.path);
+    }
   }
 
-  List<_Achievement> get _achievements {
-    if (_stats == null) return [];
-    final list = <_Achievement>[];
-    if (_stats!.enrolledCourses >= 1) list.add(const _Achievement(emoji: '🎓', title: 'First Enrollment', subtitle: 'Enrolled in your first course', color: Color(0xFF1565C0)));
-    if (_stats!.quizzesTaken >= 1) list.add(const _Achievement(emoji: '📝', title: 'Quiz Taker', subtitle: 'Completed your first quiz', color: Color(0xFF7B1FA2)));
-    if (_stats!.quizzesTaken >= 5) list.add(const _Achievement(emoji: '🔥', title: 'Quiz Streak', subtitle: 'Completed 5 or more quizzes', color: Color(0xFFE64A19)));
-    if (_stats!.avgScorePercent >= 80) list.add(const _Achievement(emoji: '⭐', title: 'High Scorer', subtitle: 'Averaged 80%+ on quizzes', color: Color(0xFFF57F17)));
-    if (_stats!.avgScorePercent >= 95) list.add(const _Achievement(emoji: '🏆', title: 'Top Student', subtitle: 'Averaged 95%+ on quizzes', color: Color(0xFF2E7D32)));
-    if (_stats!.completedCourses >= 1) list.add(const _Achievement(emoji: '✅', title: 'Course Completer', subtitle: 'Finished a full course', color: Color(0xFF00796B)));
-    if (_stats!.enrolledCourses >= 3) list.add(const _Achievement(emoji: '📚', title: 'Bookworm', subtitle: 'Enrolled in 3+ courses', color: Color(0xFF1565C0)));
-    return list;
+  Widget _animate(int index, Widget child) {
+    final start = (index * 0.07).clamp(0.0, 0.75);
+    final animation = CurvedAnimation(
+      parent: _controller,
+      curve: Interval(start, 1.0, curve: Curves.easeOutCubic),
+    );
+
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, -0.12),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -115,266 +98,465 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final primary = Theme.of(context).colorScheme.primary;
     final textTheme = Theme.of(context).textTheme;
 
-    if (_loading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
-
-    final avgProgress = _stats?.avgProgressPercent ?? 0;
-    final earned = _achievements;
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        centerTitle: true,
-        actions: [
-          IconButton(icon: const Icon(Icons.refresh_rounded), onPressed: _load, tooltip: 'Refresh'),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+        appBar: AppBar(
+          title: _animate(
+            0,
+            Text(
+              "Profile",
+              style: Theme.of(context).appBarTheme.titleTextStyle,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // ── Avatar + name ──────────────────────────────────────────
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 28),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [primary.withValues(alpha: 0.08), primary.withValues(alpha: 0.15)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(children: [
+            _animate(
+            1,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 22),
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(28),
+              ),
+              child: Column(
+                children: [
                   SizedBox(
-                    height: 135, width: 135,
-                    child: Stack(alignment: Alignment.center, children: [
-                      SizedBox(
-                        height: 130, width: 130,
-                        child: CircularProgressIndicator(
-                          value: avgProgress / 100,
-                          strokeWidth: 6,
-                          backgroundColor: Colors.white,
-                          color: primary,
+                    height: 132,
+                    width: 132,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          height: 126,
+                          width: 126,
+                          child: CircularProgressIndicator(
+                            value: 0.7,
+                            strokeWidth: 6,
+                            backgroundColor: Colors.white,
+                            color: primary,
+                          ),
                         ),
-                      ),
-                      CircleAvatar(
-                        radius: 58,
-                        backgroundColor: Colors.white,
-                        backgroundImage: profileImage != null
-                            ? (kIsWeb ? NetworkImage(profileImage!.path) : NetworkImage(profileImage!.path)) as ImageProvider
-                            : null,
-                        child: profileImage == null
-                            ? Text(
-                                name.isNotEmpty ? name[0].toUpperCase() : '?',
-                                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: primary),
-                              )
-                            : null,
-                      ),
-                    ]),
+                        CircleAvatar(
+                          radius: 56,
+                          backgroundColor: Colors.white,
+                          backgroundImage: profileImage != null
+                              ? FileImage(File(profileImage!.path))
+                              : null,
+                          child: profileImage == null
+                              ? Icon(
+                            Icons.person,
+                            size: 64,
+                            color: primary,
+                          )
+                              : null,
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(name, style: textTheme.headlineMedium, textAlign: TextAlign.center),
+                  const SizedBox(height: 14),
+                  Text(name, style: textTheme.headlineLarge),
                   const SizedBox(height: 10),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                    ),
                     child: Text(
-                      bio.isEmpty ? 'Add a bio...' : bio,
-                      style: textTheme.bodyMedium?.copyWith(color: bio.isEmpty ? Colors.grey : null, fontStyle: bio.isEmpty ? FontStyle.italic : null),
-                      textAlign: TextAlign.center,
+                      bio,
+                      style: textTheme.bodyMedium,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _memberSince.isNotEmpty ? _memberSince : 'Welcome to EduAf!',
+                    "Member since 2026",
                     style: textTheme.bodySmall,
                   ),
-                  if (avgProgress > 0) ...[
-                    const SizedBox(height: 4),
-                    Text('$avgProgress% avg progress', style: TextStyle(fontSize: 12, color: primary, fontWeight: FontWeight.w600)),
-                  ],
-                ]),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 22),
+
+          _animate(
+            2,
+            Row(
+              children: [
+                _statBox(
+                  context,
+                  Icons.menu_book,
+                  "3",
+                  "Courses",
+                ),
+                const SizedBox(width: 10),
+                _statBox(
+                  context,
+                  Icons.quiz,
+                  "5",
+                  "Quizzes",
+                ),
+                const SizedBox(width: 10),
+                _statBox(
+                  context,
+                  Icons.workspace_premium,
+                  "70%",
+                  "Progress",
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 22),
+
+          _animate(
+            3,
+            _infoCard(
+              context,
+              Icons.email,
+              "Email",
+              email,
+            ),
+          ),
+          const SizedBox(height: 14),
+
+
+
+
+          _animate(
+            4,
+            _infoCard(
+              context,
+              Icons.phone,
+              "Phone",
+              phone,
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          _animate(
+            5,
+            _infoCard(
+              context,
+              Icons.school,
+              "University",
+              university,
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          _animate(
+            6,
+            _sectionTitle(
+              context,
+              "Achievements",
+            ),
+          ),
+          const SizedBox(height: 12),
+
+              _animate(
+                7,
+                _achievementCard(
+                  context: context,
+
+                  icon: Icons.emoji_events,
+                  title: "First Quiz Completed",
+                  subtitle: "You completed your first quiz successfully.",
+                ),
               ),
 
-              const SizedBox(height: 20),
-
-              // ── Live stats ─────────────────────────────────────────────
-              Row(children: [
-                _statBox(context, icon: Icons.menu_book, number: '${_stats?.enrolledCourses ?? 0}', label: 'Courses'),
-                const SizedBox(width: 10),
-                _statBox(context, icon: Icons.quiz, number: '${_stats?.quizzesTaken ?? 0}', label: 'Quizzes'),
-                const SizedBox(width: 10),
-                _statBox(context, icon: Icons.workspace_premium, number: '$avgProgress%', label: 'Progress'),
-              ]),
-
-              const SizedBox(height: 20),
-
-              // ── Info cards ─────────────────────────────────────────────
-              _infoCard(context, Icons.email, 'Email', email.isEmpty ? 'Not set' : email),
               const SizedBox(height: 12),
-              _infoCard(context, Icons.phone, 'Phone', phone.isEmpty ? 'Not set' : phone),
+
+              _animate(
+                8,
+                _achievementCard(
+                  context: context,
+                  icon: Icons.auto_stories,
+                  title: "3 Courses Finished",
+                  subtitle: "You are building your learning journey.",
+                ),
+              ),
+
               const SizedBox(height: 12),
-              _infoCard(context, Icons.school, 'University', university.isEmpty ? 'Not set' : university),
+
+              _animate(
+                9,
+                _achievementCard(
+                  context: context,
+                  icon: Icons.star,
+                  title: "Active Learner",
+                  subtitle: "Keep learning and improving every day.",
+                ),
+              ),
 
               const SizedBox(height: 24),
 
-              // ── Achievements ───────────────────────────────────────────
-              Align(alignment: Alignment.centerLeft, child: Text('Achievements', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold))),
-              const SizedBox(height: 4),
-              Align(alignment: Alignment.centerLeft, child: Text('${earned.length} earned', style: TextStyle(fontSize: 12, color: Colors.grey.shade600))),
+              _animate(
+                10,
+                _sectionTitle(
+                  context,
+                  "Posts",
+                ),
+              ),
+
               const SizedBox(height: 12),
 
-              if (earned.isEmpty)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 28),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-                  child: Column(children: [
-                    Icon(Icons.emoji_events_outlined, size: 48, color: Colors.grey[300]),
-                    const SizedBox(height: 12),
-                    Text('No achievements yet', style: TextStyle(color: Colors.grey[400], fontSize: 15)),
-                    const SizedBox(height: 4),
-                    Text('Complete courses and quizzes to earn badges.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[300], fontSize: 12)),
-                  ]),
-                )
-              else
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 12, crossAxisSpacing: 12, childAspectRatio: 2.4),
-                  itemCount: earned.length,
-                  itemBuilder: (_, i) {
-                    final a = earned[i];
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: a.color.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: a.color.withValues(alpha: 0.2)),
+              _animate(
+                11,
+                _postCard(
+                  context: context,
+                  icon: Icons.post_add,
+                  title: "Completed Flutter UI Practice",
+                  subtitle: "Shared progress about profile screen design.",
+                  time: "2 days ago",
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              _animate(
+                12,
+                _postCard(
+                  context: context,
+                  icon: Icons.lightbulb_outline,
+                  title: "Learning Dart OOP",
+                  subtitle: "Posted notes about classes and objects.",
+                  time: "1 week ago",
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              _animate(
+                13,
+                _menuTile(
+                  context,
+                  icon: Icons.bar_chart,
+                  title: "My Progress",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ProgressScreen(),
                       ),
-                      child: Row(children: [
-                        Text(a.emoji, style: const TextStyle(fontSize: 22)),
-                        const SizedBox(width: 10),
-                        Expanded(child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(a.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: a.color)),
-                            Text(a.subtitle, style: const TextStyle(fontSize: 10, color: Colors.grey), maxLines: 2, overflow: TextOverflow.ellipsis),
-                          ],
-                        )),
-                      ]),
                     );
                   },
                 ),
+              ),
 
-              const SizedBox(height: 24),
-
-              // ── Quiz score summary ────────────────────────────────────
-              if ((_stats?.quizzesTaken ?? 0) > 0) ...[
-                Align(alignment: Alignment.centerLeft, child: Text('Quiz Performance', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold))),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))]),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _miniStat('${_stats!.avgScorePercent}%', 'Avg Score', _stats!.avgScorePercent >= 70 ? AppColors.success : AppColors.error),
-                      _divider(),
-                      _miniStat('${_stats!.quizzesTaken}', 'Total Quizzes', AppColors.info),
-                      _divider(),
-                      _miniStat('${_stats!.completedCourses}', 'Completed', AppColors.primary),
-                    ],
+          _animate(
+            14,
+            _menuTile(
+              context,
+              icon: Icons.favorite,
+              title: "Favorites",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const FavoritesScreen(),
                   ),
-                ),
-                const SizedBox(height: 20),
-              ],
+                );
+              },
+            ),
+          ),
 
-              // ── Menu tiles ─────────────────────────────────────────────
-              _menuTile(context, icon: Icons.bar_chart, title: 'My Progress',
-                  onTap: () => Navigator.of(context, rootNavigator: true)
-                      .push(MaterialPageRoute(builder: (_) => const ProgressScreen()))),
-              _menuTile(context, icon: Icons.favorite, title: 'Favorites',
-                  onTap: () => Navigator.of(context, rootNavigator: true)
-                      .push(MaterialPageRoute(builder: (_) => const FavoritesScreen()))),
-              _menuTile(context, icon: Icons.settings, title: 'Settings',
-                  onTap: () => Navigator.of(context, rootNavigator: true)
-                      .push(MaterialPageRoute(builder: (_) => const SettingsScreen()))),
-              _menuTile(
-                context,
-                icon: Icons.logout,
-                title: 'Logout',
-                showArrow: false,
-                onTap: () => showDialog(
+          _animate(
+            15,
+            _menuTile(
+              context,
+              icon: Icons.settings,
+              title: "Settings",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+          _animate(
+            16,
+            _menuTile(
+              context,
+              icon: Icons.logout,
+              title: "Logout",
+              showArrow: false,
+              onTap: () {
+                showDialog(
                   context: context,
-                  useRootNavigator: true,
-                  builder: (dialogCtx) => AlertDialog(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    title: const Text('Logout', style: TextStyle(fontWeight: FontWeight.bold)),
-                    content: const Text('Are you sure you want to logout?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialogCtx),
-                        child: const Text('Cancel'),
-                      ),
-                      FilledButton(
-                        onPressed: () async {
-                          Navigator.pop(dialogCtx);
-                          await FirebaseAuth.instance.signOut();
-                          if (context.mounted) {
-                            Navigator.of(context, rootNavigator: true)
-                                .pushNamedAndRemoveUntil(
-                                    'login_screen', (route) => false);
-                          }
-                        },
-                        style: FilledButton.styleFrom(backgroundColor: Colors.red),
-                        child: const Text('Logout'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                  barrierDismissible: false,
+                  builder: (dialogContext) {
+                    final primary =
+                        Theme.of(context).colorScheme.primary;
 
-              const SizedBox(height: 20),
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      title: const Text(
+                        "Logout",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      content: const Text(
+                        "Are you sure you want to logout?",
+                      ),
+                      actionsAlignment:
+                      MainAxisAlignment.spaceBetween,
+                      actions: [
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.black,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
+                          },
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            padding:
+                            const EdgeInsets.symmetric(
+                              horizontal: 22,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                              BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
 
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: () async {
-                    final result = await Navigator.of(context, rootNavigator: true)
-                        .push(MaterialPageRoute(
-                          builder: (_) => EditProfileScreen(
-                              name: name,
-                              email: email,
-                              phone: phone,
-                              university: university,
-                              bio: bio,
-                              image: profileImage),
-                        ));
-                    if (result != null && mounted) {
-                      setState(() {
-                        name = result['name'];
-                        email = result['email'];
-                        phone = result['phone'];
-                        university = result['university'];
-                        bio = result['bio'];
-                        profileImage = result['image'];
-                      });
-                      await saveProfileData();
-                    }
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Logged out successfully",
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text("Logout"),
+                        ),
+                      ],
+                    );
                   },
-                  icon: const Icon(Icons.edit_rounded),
-                  label: const Text('Edit Profile'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                );
+              },
+            ),
+          ),
+
+          const SizedBox(height: 22),
+
+          _animate(
+            17,
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditProfileScreen(
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        university: university,
+                        bio: bio,
+                        image: profileImage,
+                      ),
+                    ),
+                  );
+
+                  if (result != null) {
+                    setState(() {
+                      name = result["name"];
+                      email = result["email"];
+                      phone = result["phone"];
+                      university = result["university"];
+                      bio = result["bio"];
+                      profileImage = result["image"];
+                    });
+
+                    await saveProfileData();
+                  }
+                },
+                child: const Text(
+                  "Edit Profile",
+                  style: TextStyle(
+                    color: Colors.white,
                   ),
                 ),
               ),
-
+            ),
+          ),
               const SizedBox(height: 30),
+            ],
+          ),
+        ),
+    );
+  }
+
+  Widget _sectionTitle(BuildContext context, String title) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.headlineMedium,
+      ),
+    );
+  }
+
+  Widget _statBox(
+      BuildContext context,
+      IconData icon,
+      String number,
+      String label,
+      ) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Expanded(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                color: primary,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                number,
+                style: textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: textTheme.bodySmall,
+              ),
             ],
           ),
         ),
@@ -382,62 +564,128 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _statBox(BuildContext context, {required IconData icon, required String number, required String label}) {
+  Widget _infoCard(
+      BuildContext context,
+      IconData icon,
+      String title,
+      String value,
+      ) {
     final primary = Theme.of(context).colorScheme.primary;
-    return Expanded(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          child: Column(children: [
-            Icon(icon, color: primary),
-            const SizedBox(height: 6),
-            Text(number, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(label, style: Theme.of(context).textTheme.bodySmall),
-          ]),
+    final textTheme = Theme.of(context).textTheme;
+
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: primary,
+        ),
+        title: Text(
+          title,
+          style: textTheme.titleMedium,
+        ),
+        subtitle: Text(
+          value,
+          style: textTheme.bodySmall?.copyWith(
+            fontSize: 13,
+          ),
         ),
       ),
     );
   }
 
-  Widget _infoCard(BuildContext context, IconData icon, String title, String value) {
+  Widget _achievementCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
     final primary = Theme.of(context).colorScheme.primary;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       child: ListTile(
-        leading: Icon(icon, color: primary),
-        title: Text(title),
-        subtitle: Text(value, style: Theme.of(context).textTheme.bodyLarge),
+        leading: Icon(
+          icon,
+          color: primary,
+        ),
+        title: Text(
+          title,
+          style: textTheme.titleMedium,
+        ),
+        subtitle: Text(
+          subtitle,
+          style: textTheme.bodyMedium,
+        ),
       ),
     );
   }
 
-  Widget _menuTile(BuildContext context, {required IconData icon, required String title, required VoidCallback onTap, bool showArrow = true}) {
+  Widget _postCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String time,
+  }) {
     final primary = Theme.of(context).colorScheme.primary;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       child: ListTile(
-        leading: Icon(icon, color: primary),
-        title: Text(title),
-        trailing: showArrow ? const Icon(Icons.arrow_forward_ios, size: 16) : null,
+        leading: Icon(
+          icon,
+          color: primary,
+        ),
+        title: Text(
+          title,
+          style: textTheme.titleMedium,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              time,
+              style: textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _menuTile(
+      BuildContext context, {
+        required IconData icon,
+        required String title,
+        required VoidCallback onTap,
+        bool showArrow = true,
+      }) {
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: primary,
+        ),
+        title: Text(
+          title,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        trailing: showArrow
+            ? const Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+        )
+            : null,
         onTap: onTap,
       ),
     );
   }
-
-  Widget _miniStat(String value, String label, Color color) {
-    return Column(children: [
-      Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-      const SizedBox(height: 2),
-      Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-    ]);
-  }
-
-  Widget _divider() => Container(height: 36, width: 1, color: Colors.grey.shade200);
-}
-
-class _Achievement {
-  final String emoji;
-  final String title;
-  final String subtitle;
-  final Color color;
-  const _Achievement({required this.emoji, required this.title, required this.subtitle, required this.color});
 }

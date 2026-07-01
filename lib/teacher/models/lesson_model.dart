@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class LessonModel {
   final String id;
   final String courseId;
@@ -29,6 +31,17 @@ class LessonModel {
     required this.updatedAt,
   });
 
+  static DateTime _parseDate(dynamic value) {
+    if (value == null) return DateTime.now();
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    try {
+      return DateTime.parse(value.toString());
+    } catch (_) {
+      return DateTime.now();
+    }
+  }
+
   factory LessonModel.fromJson(Map<String, dynamic> json) {
     return LessonModel(
       id: json['id'] ?? '',
@@ -42,12 +55,8 @@ class LessonModel {
       totalCompleted: json['totalCompleted'] ?? 0,
       averageRating: (json['averageRating'] ?? 0).toDouble(),
       totalDuration: Duration(seconds: json['totalDurationSeconds'] ?? 0),
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'].toString())
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'].toString())
-          : DateTime.now(),
+      createdAt: _parseDate(json['createdAt']),
+      updatedAt: _parseDate(json['updatedAt']),
     );
   }
 
@@ -68,7 +77,6 @@ class LessonModel {
   };
 
   bool get hasQuiz => attachedQuizId != null && attachedQuizId!.isNotEmpty;
-  double get completionRate => totalViews > 0
-      ? (totalCompleted / totalViews * 100)
-      : 0;
+  double get completionRate =>
+      totalViews > 0 ? (totalCompleted / totalViews * 100) : 0;
 }

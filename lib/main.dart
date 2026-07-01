@@ -17,6 +17,8 @@ import 'features/login_screen.dart';
 import 'features/register_screen.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
+import 'profile/profile_screen.dart';
+
 
 
 void main() async {
@@ -52,9 +54,9 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const Wrapper(),
+      home: const ProfileScreen(),
 
-
+//Wrapper
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
@@ -71,7 +73,7 @@ class MyApp extends StatelessWidget {
           examId: ModalRoute.of(context)!.settings.arguments as String,
         ),      },
 
-      initialRoute: WelcomeScreen.id,
+      //initialRoute: WelcomeScreen.id,
     );
   }
 }

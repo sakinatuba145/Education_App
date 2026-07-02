@@ -16,7 +16,7 @@ import 'features/login_screen.dart';
 import 'features/register_screen.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
-import 'core/constants/theme.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,8 +53,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const Wrapper(),
 
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
       themeMode:themeProvider.themeMode,
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),

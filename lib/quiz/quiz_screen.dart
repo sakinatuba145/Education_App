@@ -105,11 +105,11 @@ class _QuizScreenState extends State<QuizScreen> {
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: selected
-                          ? ThemeColors.primary.withOpacity(0.15)
+                          ? AppColors.primary.withOpacity(0.15)
                           : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: ThemeColors.primary,
+                        color: AppColors.primary,
                       ),
                     ),
                     child: Text(

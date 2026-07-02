@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dashboard/dashboard_screen.dart';
-import 'features/login_screen.dart';
 import 'teacher/screens/teacher_dashboard_screen.dart';
 
 class Wrapper extends StatelessWidget {

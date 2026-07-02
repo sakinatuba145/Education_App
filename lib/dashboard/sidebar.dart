@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../auth/user_models.dart';
 import 'menu_items.dart';
 
@@ -22,7 +23,7 @@ class Sidebar extends StatelessWidget {
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Color(0xffFFE0B2).withValues(alpha: 0.15),
         border: Border.all(color: Colors.white, width: 2),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -39,11 +40,11 @@ class Sidebar extends StatelessWidget {
                 : null,
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           Text(
             user.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -51,7 +52,7 @@ class Sidebar extends StatelessWidget {
 
           Text(user.role),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           Expanded(
             child: ListView.builder(
@@ -60,9 +61,10 @@ class Sidebar extends StatelessWidget {
                 final item = menuItems[index];
 
                 return ListTile(
+                  iconColor: Color(0xFFFFA726),
                   selected: selectedIndex == index,
                   leading: Icon(item.$1),
-                  title: Text(item.$2),
+                  title: Text(item.$2.tr),
                   onTap: () => onItemSelected(index),
                 );
               },

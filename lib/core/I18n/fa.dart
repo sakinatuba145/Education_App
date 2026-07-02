@@ -12,7 +12,10 @@ class PersionLanguage extends AppTranslationsKeys {
     AppMessages.setting: 'تنظیمات',
     AppMessages.aboutUs: 'در باره ما',
     AppMessages.contactUs:'تماس با ما',
-    AppMessages.signOut: 'خروج از حساب کاربری'
+    AppMessages.signOut: 'خروج از حساب کاربری',
+    AppMessages.studentActivity: 'فعالیت شاگرد',
+    AppMessages.score: 'امتیاز شما',
+    AppMessages.upWard: 'ارزش نمرات'
 
 
 

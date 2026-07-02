@@ -76,13 +76,13 @@ class _DashboardContentState extends State<DashboardContent> {
         ),
       ),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFf5b400),
+        backgroundColor: Color(0xFFFFCC80),
         title: Text(AppMessages.learningDashboard.tr),
         actions: appBarActions.map((item) {
           if (item.icon == Icons.language) {
             return PopupMenuButton<Locale>(
               tooltip: item.title,
-              icon: const Icon(Icons.language),
+              icon: Icon(Icons.language, color: Color(0xFFFFA726),),
               onSelected: (locale) {
                 Get.updateLocale(locale);
               },
@@ -101,7 +101,7 @@ class _DashboardContentState extends State<DashboardContent> {
 
           return IconButton(
             tooltip: item.title,
-            icon: Icon(item.icon),
+            icon: Icon(item.icon, color: Color(0xFFFFA726),),
             onPressed: () {
               // عملیات مربوط به نوتیفیکیشن
             },

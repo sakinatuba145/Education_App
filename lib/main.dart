@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
         DashboardContent.id: (context) => DashboardContent(),
       },
 
-      home: Text(DashboardContent.id),
+      initialRoute: DashboardContent.id,
 
     );
   }

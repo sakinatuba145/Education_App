@@ -1,20 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../courses/course_model.dart';
-
-// class CourseModel {
-//   final String title;
-//   final String teacher;
-//   final String duration;
-//   final String image;
-//
-//   CourseModel({
-//     required this.title,
-//     required this.teacher,
-//     required this.duration,
-//     required this.image,
-//   });
-// }
 class CourseCard extends StatelessWidget {
   final CourseModel course;
 
@@ -42,7 +28,7 @@ class CourseCard extends StatelessWidget {
               borderRadius:
               BorderRadius.vertical(top: Radius.circular(16)),
               child: Image.asset(
-                course.image,
+                'assets/images/img.png',
                 height: 180,
                 width: double.infinity,
                 fit: BoxFit.cover,

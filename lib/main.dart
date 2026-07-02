@@ -1,17 +1,16 @@
 import 'package:education_app/courses/course_screen.dart';
+import 'package:education_app/dashboard/dashboard_content.dart';
 import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
-
+import 'core/I18n/translations.dart';
 import 'features/forgot_password.dart';
 import 'firebase_options.dart';
-
 import 'courses/course_bloc.dart';
 import 'theme_provider.dart';
-
-import 'core/constants/theme.dart';
 import 'core/helpers/shared_preferences_helper.dart';
 import 'features/welcome_screen.dart';
 import 'features/login_screen.dart';
@@ -50,9 +49,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-
+      translations: AppTranslations(),
+      locale: Locale('en'),
+      fallbackLocale: Locale('en'),
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode:themeProvider.themeMode,
@@ -65,9 +66,11 @@ class MyApp extends StatelessWidget {
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
         QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),
+        DashboardContent.id: (context) => DashboardContent(),
       },
 
-      initialRoute: WelcomeScreen.id,
+      home: Text(DashboardContent.id),
+
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../courses/course_model.dart';
@@ -42,7 +41,7 @@ class CourseCard extends StatelessWidget {
             ClipRRect(
               borderRadius:
               BorderRadius.vertical(top: Radius.circular(16)),
-              child: Image.network(
+              child: Image.asset(
                 course.image,
                 height: 180,
                 width: double.infinity,

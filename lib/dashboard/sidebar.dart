@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../auth/user_models.dart';
-import 'user_model.dart';
 import 'menu_items.dart';
 
 class Sidebar extends StatelessWidget {
@@ -23,7 +23,7 @@ class Sidebar extends StatelessWidget {
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         border: Border.all(color: Colors.white, width: 2),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -63,7 +63,7 @@ class Sidebar extends StatelessWidget {
                 return ListTile(
                   selected: selectedIndex == index,
                   leading: Icon(item.$1),
-                  title: Text(item.$2),
+                  title: Text(item.$2.tr),
                   onTap: () => onItemSelected(index),
                 );
               },

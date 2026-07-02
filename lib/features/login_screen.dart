@@ -5,7 +5,6 @@ import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
 
 import 'forgot_password.dart';
-import 'google_login.dart' as _authService;
 
 class LoginScreen extends StatefulWidget {
   static String id='login_screen';
@@ -200,8 +199,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () async {
                       try {
                         final userCredential =
-                        await _authService.signInWithGoogle();
-                        print(userCredential.user?.email);
+                        await authService.signInWithGoogle();
+                        // print(userCredential?.user.email);
                       } catch (e) {
                         print(e);
                       }

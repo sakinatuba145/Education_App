@@ -7,6 +7,8 @@ import 'course_model.dart';
 class CourseScreen extends StatefulWidget {
   static String id='course_screen';
 
+  const CourseScreen({super.key});
+
   @override
   State<CourseScreen> createState() => _CourseScreenState();
 }

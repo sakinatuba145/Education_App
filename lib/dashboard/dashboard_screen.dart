@@ -1,14 +1,14 @@
+
 import 'package:education_app/dashboard/student_activity_widget.dart';
 import 'package:education_app/dashboard/top_students_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/dashboard/course_card.dart';
-
-
 import '../courses/course_model.dart';
-import 'course_card.dart';
+import 'chartdata.dart';
+
 
 class DashboardHome extends StatelessWidget {
-  static String id='dashboard_screen';
+  static String id='dashboard_home';
   final List<StudentModel>? topStudents;
 
   const DashboardHome({
@@ -35,11 +35,13 @@ class DashboardHome extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          StudentActivityWidget(
-            activities: activities,
+          StudentActivityChartWidget(
+            chartData: chartData,
           ),
 
-          const SizedBox(height: 20),
+          // ActivityPieChart(data: activityData),
+
+          SizedBox(height: 20),
 
           TopStudentsWidget(students: topStudents!),
         ],

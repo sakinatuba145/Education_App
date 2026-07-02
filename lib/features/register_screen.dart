@@ -7,6 +7,8 @@ import 'package:education_app/features/auth_services.dart';
 class RegisterScreen extends StatefulWidget {
   static String id='register_screen';
 
+  const RegisterScreen({super.key});
+
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }

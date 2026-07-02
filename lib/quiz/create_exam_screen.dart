@@ -19,7 +19,9 @@ class _TeacherCreateExamScreenState
 
   void createExam() {
     if (titleController.text.isEmpty ||
-        subjectController.text.isEmpty) return;
+        subjectController.text.isEmpty) {
+      return;
+    }
 
     QuizData.exams.add(
       ExamModel(

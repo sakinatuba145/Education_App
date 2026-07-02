@@ -5,6 +5,7 @@ import 'package:education_app/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'core/constants/theme.dart';
 import 'dashboard/dashboard_content.dart';
 import 'features/forgot_password.dart';
 import 'firebase_options.dart';
@@ -51,10 +52,9 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const Wrapper(),
-
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      home:  Wrapper(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode:themeProvider.themeMode,
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),

@@ -2,14 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
- /// 3.21 AUTH SERVICE
+/// 3.21 AUTH SERVICE
 /// This class handles all authentication
-///  Email/Password Login
-///  User Registration
+/// Email/Password Login
+/// User Registration
 /// Google Sign-In
-///  Logout
+/// Logout
 /// It also stores user data in Firestore (role based system)
-
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -21,20 +20,20 @@ class AuthService {
       String email,
       String password,
       ) async {
-    final credential =
-    await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    final uid = credential.user!.uid;
+      final uid = credential.user!.uid;
 
-    final doc = await _firestore
-        .collection("users")
-        .doc(uid)
-        .get();
+      final doc = await _firestore.collection("users").doc(uid).get();
 
-    return doc.data() ?? {"role": "student"};
+      return doc.data() ?? {"role": "student"};
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_getAuthErrorMessage(e.code));
+    }
   }
 
   /// REGISTER NEW USER
@@ -46,28 +45,28 @@ class AuthService {
       String password,
       String role,
       ) async {
-    final credential =
-    await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    final user = credential.user;
+      final user = credential.user;
 
-    await user?.updateDisplayName(name);
+      await user?.updateDisplayName(name);
 
-    await _firestore
-        .collection('users')
-        .doc(user!.uid)
-        .set({
-      'name': name,
-      'email': email,
-      'role': role,
-      'uid': user.uid,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+      await _firestore.collection('users').doc(user!.uid).set({
+        'name': name,
+        'email': email,
+        'role': role,
+        'uid': user.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 
-    return user;
+      return user;
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_getAuthErrorMessage(e.code));
+    }
   }
 
   /// GOOGLE SIGN IN (FIXED + ROLE SAFE)
@@ -95,9 +94,7 @@ class AuthService {
 
       if (user == null) return null;
 
-      final docRef =
-      _firestore.collection("users").doc(user.uid);
-
+      final docRef = _firestore.collection("users").doc(user.uid);
       final doc = await docRef.get();
 
       /// If first time login → create user in Firestore
@@ -121,5 +118,31 @@ class AuthService {
   Future<void> logout() async {
     await _auth.signOut();
     await GoogleSignIn().signOut();
+  }
+
+  /// ERROR HANDLER
+  String _getAuthErrorMessage(String code) {
+    switch (code) {
+      case 'weak-password':
+        return 'Password must be at least 6 characters';
+
+      case 'email-already-in-use':
+        return 'This email is already registered';
+
+      case 'user-not-found':
+        return 'No account found with this email';
+
+      case 'wrong-password':
+        return 'Incorrect password';
+
+      case 'invalid-email':
+        return 'Enter a valid email address';
+
+      case 'network-request-failed':
+        return 'Check your internet connection';
+
+      default:
+        return 'Something went wrong. Try again';
+    }
   }
 }

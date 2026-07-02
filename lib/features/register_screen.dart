@@ -42,15 +42,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
    /// 3. Creates user in Authentication + Firestore
    /// 4. Then returns user back to login screen
   Future<void> register() async {
-
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => isLoading = true);
 
     try {
       final auth = AuthService();
-      /// 3.7 SEND DATA TO FIREBASE
-      /// Creates account with name, email, password, role
+
       await auth.register(
         nameController.text.trim(),
         emailController.text.trim(),
@@ -59,12 +57,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (!mounted) return;
+
       Navigator.pop(context);
+
     } catch (e) {
-      /// 3.8 ERROR HANDLING
-      /// Show error if Firebase fails
+      final message = e.toString().replaceAll("Exception: ", "");
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
+        SnackBar(content: Text(message)),
       );
     }
 

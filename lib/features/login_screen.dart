@@ -38,6 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   /// 2. Send login request to Firebase
   /// 3. Get user role from Firestore
   /// 4. Redirect user based on role
+
   Future<void> login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -68,12 +69,12 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       }
-    } catch (e) {
 
-      /// 3.15 ERROR HANDLING
-      /// Show message if login fails
+    } catch (e) {
+      final message = e.toString().replaceAll("Exception: ", "");
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login Failed: $e")),
+        SnackBar(content: Text(message)),
       );
     }
 

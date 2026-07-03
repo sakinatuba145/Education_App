@@ -30,5 +30,29 @@ class AppMessages {
   static const String   createAccount = 'Create Account';
   static const String   journey = 'Journey';
   static const String   student = 'Student';
+  static const String   teacher = 'Teacher';
+  static const String   fullName = 'FullName';
+  static const String   emailAddress = 'EmailAddress';
+  static const String   confirmPassword = 'ConfirmPassword';
+  static const String   enterPassword = 'EnterPassword';
+  static const String   wrongRole = 'wrongRole';
+  static const String   registered = 'Registered';
+  static const String   switchTO = 'switch';
+  static const String   lFailed = 'login failed';
+  static const String   comeBack = 'welcome back';
+  static const String   lContinue = 'login to continue';
+  static const String   yourEmail = 'your email';
+  static const String   yourPassword = 'your password';
+  static const String   forgot = 'forgot';
+  static const String   noAccount = 'no account';
+  static const String   register = 'register';
+  static const String   pReset = 'password reset';
+  static const String   error = 'error';
+  static const String   resetP = 'reset password';
+  static const String   sendLink = 'send link';
+  static const String   rLink = 'reset link';
+  static const String   toLogin = 'back to login';
+  static const String   unknown = 'Unknown';
+
 
 }

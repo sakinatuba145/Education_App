@@ -35,7 +35,31 @@ class EnglishLanguage extends AppTranslationsKeys {
     AppMessages.isHaveAccount: 'Already have an account? Login',
     AppMessages.createAccount: 'Create Account',
     AppMessages.journey: 'Journey',
-    AppMessages.student: 'Student'
+    AppMessages.student: 'Student',
+    AppMessages.teacher: 'Teacher',
+    AppMessages.fullName: 'Full name',
+    AppMessages.emailAddress: 'Email address',
+    AppMessages.confirmPassword: 'Confirm password',
+    AppMessages.enterPassword: 'Please enter your email and password',
+    AppMessages.wrongRole: 'Wrong role selected',
+    AppMessages.registered: 'This account is registered as a',
+    AppMessages.switchTO: 'Switch to',
+    AppMessages.lFailed: 'Login failed',
+    AppMessages.comeBack: 'Welcome back',
+    AppMessages.lContinue: 'Login to continue your journey',
+    AppMessages.yourEmail: 'Enter your email',
+    AppMessages.yourPassword: 'Enter Your password',
+    AppMessages.forgot: 'Forgot password',
+    AppMessages.noAccount: 'Don\'n have an account',
+    AppMessages.register: 'Register',
+    AppMessages.pReset: 'Password reset email send',
+    AppMessages.error: 'Error',
+    AppMessages.resetP: 'Reset Password',
+    AppMessages.sendLink: 'Enter your email and we will send a reset link',
+    AppMessages.rLink: 'Send reset link',
+    AppMessages.toLogin: 'Back to login',
+    AppMessages.unknown: 'Unknown',
+
   };
 
 }

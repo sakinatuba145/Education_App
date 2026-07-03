@@ -17,6 +17,14 @@ class QuizModel {
     required this.correctIndex,
     this.type = QuestionType.mcq,
   });
+  factory QuizModel.fromJson(Map<String,dynamic>json){
+    return QuizModel(
+        id: json['id'] as String,
+        question: json['question'] as String,
+        options: List<String>.from(json['options']),
+        correctIndex: json['correctIndex'] as int,
+        type: json['type'] =='text'? QuestionType.text:QuestionType.mcq);
+  }
 }
 
 class ExamModel {
@@ -34,4 +42,15 @@ class ExamModel {
     required this.questions,
     this.isTaken = false,
   });
+  factory ExamModel.fromJson(Map<String,dynamic>json){
+    return ExamModel(
+        id: json['id'] as String,
+        title: json['title']as String,
+        subject: json['subject'] as String,
+        questions: (json['questions']as List)
+        .map(
+                (e) => QuizModel.fromJson(
+                    e as Map<String,dynamic>)).toList(),
+            isTaken:json['isTaken']?? false);
+  }
 }

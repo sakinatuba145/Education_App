@@ -1,10 +1,46 @@
-import 'package:flutter/material.dart';
+import 'package:education_app/courses/course_screen.dart';
+import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
-import 'package:education_app/quiz/teacher_create_exam_screen.dart';
+import 'package:education_app/wrapper.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'core/constants/theme.dart';
+import 'dashboard/dashboard_content.dart';
+import 'features/forgot_password.dart';
+import 'firebase_options.dart';
+import 'courses/course_bloc.dart';
+import 'theme_provider.dart';
+import 'core/helpers/shared_preferences_helper.dart';
+import 'features/welcome_screen.dart';
+import 'features/login_screen.dart';
+import 'features/register_screen.dart';
+import 'dashboard/dashboard_screen.dart';
+import 'teacher/screens/teacher_dashboard_screen.dart';
 
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await SharedPreferencesHelper.init();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => CourseBloc(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider()..loadTheme(),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -12,9 +48,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TeacherCreateExamScreen(),
+      home:  Wrapper(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode:themeProvider.themeMode,
+      routes: {
+        WelcomeScreen.id: (context) => WelcomeScreen(),
+        LoginScreen.id: (context) => LoginScreen(),
+        RegisterScreen.id: (context) => RegisterScreen(),
+        ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
+        DashboardHome.id: (context) => DashboardHome(),
+        DashboardContent.id: (context) => DashboardContent(),
+        TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
+        CourseScreen.id: (context) => CourseScreen(),
+        QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),
+      },
+
+      initialRoute: WelcomeScreen.id,
     );
   }
 }

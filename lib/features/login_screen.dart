@@ -1,102 +1,225 @@
-// import 'package:flutter/material.dart';
-// import '../auth/services.dart';
-// import '../profile/profile_screen.dart';
-//
-// class LoginScreen extends StatefulWidget {
-//   const LoginScreen({super.key});
-//
-//   @override
-//   State<LoginScreen> createState() => _LoginScreenState();
-// }
-//
-// class _LoginScreenState extends State<LoginScreen> {
-//
-//   final usernameController = TextEditingController();
-//   final passwordController = TextEditingController();
-//
-//   bool isLoading = false;
-//
-//   final AuthService authService = AuthService();
-//
-//   Future login() async {
-//
-//     setState(() {
-//       isLoading = true;
-//     });
-//
-//     try {
-//
-//       final data = await authService.login(
-//         usernameController.text,
-//         passwordController.text,
-//       );
-//
-//       print(data);
-//
-//       Navigator.push(
-//         context,
-//         MaterialPageRoute(
-//           builder: (_) => const ProfileScreen(),
-//         ),
-//       );
-//
-//     } catch (e) {
-//
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text('Login Failed'),
-//         ),
-//       );
-//
-//     }
-//
-//     setState(() {
-//       isLoading = false;
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Login"),
-//       ),
-//
-//       body: Padding(
-//         padding: const EdgeInsets.all(20),
-//
-//         child: Column(
-//           children: [
-//
-//             TextField(
-//               controller: usernameController,
-//               decoration: const InputDecoration(
-//                 labelText: "Username",
-//               ),
-//             ),
-//
-//             const SizedBox(height: 20),
-//
-//             TextField(
-//               controller: passwordController,
-//               obscureText: true,
-//               decoration: const InputDecoration(
-//                 labelText: "Password",
-//               ),
-//             ),
-//
-//             const SizedBox(height: 30),
-//
-//             ElevatedButton(
-//               onPressed: login,
-//               child: isLoading
-//                   ? const CircularProgressIndicator()
-//                   : const Text("Login"),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:education_app/core/constants/theme.dart';
+import 'package:education_app/features/auth_services.dart';
+import 'package:education_app/features/register_screen.dart';
+import 'package:education_app/features/forgot_password.dart';
+import 'package:education_app/dashboard/dashboard_screen.dart';
+import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
+/// 3.10 LOGIN SCREEN
+/// This screen lets users login using email + password
+/// After login, user is redirected based on their role
+
+class LoginScreen extends StatefulWidget {
+  static const String id = 'login_screen';
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  /// 3.11 INPUT CONTROLLERS
+  /// These store email & password typed by the user
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  /// 3.12 FORM VALIDATION KEY
+  /// Ensures email/password are not empty before login
+  final _formKey = GlobalKey<FormState>();
+  /// 3.13 UI STATE
+  /// Controls loading spinner & password visibility
+  bool isLoading = false;
+  bool obscurePassword = true;
+
+  final AuthService authService = AuthService();
+
+  /// 3.14 LOGIN FUNCTION (CORE LOGIC)
+  /// 1. Validate form
+  /// 2. Send login request to Firebase
+  /// 3. Get user role from Firestore
+  /// 4. Redirect user based on role
+
+  Future<void> login() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      final user = await authService.login(
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
+
+      final role = user["role"];
+
+      if (!mounted) return;
+
+      if (role == "teacher") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const TeacherDashboardScreenPremium(),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DashboardHome(),
+          ),
+        );
+      }
+
+    } catch (e) {
+      final message = e.toString().replaceAll("Exception: ", "");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
+
+    setState(() => isLoading = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: AppBackground(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40),
+
+                        FadeInDown(
+                          child: Text(
+                            "Welcome Back",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineLarge,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        Text(
+                          "Continue your learning journey",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+
+                        const SizedBox(height: 35),
+
+
+                        TextFormField(
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Email is required";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            hintText: "Email",
+                            prefixIcon: Icon(Icons.email_outlined),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: passwordController,
+                          obscureText: obscurePassword,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Password is required";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Password",
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  obscurePassword = !obscurePassword;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, ForgotPasswordScreen.id);
+                            },
+                            child: const Text("Forgot Password?"),
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: isLoading ? null : login,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ThemeColors.button,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text("Login"),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, RegisterScreen.id);
+                          },
+                          child: const Text(
+                            "Don't have an account? Register",
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

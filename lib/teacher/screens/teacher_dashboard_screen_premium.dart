@@ -8,6 +8,7 @@ import 'package:education_app/core/widgets/animated_progress_indicators.dart';
 
 /// Premium teacher dashboard with animated statistics and course management
 class TeacherDashboardScreenPremium extends StatefulWidget {
+  static String id = 'teacher_dashboard_screen_premium';
   const TeacherDashboardScreenPremium({super.key});
 
   @override

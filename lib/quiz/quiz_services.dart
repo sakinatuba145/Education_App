@@ -10,7 +10,7 @@ class QuizService {
     ),
   );
 
-  // GET all quizzes
+  /// GET all quizzes
   Future<List<QuizModel>> getQuizzes() async {
 
     final response = await dio.get('quizzes');
@@ -20,7 +20,7 @@ class QuizService {
         .toList();
   }
 
-  // GET single quiz
+  ///GET single quiz
   Future<QuizModel> getQuizById(String id) async {
 
     final response = await dio.get('quizzes/$id');
@@ -28,7 +28,7 @@ class QuizService {
     return QuizModel.fromJson(response.data);
   }
 
-  // POST result
+  /// POST result
   Future<void> submitResult({
     required String quizId,
     required int score,

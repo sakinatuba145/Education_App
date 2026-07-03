@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'quiz_model.dart';
 import 'quiz_screen.dart';
+
+/// 3.1 TEACHER ADD QUESTION SCREEN
+/// Teachers create questions and save them to Firebase
 
 class TeacherAddQuestionScreen extends StatefulWidget {
   final ExamModel exam;
@@ -12,48 +17,50 @@ class TeacherAddQuestionScreen extends StatefulWidget {
       _TeacherAddQuestionScreenState();
 }
 
-class _TeacherAddQuestionScreenState
-    extends State<TeacherAddQuestionScreen> {
+class _TeacherAddQuestionScreenState extends State<TeacherAddQuestionScreen> {
+
+  /// 3.2 INPUT CONTROLLERS
   final questionController = TextEditingController();
   final options = List.generate(4, (_) => TextEditingController());
 
+  /// 3.3 QUESTION STATE
   QuestionType selectedType = QuestionType.mcq;
   int correctIndex = 0;
 
-  void addQuestion() {
-    if (questionController.text.isEmpty) return;
+  /// 3.4 ADD QUESTION (SAVE TO FIREBASE)
+  Future<void> addQuestion() async {
+    if (questionController.text.trim().isEmpty) return;
 
-    widget.exam.questions.add(
-      QuizModel(
-        id: DateTime.now().toString(),
-        question: questionController.text,
-        options: selectedType == QuestionType.mcq
-            ? options.map((e) => e.text).toList()
-            : [],
-        correctIndex:
-        selectedType == QuestionType.mcq ? correctIndex : -1,
-        type: selectedType,
-      ),
+    final newQuestion = QuizModel(
+      id: DateTime.now().toString(),
+      question: questionController.text.trim(),
+      options: selectedType == QuestionType.mcq
+          ? options.map((e) => e.text).toList()
+          : [],
+      correctIndex: selectedType == QuestionType.mcq ? correctIndex : -1,
+      type: selectedType,
     );
 
+
+    final updatedQuestions = List<QuizModel>.from(widget.exam.questions)
+      ..add(newQuestion);
+
+    await FirebaseFirestore.instance
+        .collection("quizzes")
+        .doc(widget.exam.id)
+        .update({
+      "questions": updatedQuestions.map((q) => q.toJson()).toList(),
+    });
+
+    /// clear UI
     questionController.clear();
     for (var o in options) {
       o.clear();
     }
 
-    setState(() {});
-  }
-
-  InputDecoration input(BuildContext context, String hint) {
-    return InputDecoration(
-      hintText: hint,
-      filled: true,
-      fillColor: Theme.of(context).colorScheme.surface,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
-      ),
-    );
+    setState(() {
+      widget.exam.questions.add(newQuestion); // update UI only AFTER save
+    });
   }
 
   @override
@@ -61,104 +68,139 @@ class _TeacherAddQuestionScreenState
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
+        body: AppBackground(
+         child: SafeArea(
+        child: Stack(
           children: [
 
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_ios),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  "Add Questions",
-                  style: theme.textTheme.headlineMedium,
-                ),
-              ],
+            /// BACK BUTTON
+            Positioned(
+              top: 8,
+              left: 8,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              ),
             ),
 
-            const SizedBox(height: 16),
+            /// MAIN UI
+            Center(
+              child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
 
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(22),
-              ),
-              child: Column(
-                children: [
-
-                  Row(
-                    children: [
-                      ChoiceChip(
-                        label: const Text("MCQ"),
-                        selected: selectedType == QuestionType.mcq,
-                        onSelected: (_) =>
-                            setState(() => selectedType = QuestionType.mcq),
-                      ),
-                      const SizedBox(width: 10),
-                      ChoiceChip(
-                        label: const Text("Text"),
-                        selected: selectedType == QuestionType.text,
-                        onSelected: (_) =>
-                            setState(() => selectedType = QuestionType.text),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  TextField(
-                    controller: questionController,
-                    decoration: input(context, "Question"),
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  if (selectedType == QuestionType.mcq)
-                    ...List.generate(4, (i) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: TextField(
-                          controller: options[i],
-                          decoration:
-                          input(context, "Option ${i + 1}"),
+                        /// TITLE
+                        Text(
+                          "Add Questions",
+                          style: theme.textTheme.headlineLarge,
                         ),
-                      );
-                    }),
 
-                  const SizedBox(height: 10),
+                        const SizedBox(height: 20),
 
-                  ElevatedButton(
-                    onPressed: addQuestion,
-                    child: const Text("Add Question"),
-                  ),
+                        /// CARD
+                        Container(
+                          padding: const EdgeInsets.all(18),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            borderRadius: BorderRadius.circular(22),
+                          ),
+                          child: Column(
+                            children: [
 
-                  const SizedBox(height: 10),
+                              /// TYPE SELECT
+                              Row(
+                                children: [
+                                  ChoiceChip(
+                                    label: const Text("MCQ"),
+                                    selected: selectedType == QuestionType.mcq,
+                                    onSelected: (_) {
+                                      setState(() => selectedType = QuestionType.mcq);
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                  ChoiceChip(
+                                    label: const Text("Text"),
+                                    selected: selectedType == QuestionType.text,
+                                    onSelected: (_) {
+                                      setState(() => selectedType = QuestionType.text);
+                                    },
+                                  ),
+                                ],
+                              ),
 
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              QuizScreen(exam: widget.exam),
+                              const SizedBox(height: 16),
+
+                              /// QUESTION
+                              TextField(
+                                controller: questionController,
+                                decoration: const InputDecoration(
+                                  hintText: "Question",
+                                ),
+                              ),
+
+                              const SizedBox(height: 14),
+
+                              /// OPTIONS
+                              if (selectedType == QuestionType.mcq)
+                                ...List.generate(4, (i) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: TextField(
+                                      controller: options[i],
+                                      decoration: InputDecoration(
+                                        hintText: "Option ${i + 1}",
+                                      ),
+                                    ),
+                                  );
+                                }),
+
+                              const SizedBox(height: 10),
+
+                              /// ADD BUTTON
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: ThemeColors.button,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  onPressed: addQuestion,
+                                  child: const Text("Add Question"),
+                                ),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              /// PREVIEW
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          QuizScreen(exam: widget.exam),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.remove_red_eye),
+                                label: const Text("Preview Quiz"),
+                              ),
+                            ],
+                          ),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.remove_red_eye),
-                    label: const Text("Preview Quiz"),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
           ],
         ),
-      ),
+         ),),
     );
   }
 }

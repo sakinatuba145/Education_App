@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class QuizFirebaseService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // Get quizzes from Firestore
+  /// Get quizzes from Firestore
   Future<List<Map<String, dynamic>>> getQuizzes() async {
     final snapshot = await firestore.collection('quizzes').get();
 
     return snapshot.docs.map((doc) => doc.data()).toList();
   }
-  // Save result
+  /// Save result
   Future<void> saveResult({
     required String uid,
     required String quizId,

@@ -1,6 +1,7 @@
 import 'package:education_app/courses/course_screen.dart';
 import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
+import 'package:education_app/quiz/teacher_create_exam_screen.dart';
 import 'package:education_app/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -66,9 +67,11 @@ class MyApp extends StatelessWidget {
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
         QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),
+        TeacherCreateExamScreen.id: (_) => const TeacherCreateExamScreen(),
+
       },
 
-      initialRoute: WelcomeScreen.id,
+      initialRoute: TeacherCreateExamScreen.id,
     );
   }
 }

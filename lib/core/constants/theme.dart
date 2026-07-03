@@ -254,7 +254,7 @@ class AppTheme {
 }
 
  class ThemeColors {
-   static const primary =git);
+   static const primary = Color(0xFFFFA726);
    static const secondary = Color(0xFFFFCC80);
    static const background = Color(0xFFFFF3E0);
 

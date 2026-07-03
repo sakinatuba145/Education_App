@@ -93,6 +93,9 @@ class LessonScreen extends StatefulWidget {
 class _LessonScreenState extends State<LessonScreen> {
   @override
   Widget build(BuildContext context) {
-    return LessonScreen();
+    return Scaffold(
+      appBar: AppBar(title: const Text("Lessons")),
+      body: const Center(child: Text("Lesson Screen")),
+    );
   }
 }

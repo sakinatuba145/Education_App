@@ -4,8 +4,6 @@ import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
 import 'core/I18n/translations.dart';
@@ -54,15 +52,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       translations: AppTranslations(),
-      locale: Get.deviceLocale,
+      locale: Locale('en'),
       fallbackLocale: Locale('en'),
-      supportedLocales: [
-        Locale('en' , 'US'),
-        Locale('fa' , 'IR'),
-        Locale('ps' , 'AF'),
-        Locale('ur' , 'PK'),
-        Locale('hi' , 'IN')
-      ],
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode:themeProvider.themeMode,

@@ -25,22 +25,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   /// 3.3 FORM VALIDATION
   /// This key checks if inputs are valid before sending to backend
   final _formKey = GlobalKey<FormState>();
+
   /// 3.4 ROLE SYSTEM
   /// User chooses what type of account they are:
   String role = "student";
 
   bool isLoading = false;
+
   /// 3.5 PASSWORD VISIBILITY
- /// Controls show/hide password icon
+  /// Controls show/hide password icon
   bool obscurePassword = true;
+
   /// 3.6 REGISTER FUNCTION (CORE LOGIC)
   /// 1. First checks if form is valid
   /// 2. Sends data to AuthService (Firebase)
-   /// 3. Creates user in Authentication + Firestore
-   /// 4. Then returns user back to login screen
+  /// 3. Creates user in Authentication + Firestore
+  /// 4. Then returns user back to login screen
   Future<void> register() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -59,17 +63,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) return;
 
       Navigator.pop(context);
-
     } catch (e) {
       final message = e.toString().replaceAll("Exception: ", "");
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
 
     setState(() => isLoading = false);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,9 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               return SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 420),
@@ -100,9 +102,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 child: Text(
                                   "Create Account",
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineLarge,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineLarge,
                                 ),
                               ),
 
@@ -113,7 +115,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
-
                               const SizedBox(height: 35),
 
                               TextFormField(
@@ -167,14 +168,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 items: const [
                                   DropdownMenuItem(
-                                      value: "student",
-                                      child: Text("Student")),
+                                    value: "student",
+                                    child: Text("Student"),
+                                  ),
                                   DropdownMenuItem(
-                                      value: "teacher",
-                                      child: Text("Teacher")),
+                                    value: "teacher",
+                                    child: Text("Teacher"),
+                                  ),
                                   DropdownMenuItem(
-                                      value: "academy",
-                                      child: Text("Academy")),
+                                    value: "academy",
+                                    child: Text("Academy"),
+                                  ),
                                 ],
                                 onChanged: (v) {
                                   setState(() => role = v!);
@@ -196,8 +200,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                   child: isLoading
                                       ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
+                                          color: Colors.white,
+                                        )
                                       : const Text("Create Account"),
                                 ),
                               ),
@@ -208,8 +212,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 children: const [
                                   Expanded(child: Divider()),
                                   Padding(
-                                    padding:
-                                    EdgeInsets.symmetric(horizontal: 10),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
                                     child: Text("OR"),
                                   ),
                                   Expanded(child: Divider()),
@@ -217,6 +222,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
 
                               const SizedBox(height: 20),
+
                               /// 3.9 GOOGLE SIGN-IN OPTION
                               /// Allows fast registration using Google account
                               SizedBox(
@@ -229,7 +235,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     if (!mounted) return;
 
                                     Navigator.pushReplacementNamed(
-                                        context, '/dashboard');
+                                      context,
+                                      '/dashboard',
+                                    );
                                   },
                                   icon: const Icon(Icons.g_mobiledata),
                                   label: const Text("Continue with Google"),
@@ -248,7 +256,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextButton(
                                 onPressed: () {
                                   Navigator.pushReplacementNamed(
-                                      context, LoginScreen.id);
+                                    context,
+                                    LoginScreen.id,
+                                  );
                                 },
                                 child: const Text(
                                   "Already have an account? Login",

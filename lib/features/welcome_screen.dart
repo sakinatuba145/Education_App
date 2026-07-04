@@ -16,8 +16,6 @@ class WelcomeScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-
-
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(

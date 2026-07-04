@@ -7,6 +7,8 @@ import 'package:education_app/features/forgot_password.dart';
 import 'package:education_app/dashboard/dashboard_screen.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
 
+import '../teacher/screens/teacher_dashboard_screen.dart';
+
 /// 3.10 LOGIN SCREEN
 /// This screen lets users login using email + password
 /// After login, user is redirected based on their role
@@ -62,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const TeacherDashboardScreenPremium(),
+            builder: (_) => const TeacherDashboardScreen(),
           ),
         );
       } else {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/theme.dart';
-/// 3.34 RESULT SCREEN
+/// 3.12 RESULT SCREEN
 /// Shows final quiz score and percentage after submission.
 class ResultScreen extends StatelessWidget {
   /// Receives score, total questions, and user answers.

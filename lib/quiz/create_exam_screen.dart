@@ -5,7 +5,7 @@ import 'quiz_model.dart';
 import 'quiz_data.dart';
 import 'question_model.dart';
 
-/// 3.22 CREATE EXAM SCREEN
+/// 3.1 CREATE EXAM SCREEN
 /// Allows teachers to create a new exam and manage existing exams.
 class TeacherCreateExamScreen extends StatefulWidget {
   static const String id = 'create_exam_screen';
@@ -19,11 +19,11 @@ class TeacherCreateExamScreen extends StatefulWidget {
 
 class _TeacherCreateExamScreenState extends State<TeacherCreateExamScreen> {
 
-  /// 3.23 INPUT CONTROLLERS
+  /// 3.2 INPUT CONTROLLERS
   /// Store the exam title and subject entered by the teacher.
   final titleController = TextEditingController();
   final subjectController = TextEditingController();
-  /// 3.24 CREATE EXAM
+  /// 3.3 CREATE EXAM
   /// Saves a new exam to Firestore with an empty question list.
   void createExam() async {
     if (titleController.text.isEmpty || subjectController.text.isEmpty) return;

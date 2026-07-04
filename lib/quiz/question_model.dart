@@ -4,7 +4,7 @@ import 'quiz_model.dart';
 import 'quiz_screen.dart';
 import 'package:education_app/core/constants/theme.dart';
 
-/// 3.26 ADD QUESTION SCREEN
+/// 3.4 ADD QUESTION SCREEN
 /// Allows teachers to add questions.
 
 class TeacherAddQuestionScreen extends StatefulWidget {
@@ -21,14 +21,14 @@ class TeacherAddQuestionScreen extends StatefulWidget {
 }
 
 class _TeacherAddQuestionScreenState extends State<TeacherAddQuestionScreen> {
-  /// 3.27 QUESTION DATA
+  /// 3.5 QUESTION DATA
   /// Stores the question, answer options, and question type.
   final questionController = TextEditingController();
   final options = List.generate(4, (_) => TextEditingController());
 
   QuestionType selectedType = QuestionType.mcq;
   int correctIndex = 0;
-  /// 3.28 ADD QUESTION
+  /// 3.6 ADD QUESTION
   /// Saves the question and its answers to Firestore.
   void addQuestion() async {
     if (questionController.text.isEmpty) return;
@@ -125,7 +125,7 @@ class _TeacherAddQuestionScreenState extends State<TeacherAddQuestionScreen> {
                               ),
                               child: Column(
                                 children: [
-                                  /// 3.29 QUESTION TYPE
+                                  /// 3.7 QUESTION TYPE
                                   /// Teacher chooses whether the question is MCQ or Text.
                                   Row(
                                     children: [

@@ -1,4 +1,5 @@
 import 'package:education_app/courses/course_screen.dart';
+import 'package:education_app/quiz/create_exam_screen.dart';
 import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
 import 'package:education_app/wrapper.dart';
@@ -67,11 +68,13 @@ class MyApp extends StatelessWidget {
         DashboardContent.id: (context) => DashboardContent(),
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
+        TeacherCreateExamScreen.id: (context)=> TeacherCreateExamScreen(),
         QuizScreen.id: (context) => QuizScreen(
           examId: ModalRoute.of(context)!.settings.arguments as String,
         ),      },
 
-      initialRoute: WelcomeScreen.id,
+
+      initialRoute: TeacherCreateExamScreen.id,
     );
   }
 }

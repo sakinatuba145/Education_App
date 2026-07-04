@@ -1,4 +1,4 @@
-/// 3.32 QUESTION TYPE
+/// 3.10 QUESTION TYPE
 /// Defines the type of question: MCQ or Text.
 enum QuestionType {
   mcq,

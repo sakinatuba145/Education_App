@@ -22,7 +22,6 @@ class DashboardHome extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
 
-      // ✅ TOP BAR (REAL DASHBOARD STYLE)
       appBar: AppBar(
         title: const Text("Dashboard"),
         actions: [
@@ -47,7 +46,6 @@ class DashboardHome extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            // 👋 GREETING SECTION
             Text(
               "Welcome back 👋",
               style: theme.textTheme.headlineMedium,
@@ -88,7 +86,6 @@ class DashboardHome extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // 🎯 FEATURED COURSE (SMALL PRO CARD)
             Text("Featured Course", style: theme.textTheme.titleMedium),
             const SizedBox(height: 10),
 
@@ -104,7 +101,6 @@ class DashboardHome extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // 📈 ACTIVITY CHART
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -126,7 +122,7 @@ class DashboardHome extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // 🏆 TOP STUDENTS
+
             Text("Top Students", style: theme.textTheme.titleMedium),
             const SizedBox(height: 10),
 
@@ -141,7 +137,6 @@ class DashboardHome extends StatelessWidget {
     );
   }
 
-  // 🔥 MINI DASHBOARD CARDS
   Widget _miniCard(
       BuildContext context, {
         required IconData icon,

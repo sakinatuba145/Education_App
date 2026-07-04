@@ -15,19 +15,26 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  String name = "Zeynab Nazari";
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
+  String name = "Zeynab";
   String email = "zeynab@gmail.com";
-  String phone = "+971 000000000";
+  String phone = "+971 555555555";
   String university = "University of Kabul";
   String bio = "Education App Student";
-
   XFile? profileImage;
+
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
     loadProfileData();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 950),
+    )..forward();
   }
 
   Future<void> loadProfileData() async {
@@ -61,38 +68,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Widget _animate(int index, Widget child) {
+    final start = (index * 0.07).clamp(0.0, 0.75);
+    final animation = CurvedAnimation(
+      parent: _controller,
+      curve: Interval(start, 1.0, curve: Curves.easeOutCubic),
+    );
+
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, -0.12),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profile"),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
+        appBar: AppBar(
+          title: _animate(
+            0,
+            Text(
+              "Profile",
+              style: Theme.of(context).appBarTheme.titleTextStyle,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+            _animate(
+            1,
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.symmetric(vertical: 22),
               decoration: BoxDecoration(
-                color: primary.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(24),
+                color: primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(28),
               ),
               child: Column(
                 children: [
                   SizedBox(
-                    height: 135,
-                    width: 135,
+                    height: 132,
+                    width: 132,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
                         SizedBox(
-                          height: 130,
-                          width: 130,
+                          height: 126,
+                          width: 126,
                           child: CircularProgressIndicator(
                             value: 0.7,
                             strokeWidth: 6,
@@ -101,47 +141,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         CircleAvatar(
-                          radius: 58,
+                          radius: 56,
                           backgroundColor: Colors.white,
                           backgroundImage: profileImage != null
                               ? FileImage(File(profileImage!.path))
                               : null,
                           child: profileImage == null
-                              ? Icon(Icons.person, size: 70, color: primary)
+                              ? Icon(
+                            Icons.person,
+                            size: 64,
+                            color: primary,
+                          )
                               : null,
                         ),
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 16),
-
-                  Text(
-                    name,
-                    style: textTheme.headlineMedium,
-                    textAlign: TextAlign.center,
-                  ),
-
+                  const SizedBox(height: 14),
+                  Text(name, style: textTheme.headlineLarge),
                   const SizedBox(height: 10),
-
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
+                      horizontal: 18,
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(22),
                     ),
                     child: Text(
                       bio,
                       style: textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
                   Text(
                     "Member since 2026",
                     style: textTheme.bodySmall,
@@ -149,95 +182,177 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
+          ),
+          const SizedBox(height: 22),
 
-            const SizedBox(height: 20),
-
+          _animate(
+            2,
             Row(
               children: [
                 _statBox(
                   context,
-                  icon: Icons.menu_book,
-                  number: "3",
-                  label: "Courses",
+                  Icons.menu_book,
+                  "3",
+                  "Courses",
                 ),
                 const SizedBox(width: 10),
                 _statBox(
                   context,
-                  icon: Icons.quiz,
-                  number: "5",
-                  label: "Quizzes",
+                  Icons.quiz,
+                  "5",
+                  "Quizzes",
                 ),
                 const SizedBox(width: 10),
                 _statBox(
                   context,
-                  icon: Icons.workspace_premium,
-                  number: "70%",
-                  label: "Progress",
+                  Icons.workspace_premium,
+                  "70%",
+                  "Progress",
                 ),
               ],
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 22),
 
-            _infoCard(context, Icons.email, "Email", email),
-            const SizedBox(height: 12),
-            _infoCard(context, Icons.phone, "Phone", phone),
-            const SizedBox(height: 12),
-            _infoCard(context, Icons.school, "University", university),
+          _animate(
+            3,
+            _infoCard(
+              context,
+              Icons.email,
+              "Email",
+              email,
+            ),
+          ),
+          const SizedBox(height: 14),
 
-            const SizedBox(height: 20),
 
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Achievements",
-                style: textTheme.titleLarge,
+
+
+          _animate(
+            4,
+            _infoCard(
+              context,
+              Icons.phone,
+              "Phone",
+              phone,
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          _animate(
+            5,
+            _infoCard(
+              context,
+              Icons.school,
+              "University",
+              university,
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          _animate(
+            6,
+            _sectionTitle(
+              context,
+              "Achievements",
+            ),
+          ),
+          const SizedBox(height: 12),
+
+              _animate(
+                7,
+                _achievementCard(
+                  context: context,
+
+                  icon: Icons.emoji_events,
+                  title: "First Quiz Completed",
+                  subtitle: "You completed your first quiz successfully.",
+                ),
               ),
-            ),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            _achievementCard(
-              context,
-              icon: Icons.emoji_events,
-              title: "First Quiz Completed",
-              subtitle: "You completed your first quiz successfully.",
-            ),
+              _animate(
+                8,
+                _achievementCard(
+                  context: context,
+                  icon: Icons.auto_stories,
+                  title: "3 Courses Finished",
+                  subtitle: "You are building your learning journey.",
+                ),
+              ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 12),
 
-            _achievementCard(
-              context,
-              icon: Icons.auto_stories,
-              title: "3 Courses Finished",
-              subtitle: "You are building your learning journey.",
-            ),
+              _animate(
+                9,
+                _achievementCard(
+                  context: context,
+                  icon: Icons.star,
+                  title: "Active Learner",
+                  subtitle: "Keep learning and improving every day.",
+                ),
+              ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 24),
 
-            _achievementCard(
-              context,
-              icon: Icons.star,
-              title: "Active Learner",
-              subtitle: "Keep learning and improving every day.",
-            ),
-
-            const SizedBox(height: 20),
-
-            _menuTile(
-              context,
-              icon: Icons.bar_chart,
-              title: "My Progress",
-              onTap: () {
-                Navigator.push(
+              _animate(
+                10,
+                _sectionTitle(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProgressScreen(),
-                  ),
-                );
-              },
-            ),
+                  "Posts",
+                ),
+              ),
 
+              const SizedBox(height: 12),
+
+              _animate(
+                11,
+                _postCard(
+                  context: context,
+                  icon: Icons.post_add,
+                  title: "Completed Flutter UI Practice",
+                  subtitle: "Shared progress about profile screen design.",
+                  time: "2 days ago",
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              _animate(
+                12,
+                _postCard(
+                  context: context,
+                  icon: Icons.lightbulb_outline,
+                  title: "Learning Dart OOP",
+                  subtitle: "Posted notes about classes and objects.",
+                  time: "1 week ago",
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              _animate(
+                13,
+                _menuTile(
+                  context,
+                  icon: Icons.bar_chart,
+                  title: "My Progress",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ProgressScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+          _animate(
+            14,
             _menuTile(
               context,
               icon: Icons.favorite,
@@ -246,12 +361,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const FavoritesScreen(),
+                    builder: (_) => const FavoritesScreen(),
                   ),
                 );
               },
             ),
+          ),
 
+          _animate(
+            15,
             _menuTile(
               context,
               icon: Icons.settings,
@@ -260,12 +378,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SettingsScreen(),
+                    builder: (_) => const SettingsScreen(),
                   ),
                 );
               },
             ),
-
+          ),
+          _animate(
+            16,
             _menuTile(
               context,
               icon: Icons.logout,
@@ -274,20 +394,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {
                 showDialog(
                   context: context,
-                  builder: (context) {
+                  barrierDismissible: false,
+                  builder: (dialogContext) {
+                    final primary =
+                        Theme.of(context).colorScheme.primary;
+
                     return AlertDialog(
-                      title: const Text("Logout"),
-                      content: const Text("Are you sure you want to logout?"),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      title: const Text(
+                        "Logout",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      content: const Text(
+                        "Are you sure you want to logout?",
+                      ),
+                      actionsAlignment:
+                      MainAxisAlignment.spaceBetween,
                       actions: [
                         TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.black,
+                          ),
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(dialogContext);
                           },
-                          child: const Text("Cancel"),
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
-                        TextButton(
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            padding:
+                            const EdgeInsets.symmetric(
+                              horizontal: 22,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                              BorderRadius.circular(12),
+                            ),
+                          ),
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(dialogContext);
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Logged out successfully",
+                                ),
+                              ),
+                            );
                           },
                           child: const Text("Logout"),
                         ),
@@ -297,17 +464,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 22),
 
+          _animate(
+            17,
             SizedBox(
               width: double.infinity,
+              height: 56,
               child: ElevatedButton(
                 onPressed: () async {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditProfileScreen(
+                      builder: (_) => EditProfileScreen(
                         name: name,
                         email: email,
                         phone: phone,
@@ -331,37 +502,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     await saveProfileData();
                   }
                 },
-                child: const Text("Edit Profile"),
+                child: const Text(
+                  "Edit Profile",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
-
-            const SizedBox(height: 30),
-          ],
+          ),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
+    );
+  }
+
+  Widget _sectionTitle(BuildContext context, String title) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.headlineMedium,
       ),
     );
   }
 
   Widget _statBox(
-      BuildContext context, {
-        required IconData icon,
-        required String number,
-        required String label,
-      }) {
+      BuildContext context,
+      IconData icon,
+      String number,
+      String label,
+      ) {
     final primary = Theme.of(context).colorScheme.primary;
     final textTheme = Theme.of(context).textTheme;
 
     return Expanded(
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           child: Column(
             children: [
-              Icon(icon, color: primary),
-              const SizedBox(height: 6),
-              Text(number, style: textTheme.titleLarge),
-              const SizedBox(height: 4),
-              Text(label, style: textTheme.bodySmall),
+              Icon(
+                icon,
+                color: primary,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                number,
+                style: textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: textTheme.bodySmall,
+              ),
             ],
           ),
         ),
@@ -380,32 +575,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Card(
       child: ListTile(
-        leading: Icon(icon, color: primary),
-        title: Text(title),
+        leading: Icon(
+          icon,
+          color: primary,
+        ),
+        title: Text(
+          title,
+          style: textTheme.titleMedium,
+        ),
         subtitle: Text(
           value,
-          style: textTheme.bodyLarge,
+          style: textTheme.bodySmall?.copyWith(
+            fontSize: 13,
+          ),
         ),
       ),
     );
   }
 
-  Widget _achievementCard(
-      BuildContext context, {
-        required IconData icon,
-        required String title,
-        required String subtitle,
-      }) {
+  Widget _achievementCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
     final primary = Theme.of(context).colorScheme.primary;
     final textTheme = Theme.of(context).textTheme;
 
     return Card(
       child: ListTile(
-        leading: Icon(icon, color: primary),
-        title: Text(title),
+        leading: Icon(
+          icon,
+          color: primary,
+        ),
+        title: Text(
+          title,
+          style: textTheme.titleMedium,
+        ),
         subtitle: Text(
           subtitle,
           style: textTheme.bodyMedium,
+        ),
+      ),
+    );
+  }
+
+  Widget _postCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String time,
+  }) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: primary,
+        ),
+        title: Text(
+          title,
+          style: textTheme.titleMedium,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              time,
+              style: textTheme.bodySmall,
+            ),
+          ],
         ),
       ),
     );
@@ -422,10 +670,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Card(
       child: ListTile(
-        leading: Icon(icon, color: primary),
-        title: Text(title),
-        trailing:
-        showArrow ? const Icon(Icons.arrow_forward_ios, size: 16) : null,
+        leading: Icon(
+          icon,
+          color: primary,
+        ),
+        title: Text(
+          title,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        trailing: showArrow
+            ? const Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+        )
+            : null,
         onTap: onTap,
       ),
     );

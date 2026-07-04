@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/core/constants/theme.dart';
+
 /// 3.16 FORGOT PASSWORD SCREEN
 /// This screen lets user reset password using email
 /// Firebase sends a reset link to the email
@@ -11,21 +12,21 @@ class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() =>
-      _ForgotPasswordScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   /// 3.17 EMAIL CONTROLLER
   /// Stores user email input for password reset request
   final emailController = TextEditingController();
+
   /// 3.18 FORM VALIDATION
   /// Ensures email is not empty before sending request
   final _formKey = GlobalKey<FormState>();
+
   /// 3.19 LOADING STATE
   /// Shows spinner while Firebase is sending reset email
   bool isLoading = false;
-
 
   /// 3.20 RESET PASSWORD FUNCTION (CORE LOGIC)
   /// 1. Validate email
@@ -45,15 +46,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Reset link sent")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Reset link sent")));
 
       Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
 
     setState(() => isLoading = false);
@@ -79,9 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         Text(
                           "Forgot Password",
                           textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineLarge,
+                          style: Theme.of(context).textTheme.headlineLarge,
                         ),
                         const SizedBox(height: 8),
 
@@ -116,7 +115,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
 
                         const SizedBox(height: 25),
-
                         SizedBox(
                           width: double.infinity,
                           height: 56,
@@ -130,13 +128,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               ),
                             ),
                             child: isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
                                 : const Text("Send Reset Link"),
                           ),
                         ),
 
                         const SizedBox(height: 12),
-
 
                         TextButton(
                           onPressed: () => Navigator.pop(context),

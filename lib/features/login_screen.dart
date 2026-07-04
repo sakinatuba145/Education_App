@@ -6,12 +6,14 @@ import 'package:education_app/features/register_screen.dart';
 import 'package:education_app/features/forgot_password.dart';
 import 'package:education_app/dashboard/dashboard_screen.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
+
 /// 3.10 LOGIN SCREEN
 /// This screen lets users login using email + password
 /// After login, user is redirected based on their role
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
+
   const LoginScreen({super.key});
 
   @override
@@ -23,9 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
   /// These store email & password typed by the user
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   /// 3.12 FORM VALIDATION KEY
   /// Ensures email/password are not empty before login
   final _formKey = GlobalKey<FormState>();
+
   /// 3.13 UI STATE
   /// Controls loading spinner & password visibility
   bool isLoading = false;
@@ -38,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
   /// 2. Send login request to Firebase
   /// 3. Get user role from Firestore
   /// 4. Redirect user based on role
+
   Future<void> login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -63,18 +68,15 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => DashboardHome(),
-          ),
+          MaterialPageRoute(builder: (_) => DashboardHome()),
         );
       }
     } catch (e) {
+      final message = e.toString().replaceAll("Exception: ", "");
 
-      /// 3.15 ERROR HANDLING
-      /// Show message if login fails
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login Failed: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
 
     setState(() => isLoading = false);
@@ -102,9 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             "Welcome Back",
                             textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineLarge,
+                            style: Theme.of(context).textTheme.headlineLarge,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -116,8 +116,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
 
                         const SizedBox(height: 35),
-
-
                         TextFormField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -164,13 +162,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         const SizedBox(height: 8),
 
-
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
                               Navigator.pushNamed(
-                                  context, ForgotPasswordScreen.id);
+                                context,
+                                ForgotPasswordScreen.id,
+                              );
                             },
                             child: const Text("Forgot Password?"),
                           ),
@@ -191,22 +190,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             child: isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
                                 : const Text("Login"),
                           ),
                         ),
 
                         const SizedBox(height: 12),
 
-
                         TextButton(
                           onPressed: () {
-                            Navigator.pushNamed(
-                                context, RegisterScreen.id);
+                            Navigator.pushNamed(context, RegisterScreen.id);
                           },
-                          child: const Text(
-                            "Don't have an account? Register",
-                          ),
+                          child: const Text("Don't have an account? Register"),
                         ),
 
                         const SizedBox(height: 40),

@@ -1,13 +1,17 @@
 import 'package:education_app/dashboard/sidebar.dart';
 import 'package:education_app/dashboard/top_students_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../auth/user_models.dart';
-import '../core/constants/theme.dart';
+import '../core/I18n/messages.dart';
 import 'appbar_actions.dart';
 import 'dashboard_screen.dart';
 
 class DashboardContent extends StatefulWidget {
-  static String id = 'dashboard_content';
+  static String id='dashboard_content';
   const DashboardContent({super.key});
 
   @override
@@ -46,15 +50,15 @@ class _DashboardContentState extends State<DashboardContent> {
   List<StudentModel> get topStudents =>
       allStudents.where((s) => s.score >= 90).toList();
 
-  final List<Widget> pages = [
-    const Center(child: Text("Dashboard")),
-    const Center(child: Text("My Learning")),
-    const Center(child: Text("Course Catalog")),
-    const Center(child: Text("Trophies")),
-    const Center(child: Text("Settings")),
-    const Center(child: Text("About Us")),
-    const Center(child: Text("Contact Us")),
-    const Center(child: Text("Sign Out")),
+  List<Widget> get pages => [
+     Center(child: Text(AppMessages.dashboard.tr)),
+     Center(child: Text(AppMessages.myLearning.tr)),
+     Center(child: Text(AppMessages.courseCatalog.tr)),
+     Center(child: Text(AppMessages.trophies.tr)),
+     Center(child: Text(AppMessages.setting.tr)),
+     Center(child: Text(AppMessages.aboutUs.tr)),
+     Center(child: Text(AppMessages.contactUs.tr)),
+     Center(child: Text(AppMessages.signOut.tr)),
   ];
 
   @override
@@ -72,29 +76,44 @@ class _DashboardContentState extends State<DashboardContent> {
         ),
       ),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFf5b400),
-        title: const Text("Learning Dashboard"),
+        backgroundColor: Color(0xFFFFCC80),
+        title: Text(AppMessages.learningDashboard.tr),
         actions: appBarActions.map((item) {
+          if (item.icon == Icons.language) {
+            return PopupMenuButton<Locale>(
+              tooltip: item.title,
+              icon: Icon(Icons.language, color: Color(0xFFFFA726),),
+              onSelected: (locale) {
+                Get.updateLocale(locale);
+              },
+              itemBuilder: (context) => const [
+                PopupMenuItem(
+                  value: Locale('en', 'US'),
+                  child: Text('English'),
+                ),
+                PopupMenuItem(
+                  value: Locale('fa', 'IR'),
+                  child: Text('فارسی'),
+                ),
+              ],
+            );
+          }
+
           return IconButton(
             tooltip: item.title,
-            icon: Icon(item.icon),
-            onPressed: () {},
+            icon: Icon(item.icon, color: Color(0xFFFFA726),),
+            onPressed: () {
+              // عملیات مربوط به نوتیفیکیشن
+            },
           );
         }).toList(),
       ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              ThemeColors.gradient1,
-              ThemeColors.gradient2,
-              ThemeColors.gradient3,
-              ThemeColors.gradient2,
-            ],
+            colors: [Color(0xffFFF8F0), Color(0xffFFE0B2), Color(0xffFFD180)],
           ),
         ),
         child: isDesktop
@@ -120,7 +139,12 @@ class _DashboardContentState extends State<DashboardContent> {
             ? DashboardHome(topStudents: topStudents)
             : pages[selectedIndex - 1],
       ),
-
     );
   }
+}
+
+void _updateLocale(String localeCode) async {
+  Get.updateLocale(Locale(localeCode));
+  final shared = await SharedPreferences.getInstance();
+  shared.setString('app_language-code', localeCode);
 }

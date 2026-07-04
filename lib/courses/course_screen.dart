@@ -7,6 +7,8 @@ import 'course_model.dart';
 class CourseScreen extends StatefulWidget {
   static String id='course_screen';
 
+  const CourseScreen({super.key});
+
   @override
   State<CourseScreen> createState() => _CourseScreenState();
 }
@@ -91,6 +93,9 @@ class LessonScreen extends StatefulWidget {
 class _LessonScreenState extends State<LessonScreen> {
   @override
   Widget build(BuildContext context) {
-    return LessonScreen();
+    return Scaffold(
+      appBar: AppBar(title: const Text("Lessons")),
+      body: const Center(child: Text("Lesson Screen")),
+    );
   }
 }

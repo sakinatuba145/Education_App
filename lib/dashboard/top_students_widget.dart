@@ -59,9 +59,7 @@ class TopStudentsWidget extends StatelessWidget {
                 ),
 
                 Text(student.grade),
-
                 SizedBox(height: 8),
-
                 Chip(
                   label:
                   Text("Score ${student.score}"),

@@ -75,14 +75,6 @@ class ResultScreen extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 25),
-
-                  const Center(
-                    child: Text(
-                      "Review removed in Firestore version",
-                    ),
-                  ),
-
                   const SizedBox(height: 20),
 
                   SizedBox(

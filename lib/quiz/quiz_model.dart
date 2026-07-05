@@ -1,8 +1,10 @@
+/// 3.10 QUESTION TYPE
+/// Defines the type of question: MCQ or Text.
 enum QuestionType {
   mcq,
   text,
 }
-
+/// Represents a single question in a quiz.
 class QuizModel {
   final String id;
   final String question;
@@ -17,6 +19,7 @@ class QuizModel {
     required this.correctIndex,
     this.type = QuestionType.mcq,
   });
+  /// Converts Firestore data into QuizModel object.
   factory QuizModel.fromJson(Map<String,dynamic>json){
     return QuizModel(
         id: json['id'] as String,

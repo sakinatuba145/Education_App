@@ -12,7 +12,7 @@ class StudentActivityChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     return Card(
+    return Card(
       color: Color(0xffFFE0B2),
       surfaceTintColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -48,10 +48,10 @@ class StudentActivityChartWidget extends StatelessWidget {
               borderColor: Colors.white,
               enableSideBySideSeriesPlacement: false,
               primaryXAxis: CategoryAxis(isVisible: true,
-              majorGridLines: MajorGridLines(width: 0),
-              majorTickLines: MajorTickLines(size: 0),
-              axisLine: AxisLine(width: 0),
-              labelStyle: TextStyle(color: Colors.black, fontSize: 16),),
+                majorGridLines: MajorGridLines(width: 0),
+                majorTickLines: MajorTickLines(size: 0),
+                axisLine: AxisLine(width: 0),
+                labelStyle: TextStyle(color: Colors.black, fontSize: 16),),
               primaryYAxis: NumericAxis(
                 isVisible: false,
                 minimum: 0,

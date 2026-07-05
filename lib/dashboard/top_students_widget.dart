@@ -15,10 +15,10 @@ class StudentModel {
 }
 class TopStudentsWidget extends StatelessWidget {
   final List<StudentModel> students;
-
   const TopStudentsWidget({
     super.key,
     required this.students,
+
   });
 
   @override
@@ -32,7 +32,7 @@ class TopStudentsWidget extends StatelessWidget {
           final student = students[index];
 
           return Container(
-            width: 170,
+            width: 200,
             margin: EdgeInsets.only(right: 16),
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -45,7 +45,8 @@ class TopStudentsWidget extends StatelessWidget {
                 CircleAvatar(
                   radius: 35,
                   backgroundImage:
-                  NetworkImage(student.image),
+                  AssetImage(student.image),
+                  // NetworkImage(student.image),
                 ),
 
                 SizedBox(height: 10),

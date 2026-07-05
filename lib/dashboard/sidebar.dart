@@ -50,7 +50,7 @@ class Sidebar extends StatelessWidget {
             ),
           ),
 
-          Text(user.role),
+          //Text(user.role),
 
           SizedBox(height: 20),
 

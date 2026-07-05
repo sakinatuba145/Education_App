@@ -54,6 +54,7 @@ dependencies:
 
   shared_preferences_helper: ^0.0.3
   google_fonts: ^6.2.1
+  syncfusion_flutter_charts: ^27.1.58
 
 
 dev_dependencies:

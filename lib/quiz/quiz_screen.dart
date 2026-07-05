@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'result_screen.dart';
+import 'quiz_model.dart';
 import 'package:education_app/core/constants/theme.dart';
 
 /// 3.11  QUIZ SCREEN

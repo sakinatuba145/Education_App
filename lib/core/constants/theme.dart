@@ -1,7 +1,14 @@
- import 'package:flutter/material.dart';
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: ThemeColors.primary,
+      selectionColor: ThemeColors.secondary,
+      selectionHandleColor: ThemeColors.primary,
+    ),
     useMaterial3: true,
     brightness: Brightness.light,
     fontFamily: GoogleFonts.poppins().fontFamily,
@@ -66,7 +73,7 @@ class AppTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: ThemeColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: ThemeColors.primary,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         shape: RoundedRectangleBorder(
@@ -80,36 +87,68 @@ class AppTheme {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: ThemeColors.primary,
+        foregroundColor: Colors.white,
         textStyle: GoogleFonts.poppins(
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFFF5F7FB),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      hintStyle: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+      fillColor: const Color(0xFFF7F7F7),
+      isDense: true,
+
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 18,
+        vertical: 18,
+      ),
+
+      hintStyle: GoogleFonts.poppins(
+        fontSize: 14,
+        color: Colors.grey.shade600,
+      ),
+
       labelStyle: GoogleFonts.poppins(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: ThemeColors.black,
       ),
+
+      prefixIconColor: ThemeColors.primary,
+      suffixIconColor: ThemeColors.primary,
+
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide.none,
       ),
+
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide.none,
       ),
+
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: const BorderSide(
           color: ThemeColors.primary,
+          width: 2,
+        ),
+      ),
+
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: Colors.red,
           width: 1.5,
+        ),
+      ),
+
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: Colors.red,
+          width: 2,
         ),
       ),
     ),
@@ -200,13 +239,17 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: ThemeColors.primary,
+        backgroundColor: ThemeColors.button,
         foregroundColor: Colors.white,
+
+        minimumSize: const Size(double.infinity, 56),
+
         elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
         ),
+
         textStyle: GoogleFonts.poppins(
           fontSize: 16,
           fontWeight: FontWeight.w600,
@@ -253,25 +296,79 @@ class AppTheme {
   );
 }
 
- class ThemeColors {
-   static const primary = Color(0xFFFFA726);
-   static const secondary = Color(0xFFFFCC80);
-   static const background = Color(0xFFFFF3E0);
+class ThemeColors {
+  static const primary = Color(0xFFFFA726);
+  static const secondary = Color(0xFFFFCC80);
+  static const background = Color(0xFFFFF3E0);
 
 
+  static const gradient1 = Color(0xFFFFF8F0);
+  static const gradient2 = Color(0xFFFFE0B2);
+  static const gradient3 = Color(0xFFFFD180);
+  static const button = Color(0xFFFf5b400);
 
-   static const gradient1 = Color(0xFFFFF8F0);
-   static const gradient2 = Color(0xFFFFE0B2);
-   static const gradient3 = Color(0xFFFFD180);
-   static const button = Color(0xffff5b400);
 
-
-   static const white = Colors.white;
-   static const black = Colors.black;
- }
+  static const white = Colors.white;
+  static const black = Colors.black;
+}
 
 class AppDarkColors {
   static const background = Color(0xFF121212);
   static const card = Color(0xFF1E1E1E);
   static const input = Color(0xFF2A2A2A);
+}
+
+class AppBackground extends StatelessWidget {
+  final Widget child;
+
+  const AppBackground({super.key, required this.child});
+
+  static Widget _blurCircle(double size, Color color) {
+    return ImageFiltered(
+      imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+      child: Container(
+        height: size,
+        width: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withOpacity(0.25),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                ThemeColors.gradient1,
+                ThemeColors.gradient2,
+                ThemeColors.gradient3,
+              ],
+            ),
+          ),
+        ),
+
+        Positioned(
+          top: -80,
+          right: -50,
+          child: _blurCircle(220, Colors.orange),
+        ),
+
+        Positioned(
+          bottom: -100,
+          left: -60,
+          child: _blurCircle(250, Colors.orange),
+        ),
+
+        child,
+      ],
+    );
+  }
 }

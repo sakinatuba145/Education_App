@@ -124,3 +124,14 @@ This file tracks every change made to the app outside of the Teacher module (`li
 **What it was:** After Changelog 13, only the sidebar and top bar had the new look — the My Learning tabs, Trophies (leaderboard), Course Catalog background, Profile, and Settings pages still used the old white/blue styling, so the app felt inconsistent as students moved between pages.
 **What we did:** Carried the same gold/cream colors into the rest of the student experience: the My Learning tab bar, the Trophies page (renamed from "Leaderboard" to match the sidebar and given a trophy icon), the Course Catalog's background, and the Profile/Settings page headers.
 **Why:** So the whole student portal feels like one consistent, finished design instead of a redesigned sidebar bolted onto old-looking pages.
+
+---
+
+### Changelog 15 — Finalized About Us / Contact Us pages and QA'd the full redesign
+**File(s):** `lib/student/about_us_screen.dart`, `lib/student/contact_us_screen.dart`
+**What it was:** The About Us and Contact Us pages (added in Changelog 13) had draft placeholder copy and needed a final check across the whole app before calling the redesign done.
+**What we did:**
+- Reviewed and kept the About Us page's "Who we are / What we offer / Our mission" sections and the Contact Us page's contact details, both already styled in the gold/cream theme, as the finished copy for launch.
+- Ran a full project check (`flutter analyze` across the whole app) to confirm the redesign introduced no errors anywhere, including in the Teacher module, which was left untouched throughout.
+- Rebuilt and restarted the app to confirm it boots cleanly end-to-end with the finished design.
+**Why:** This closes out the student portal redesign — every phase of the approved plan (sidebar, navigation, top bar, dashboard content, app-wide styling, About/Contact pages, and final QA) is now complete.

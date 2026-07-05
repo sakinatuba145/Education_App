@@ -1,10 +1,9 @@
 import 'dart:math';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'chartdata.dart';
 
 class ChartPainter extends CustomPainter{
-  final List<ChartData> data;
+  final List<ChartColumnData> data;
   ChartPainter(this.data);
   @override
   void paint(Canvas canvas, Size size){
@@ -21,13 +20,13 @@ class ChartPainter extends CustomPainter{
     final path1 = Path();
     final path2 = Path();
 
-    double maxValue = data.map((e) => max(e.value1, e.value2 )).reduce(max);
+    double maxValue = data.map((e) => max(e.y, e.y1 )).reduce(max);
     double stepX = size.width / (data.length - 1);
 
     for(int i = 0; i < data.length; i++){
       double x = i * stepX;
-      double y1 = size.height - (data[i].value1/ maxValue)* size.height;
-      double y2 = size.height - (data[i].value2/ maxValue)* size.height;
+      double y1 = size.height - (data[i].y/ maxValue)* size.height;
+      double y2 = size.height - (data[i].y1/ maxValue)* size.height;
 
       if(i == 0){
         path1.moveTo(x, y1);

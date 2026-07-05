@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
         'teacher_create_exam': (context) => const TeacherCreateExamScreen(),
         CourseScreen.id: (context) => CourseScreen(),
         QuizScreen.id: (context) => QuizScreen(
-              exam: ModalRoute.of(context)!.settings.arguments as ExamModel,
+              examId: ModalRoute.of(context)!.settings.arguments as String,
             ),
         CertificatePreviewScreen.id: (context) => const CertificatePreviewScreen(),
       },

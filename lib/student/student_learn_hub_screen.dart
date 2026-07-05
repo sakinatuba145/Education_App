@@ -36,6 +36,23 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+              child: Row(
+                children: [
+                  const Icon(Icons.menu_book_rounded, color: AppColors.studioGoldDark, size: 26),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text('My Learning', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.studioInk)),
+                      SizedBox(height: 2),
+                      Text('Quizzes, assignments, flashcards & more', style: TextStyle(fontSize: 13, color: Colors.grey)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             Container(
               color: AppColors.studioCream,
               child: TabBar(
@@ -65,7 +82,7 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
                   StudentAssignmentsTab(),
                   FlashcardScreen(),
                   WordPuzzleScreen(),
-                  LeaderboardScreen(),
+                  LeaderboardScreen(showHeader: false),
                 ],
               ),
             ),

@@ -2,10 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/welcome_screen.dart';
 import 'package:education_app/courses/course_discovery_screen_premium.dart';
 import 'package:education_app/student/student_learn_hub_screen.dart';
+import 'package:education_app/student/leaderboard_screen.dart';
+import 'package:education_app/student/about_us_screen.dart';
+import 'package:education_app/student/contact_us_screen.dart';
 import 'package:education_app/profile/profile_screen.dart';
 import 'package:education_app/profile/settings_screen.dart';
 import 'package:education_app/profile/progress_screen.dart';
@@ -30,11 +34,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
   bool _isDarkMode = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  /// The 4 primary tabs shown in the sidebar / bottom nav, matching the
+  /// approved gold-theme design ("Dashboard", "My Learning", "Course
+  /// Catalog", "Trophies").
   final List<String> _pages = [
-    'Home',
-    'Explore',
-    'Learn',
-    'Profile',
+    'Dashboard',
+    'My Learning',
+    'Course Catalog',
+    'Trophies',
   ];
   List<QuizResult> _recentQuizResults = [];
   bool _activitiesLoading = true;
@@ -152,12 +160,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Container(
                     width: isDesktop ? 260 : 80,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: _isDarkMode
-                            ? [Colors.grey[900]!, Colors.grey[850]!]
-                            : [const Color(0xFF1A1A2E), const Color(0xFF16213E)],
+                      color: _isDarkMode ? Colors.grey[900] : AppColors.studioCream,
+                      border: Border(
+                        right: BorderSide(
+                          color: _isDarkMode ? Colors.black : AppColors.studioCreamDark,
+                          width: 1,
+                        ),
                       ),
                     ),
                     child: _buildSideNavigation(isDesktop),
@@ -167,13 +175,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     children: [
                       _buildAppBar(isMobile, isTablet, isDesktop),
                       Expanded(
-                        // Explore (1) and Learn (2) manage their own scroll/layout
+                        // Course Catalog (2) and Learn Hub (1) manage their own scroll/layout
                         child: (_selectedIndex == 1 || _selectedIndex == 2)
                             ? _buildPageContent(isMobile, isTablet, isDesktop)
                             : Container(
                                 color: _isDarkMode
                                     ? Colors.grey[850]
-                                    : Colors.grey[100],
+                                    : AppColors.studioCream,
                                 child: SingleChildScrollView(
                                   padding: EdgeInsets.all(isMobile ? 12 : 24),
                                   child: _buildPageContent(
@@ -199,24 +207,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   });
                 },
                 type: BottomNavigationBarType.fixed,
-                selectedItemColor: AppColors.primary,
-                unselectedItemColor: Colors.grey,
-                items: const [
+                backgroundColor: _isDarkMode ? null : AppColors.studioCream,
+                selectedItemColor: AppColors.studioGoldDark,
+                unselectedItemColor: AppColors.studioInk.withValues(alpha: 0.5),
+                items: [
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.home_rounded),
-                    label: "Home",
+                    icon: Icon(_getIcon(0)),
+                    label: _pages[0],
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.explore_rounded),
-                    label: "Explore",
+                    icon: Icon(_getIcon(1)),
+                    label: _pages[1],
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.school_rounded),
-                    label: "Learn",
+                    icon: Icon(_getIcon(2)),
+                    label: _pages[2],
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.person_rounded),
-                    label: "Profile",
+                    icon: Icon(_getIcon(3)),
+                    label: _pages[3],
                   ),
                 ],
               );
@@ -226,10 +235,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         floatingActionButton: _selectedIndex == 0
             ? FloatingActionButton.extended(
-                onPressed: () => setState(() => _selectedIndex = 1),
-                label: const Text("Explore"),
-                icon: const Icon(Icons.explore),
-                backgroundColor: AppColors.primary,
+                onPressed: () => setState(() => _selectedIndex = 2),
+                label: Text(_pages[2]),
+                icon: const Icon(Icons.menu_book_rounded),
+                backgroundColor: AppColors.studioGold,
                 foregroundColor: Colors.white,
               )
             : null,
@@ -237,95 +246,170 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  /// Signs the student out and returns to the welcome screen.
+  Future<void> _signOut(BuildContext context) async {
+    await AuthService().logout();
+    if (context.mounted) {
+      Navigator.pushReplacementNamed(context, WelcomeScreen.id);
+    }
+  }
+
   _buildDrawer(BuildContext context) {
     return Drawer(
+      backgroundColor: _isDarkMode ? null : AppColors.studioCream,
       child: Column(
         children: [
-          UserAccountsDrawerHeader(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF1A1A2E), Color(0xFFFF6B35)],
-              ),
-            ),
-            accountName: Text(user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student'),
-            accountEmail: Text(user?.email ?? ''),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: AppColors.primaryLight,
-              child: Text(
-                (user?.displayName?.split('|').first ?? user?.email ?? 'S')[0].toUpperCase(),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+            color: _isDarkMode ? Colors.grey[900] : AppColors.studioCream,
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 36,
+                  backgroundColor: AppColors.studioGold,
+                  child: const Icon(Icons.person, color: Colors.white, size: 36),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student',
+                  style: TextStyle(
+                    color: _isDarkMode ? Colors.white : AppColors.studioInk,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  user?.email ?? '',
+                  style: TextStyle(
+                    color: _isDarkMode ? Colors.white70 : AppColors.studioInk.withValues(alpha: 0.6),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _pages.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: Icon(_getIcon(index)),
-                  title: Text(_pages[index]),
-                  selected: _selectedIndex == index,
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                for (int index = 0; index < _pages.length; index++)
+                  _buildDrawerTile(
+                    icon: _getIcon(index),
+                    label: _pages[index],
+                    selected: _selectedIndex == index,
+                    onTap: () {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                Divider(color: _isDarkMode ? Colors.white24 : AppColors.studioCreamDark),
+                _buildDrawerTile(
+                  icon: Icons.bar_chart_rounded,
+                  label: 'My Progress',
+                  selected: false,
                   onTap: () {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
                     Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ProgressScreen()));
                   },
-                );
-              },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.favorite_outline,
+                  label: 'Favourites',
+                  selected: false,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen()));
+                  },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.person_outline,
+                  label: 'Profile',
+                  selected: false,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+                  },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.settings_outlined,
+                  label: 'Sitting',
+                  selected: false,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+                  },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.info_outline,
+                  label: 'About Us',
+                  selected: false,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutUsScreen()));
+                  },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.contact_support_outlined,
+                  label: 'Contact Us',
+                  selected: false,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ContactUsScreen()));
+                  },
+                ),
+                Divider(color: _isDarkMode ? Colors.white24 : AppColors.studioCreamDark),
+                SwitchListTile(
+                  title: Text('Dark Mode', style: TextStyle(color: _isDarkMode ? Colors.white : AppColors.studioInk)),
+                  secondary: Icon(Icons.dark_mode, color: _isDarkMode ? Colors.white70 : AppColors.studioInk),
+                  activeColor: AppColors.studioGold,
+                  value: _isDarkMode,
+                  onChanged: (value) {
+                    setState(() {
+                      _isDarkMode = value;
+                    });
+                  },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.logout,
+                  label: 'Sign Out',
+                  selected: false,
+                  onTap: () => _signOut(context),
+                ),
+              ],
             ),
-          ),
-          Divider(),
-          SwitchListTile(
-            title: Text('Dark Mode'),
-            secondary: Icon(Icons.dark_mode),
-            value: _isDarkMode,
-            onChanged: (value) {
-              setState(() {
-                _isDarkMode = value;
-              });
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.bar_chart_rounded),
-            title: const Text('My Progress'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProgressScreen()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.favorite_outline),
-            title: const Text('Favourites'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.settings_outlined),
-            title: const Text('Settings'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
-            onTap: () async {
-              await AuthService().logout();
-              if (context.mounted) {
-                Navigator.pushReplacementNamed(context, WelcomeScreen.id);
-              }
-            },
           ),
         ],
       ),
     );
   }
 
+  Widget _buildDrawerTile({
+    required IconData icon,
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    final color = selected
+        ? AppColors.studioGoldDark
+        : (_isDarkMode ? Colors.white : AppColors.studioInk);
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(
+        label,
+        style: TextStyle(color: color, fontWeight: selected ? FontWeight.bold : FontWeight.normal),
+      ),
+      selected: selected,
+      selectedTileColor: AppColors.studioGoldLight.withValues(alpha: 0.5),
+      onTap: onTap,
+    );
+  }
+
   Widget _buildSideNavigation(bool isDesktop) {
+    final Color inkColor = _isDarkMode ? Colors.white : AppColors.studioInk;
     return Column(
       children: [
         SizedBox(height: 30),
@@ -333,7 +417,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: EdgeInsets.all(10),
           child: CircleAvatar(
             radius: isDesktop ? 40 : 25,
-            backgroundColor: Colors.white24,
+            backgroundColor: AppColors.studioGold,
             child: Icon(
               Icons.person,
               color: Colors.white,
@@ -346,44 +430,74 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Text(
             user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student',
             style: TextStyle(
-              color: Colors.white,
+              color: inkColor,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
           ),
-          Text('Student', style: TextStyle(color: Colors.white70, fontSize: 14)),
         ],
         SizedBox(height: 30),
         Expanded(
-          child: ListView.builder(
-            itemCount: _pages.length,
-            itemBuilder: (context, index) {
-              return _buildNavItem(
-                icon: _getIcon(index),
-                label: _pages[index],
-                isSelected: _selectedIndex == index,
+          child: ListView(
+            children: [
+              for (int index = 0; index < _pages.length; index++)
+                _buildNavItem(
+                  icon: _getIcon(index),
+                  label: _pages[index],
+                  isSelected: _selectedIndex == index,
+                  isDesktop: isDesktop,
+                  onTap: () {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                ),
+              Divider(color: _isDarkMode ? Colors.white24 : AppColors.studioCreamDark, indent: 12, endIndent: 12),
+              _buildNavItem(
+                icon: Icons.settings,
+                label: 'Sitting',
+                isSelected: false,
                 isDesktop: isDesktop,
                 onTap: () {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                  );
                 },
-              );
-            },
+              ),
+              _buildNavItem(
+                icon: Icons.info,
+                label: 'About Us',
+                isSelected: false,
+                isDesktop: isDesktop,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+                  );
+                },
+              ),
+              _buildNavItem(
+                icon: Icons.contact_support,
+                label: 'Contact Us',
+                isSelected: false,
+                isDesktop: isDesktop,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ContactUsScreen()),
+                  );
+                },
+              ),
+              _buildNavItem(
+                icon: Icons.logout,
+                label: 'Sign Out',
+                isSelected: false,
+                isDesktop: isDesktop,
+                onTap: () => _signOut(context),
+              ),
+            ],
           ),
-        ),
-        Divider(color: Colors.white24),
-        _buildNavItem(
-          icon: Icons.settings,
-          label: 'Settings',
-          isSelected: false,
-          isDesktop: isDesktop,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            );
-          },
         ),
       ],
     );
@@ -396,28 +510,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
     required bool isDesktop,
     required VoidCallback onTap,
   }) {
+    final Color color = isSelected
+        ? AppColors.studioGoldDark
+        : (_isDarkMode ? Colors.white : AppColors.studioInk);
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         padding: EdgeInsets.symmetric(
-          vertical: isDesktop ? 16 : 8,
+          vertical: isDesktop ? 14 : 8,
           horizontal: 12,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.studioGoldLight.withValues(alpha: 0.6) : null,
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.white, size: 24),
+            Icon(icon, color: color, size: 22),
             if (isDesktop) ...[
               SizedBox(width: 16),
               Expanded(
                 child: Text(
                   label,
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
+                    color: color,
+                    fontSize: 15,
                     fontWeight: isSelected
                         ? FontWeight.bold
-                        : FontWeight.normal,
+                        : FontWeight.w500,
                   ),
                 ),
               ),
@@ -429,14 +551,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildAppBar(bool isMobile, bool isTaplet, bool isDeskTop) {
+    final Color textColor = _isDarkMode ? Colors.white : AppColors.studioInk;
     return Container(
       height: 70,
       padding: EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: _isDarkMode ? Colors.grey[850] : Colors.white,
+        color: _isDarkMode ? Colors.grey[850] : AppColors.studioCream,
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withAlpha(55),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: Offset(0, 2),
           ),
@@ -446,7 +569,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           if (isMobile)
             IconButton(
-              icon: Icon(Icons.menu),
+              icon: Icon(Icons.menu, color: textColor),
               onPressed: () {
                 _scaffoldKey.currentState?.openDrawer();
               },
@@ -458,16 +581,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Text(
                   _pages[_selectedIndex],
-                  style: TextStyle(
-                    fontSize: isMobile ? 20 : 24,
-                    fontWeight: FontWeight.bold,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: isMobile ? 20 : 26,
+                    fontWeight: FontWeight.w700,
+                    color: textColor,
                   ),
                 ),
                 Text(
                   'Welcome back, ${user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student'}',
                   style: TextStyle(
                     fontSize: isMobile ? 12 : 14,
-                    color: Colors.grey[600],
+                    color: textColor.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -486,7 +610,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: _isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                  fillColor: _isDarkMode ? Colors.grey[800] : AppColors.studioCreamDark,
                 ),
               ),
             ),
@@ -494,7 +618,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.notification_add_outlined),
+            icon: Icon(Icons.public, color: _isDarkMode ? Colors.white70 : AppColors.studioGoldDark),
+          ),
+          SizedBox(width: 4),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.notifications_none_rounded, color: _isDarkMode ? Colors.white70 : AppColors.studioGoldDark),
           ),
           SizedBox(width: 8),
           IconButton(
@@ -503,15 +632,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 _isDarkMode = !_isDarkMode;
               });
             },
-            icon: Icon(_isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            icon: Icon(_isDarkMode ? Icons.light_mode : Icons.dark_mode, color: _isDarkMode ? Colors.white70 : AppColors.studioGoldDark),
           ),
           if (!isMobile) ...[
             SizedBox(width: 16),
-            CircleAvatar(
-              backgroundColor: _isDarkMode ? Colors.grey[700] : Colors.grey[300],
-              child: Icon(
-                Icons.person,
-                color: _isDarkMode ? Colors.white70 : Colors.grey[700],
+            GestureDetector(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen())),
+              child: CircleAvatar(
+                backgroundColor: AppColors.studioGold,
+                child: Text(
+                  (user?.displayName?.split('|').first ?? user?.email ?? 'S')[0].toUpperCase(),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],
@@ -525,14 +657,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 0:
         return _buildDashboardScreen(isMobile, isTablet, isDesktop);
       case 1:
-        // Explore / Course Discovery
-        return const CourseDiscoveryScreenPremium();
-      case 2:
-        // Learn hub
+        // My Learning: quizzes, flashcards, puzzles, leaderboard hub
         return const StudentLearnHubScreen();
+      case 2:
+        // Course Catalog: browse & enroll into courses
+        return const CourseDiscoveryScreenPremium();
       case 3:
-        // Profile & Settings
-        return const ProfileScreen();
+        // Trophies: standalone leaderboard screen
+        return const LeaderboardScreen();
       default:
         return _buildDashboardScreen(isMobile, isTablet, isDesktop);
     }
@@ -570,7 +702,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         SizedBox(height: 12),
-        StudentActivityChartWidget(chartData: chartData),
+        StudentActivityChartWidget(chartData: chartData, isDarkMode: _isDarkMode),
         SizedBox(height: 24),
         Text(
           'Top Students',
@@ -580,7 +712,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         SizedBox(height: 12),
-        TopStudentsWidget(students: _topStudents),
+        TopStudentsWidget(students: _topStudents, isDarkMode: _isDarkMode),
       ],
     );
   }
@@ -593,6 +725,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ? _recentQuizResults.fold(0.0, (s, r) => s + r.percentageInt) / quizCount
         : 0.0;
 
+    final Color textColor = _isDarkMode ? Colors.white : AppColors.studioInk;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -605,7 +738,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           Row(
             children: [
-              const Text('Learning Stats', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+              Text('Learning Stats', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: textColor)),
               const Spacer(),
               if (_activitiesLoading)
                 const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
@@ -705,7 +838,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Recent Activity', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+              Text('Recent Activity', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: _isDarkMode ? Colors.white : AppColors.studioInk)),
               if (_activitiesLoading)
                 const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
               else
@@ -782,12 +915,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   IconData _getIcon(int index) {
     const icons = [
-      Icons.home_rounded,
-      Icons.explore_rounded,
+      Icons.dashboard_rounded,
       Icons.school_rounded,
-      Icons.person_rounded,
+      Icons.menu_book_rounded,
+      Icons.emoji_events_rounded,
     ];
-    if (index < 0 || index >= icons.length) return Icons.home_rounded;
+    if (index < 0 || index >= icons.length) return Icons.dashboard_rounded;
     return icons[index];
   }
 }

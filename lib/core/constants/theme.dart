@@ -1,7 +1,14 @@
- import 'package:flutter/material.dart';
+ import 'dart:ui';
+
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: ThemeColors.primary,
+      selectionColor: ThemeColors.secondary,
+      selectionHandleColor: ThemeColors.primary,
+    ),
     useMaterial3: true,
     brightness: Brightness.light,
     fontFamily: GoogleFonts.poppins().fontFamily,
@@ -273,4 +280,59 @@ class AppDarkColors {
   static const background = Color(0xFF121212);
   static const card = Color(0xFF1E1E1E);
   static const input = Color(0xFF2A2A2A);
+}
+
+class AppBackground extends StatelessWidget {
+  final Widget child;
+
+  const AppBackground({super.key, required this.child});
+
+  static Widget _blurCircle(double size, Color color) {
+    return ImageFiltered(
+      imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+      child: Container(
+        height: size,
+        width: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withOpacity(0.25),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                ThemeColors.gradient1,
+                ThemeColors.gradient2,
+                ThemeColors.gradient3,
+              ],
+            ),
+          ),
+        ),
+
+        Positioned(
+          top: -80,
+          right: -50,
+          child: _blurCircle(220, Colors.orange),
+        ),
+
+        Positioned(
+          bottom: -100,
+          left: -60,
+          child: _blurCircle(250, Colors.orange),
+        ),
+
+        child,
+      ],
+    );
+  }
 }

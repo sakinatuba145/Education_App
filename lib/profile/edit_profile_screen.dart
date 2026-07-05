@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -24,7 +24,8 @@ class EditProfileScreen extends StatefulWidget {
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen>
+    with SingleTickerProviderStateMixin {
   late TextEditingController nameController;
   late TextEditingController bioController;
   late TextEditingController emailController;
@@ -33,6 +34,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   XFile? selectedImage;
   final ImagePicker picker = ImagePicker();
+
+  late final AnimationController _controller;
 
   @override
   void initState() {
@@ -44,6 +47,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     phoneController = TextEditingController(text: widget.phone);
     universityController = TextEditingController(text: widget.university);
     selectedImage = widget.image;
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 850),
+    )..forward();
+  }
+
+  Widget _animate(int index, Widget child) {
+    final start = (index * 0.08).clamp(0.0, 0.75);
+    final animation = CurvedAnimation(
+      parent: _controller,
+      curve: Interval(start, 1.0, curve: Curves.easeOutCubic),
+    );
+
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, -0.12),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      ),
+    );
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -59,7 +86,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void showImageOptions() {
     showModalBottomSheet(
       context: context,
-      builder: (context) {
+      builder: (_) {
         return Padding(
           padding: const EdgeInsets.all(20),
           child: Wrap(
@@ -87,6 +114,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+
+
+
   void saveProfile() {
     Navigator.pop(context, {
       "name": nameController.text,
@@ -100,6 +130,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void dispose() {
+    _controller.dispose();
     nameController.dispose();
     bioController.dispose();
     emailController.dispose();
@@ -115,160 +146,191 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Profile"),
+        title: _animate(
+          0,
+          Text(
+            "Edit Profile",
+            style: Theme.of(context).appBarTheme.titleTextStyle,
+          ),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 25,
-                  horizontal: 20,
-                ),
-                child: Column(
-                  children: [
-                    Stack(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: primary,
-                              width: 4,
+            _animate(
+              1,
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 24,
+                    horizontal: 20,
+                  ),
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: primary, width: 4),
+                            ),
+                            child: CircleAvatar(
+                              radius: 56,
+                              backgroundColor: primary.withValues(alpha: 0.15),
+                              backgroundImage: selectedImage != null
+                                  ? FileImage(File(selectedImage!.path))
+                                  : null,
+                              child: selectedImage == null
+                                  ? Icon(
+                                Icons.person,
+                                size: 64,
+                                color: primary,
+                              )
+                                  : null,
                             ),
                           ),
-                          child: CircleAvatar(
-                            radius: 58,
-                            backgroundColor: primary.withOpacity(0.15),
-                            backgroundImage: selectedImage != null
-                                ? NetworkImage(selectedImage!.path)
-                                    as ImageProvider
-                                : null,
-                            child: selectedImage == null
-                                ? Icon(
-                              Icons.person,
-                              size: 70,
-                              color: primary,
-                            )
-                                : null,
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 5,
-                          right: 5,
-                          child: InkWell(
-                            onTap: showImageOptions,
-                            child: CircleAvatar(
-                              radius: 20,
-                              backgroundColor: primary,
-                              child: const Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                                size: 20,
+                          Positioned(
+                            bottom: 4,
+                            right: 4,
+                            child: InkWell(
+                              onTap: showImageOptions,
+                              child: CircleAvatar(
+                                radius: 22,
+                                backgroundColor: primary,
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    Text(
-                      "Update your profile photo",
-                      style: textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Text(
-                      "Member since 2026",
-                      style: textTheme.bodySmall,
-                    ),
-                  ],
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+                      Text(
+                        "Update your profile photo",
+                        style: textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 6),
+                      Text("Member since 2026", style: textTheme.bodySmall),
+                    ],
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Personal Information",
-                style: textTheme.titleLarge,
+            _animate(
+              2,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Personal Information",
+                  style: textTheme.headlineMedium,
+                ),
               ),
             ),
 
             const SizedBox(height: 12),
 
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: "Full Name",
-                prefixIcon: Icon(Icons.person, color: primary),
+            _animate(
+              3,
+              _profileField(
+                context,
+                controller: nameController,
+                label: "Full Name",
+                icon: Icons.person,
               ),
             ),
-
             const SizedBox(height: 15),
 
-            TextField(
-              controller: bioController,
-              decoration: InputDecoration(
-                labelText: "Bio / Role",
-                prefixIcon: Icon(Icons.badge, color: primary),
+            _animate(
+              4,
+              _profileField(
+                context,
+                controller: bioController,
+                label: "Bio / Role",
+                icon: Icons.badge,
               ),
             ),
-
             const SizedBox(height: 15),
 
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                labelText: "Email",
-                prefixIcon: Icon(Icons.email, color: primary),
+            _animate(
+              5,
+              _profileField(
+                context,
+                controller: emailController,
+                label: "Email",
+                icon: Icons.email,
               ),
             ),
-
             const SizedBox(height: 15),
 
-            TextField(
-              controller: phoneController,
-              decoration: InputDecoration(
-                labelText: "Phone Number",
-                prefixIcon: Icon(Icons.phone, color: primary),
+            _animate(
+              6,
+              _profileField(
+                context,
+                controller: phoneController,
+                label: "Phone Number",
+                icon: Icons.phone,
               ),
             ),
-
             const SizedBox(height: 15),
 
-            TextField(
-              controller: universityController,
-              decoration: InputDecoration(
-                labelText: "University",
-                prefixIcon: Icon(Icons.school, color: primary),
+            _animate(
+              7,
+              _profileField(
+                context,
+                controller: universityController,
+                label: "University",
+                icon: Icons.school,
               ),
             ),
 
             const SizedBox(height: 25),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: saveProfile,
-                icon: const Icon(Icons.save),
-                label: const Text("Save Changes"),
+            _animate(
+              8,
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  onPressed: saveProfile,
+                  icon: const Icon(Icons.save, color: Colors.white),
+                  label: const Text(
+                    "Save Changes",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
             ),
 
             const SizedBox(height: 100),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _profileField(
+      BuildContext context, {
+        required TextEditingController controller,
+        required String label,
+        required IconData icon,
+      }) {
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return TextField(
+      controller: controller,
+      style: Theme.of(context).textTheme.bodyLarge,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: primary),
       ),
     );
   }

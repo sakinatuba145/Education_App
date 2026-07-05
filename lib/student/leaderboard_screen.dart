@@ -77,7 +77,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: AppColors.studioCream,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,9 +91,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.leaderboard_rounded, color: AppColors.primary, size: 28),
+                          Icon(Icons.emoji_events_rounded, color: AppColors.studioGoldDark, size: 28),
                           SizedBox(width: 10),
-                          Text('Leaderboard', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.dark)),
+                          Text('Trophies', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.studioInk)),
                         ],
                       ),
                       SizedBox(height: 4),

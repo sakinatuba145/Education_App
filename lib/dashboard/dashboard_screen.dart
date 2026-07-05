@@ -177,7 +177,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Expanded(
                         // Course Catalog (2) and Learn Hub (1) manage their own scroll/layout
                         child: (_selectedIndex == 1 || _selectedIndex == 2)
-                            ? _buildPageContent(isMobile, isTablet, isDesktop)
+                            ? Container(
+                                color: _isDarkMode ? Colors.grey[850] : AppColors.studioCream,
+                                child: _buildPageContent(isMobile, isTablet, isDesktop),
+                              )
                             : Container(
                                 color: _isDarkMode
                                     ? Colors.grey[850]

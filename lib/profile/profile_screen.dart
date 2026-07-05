@@ -127,11 +127,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final earned = _achievements;
 
     return Scaffold(
+      backgroundColor: AppColors.studioCream,
       appBar: AppBar(
         title: const Text('Profile'),
         centerTitle: true,
+        backgroundColor: AppColors.studioCream,
+        foregroundColor: AppColors.studioInk,
+        elevation: 0,
         actions: [
-          IconButton(icon: const Icon(Icons.refresh_rounded), onPressed: _load, tooltip: 'Refresh'),
+          IconButton(icon: const Icon(Icons.refresh_rounded, color: AppColors.studioGoldDark), onPressed: _load, tooltip: 'Refresh'),
         ],
       ),
       body: RefreshIndicator(

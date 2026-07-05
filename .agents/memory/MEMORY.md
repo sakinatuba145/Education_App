@@ -11,3 +11,4 @@
 - [Teacher Course Studio](teacher-course-studio.md) — TeacherCourseHubScreen is 5-tab Course Studio (Overview/Content/Quiz/Students/Analytics); TeacherDashboardScreen is course list + FAB only; LessonEditorScreen exists but is no longer navigated to from hub.
 - [Lesson YouTube inline](lesson-youtube.md) — youtubeUrl/notes/assignmentTitle/assignmentInstructions stored directly on lesson Firestore doc; _LessonCard in TeacherCourseHubScreen reads/writes these inline without going through LessonModel.
 - [Husna/Sakina branch naming trap](husna-branch-naming.md) — a `revert-N-<branch>` branch can be empty; check the un-reverted base branch (same name, no prefix) for real work.
+- [Inline video playback](inline-video-playback.md) — shared `InlineVideoPlayer` widget (YouTube iframe + video_player) replaces dart:html/url_launcher hacks; keeps video playback in-app on web/Android/iOS.

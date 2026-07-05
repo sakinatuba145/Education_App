@@ -195,3 +195,27 @@ What we did:
 - Rebuilt and restarted the app to confirm it boots cleanly end-to-end with the finished design.
 
 Why: This closes out the student portal redesign — every phase of the approved plan (sidebar, navigation, top bar, dashboard content, app-wide styling, About/Contact pages, and final QA) is now complete.
+
+---
+
+### Changelog 16 — Fixed header duplication across every page
+
+File(s): `lib/dashboard/dashboard_screen.dart`, `lib/student/student_learn_hub_screen.dart`, `lib/student/course_discovery_screen_premium.dart`, `lib/student/leaderboard_screen.dart`
+
+What it was: Every page in the student portal showed two headers stacked on top of each other — the top navigation bar repeated the page title and a "Welcome back" message, and then the page itself showed its own header right below it.
+
+What we did: Cleaned up the top navigation bar so it only shows the search field, notification/globe/dark-mode icons, and the profile avatar. Added a single, page-specific header to Dashboard, My Learning, and Course Catalog. Gave the Trophies page (Leaderboard) a `showHeader` option so it can hide its header when it's shown inside the My Learning "Ranking" tab (which already has its own section header), avoiding a double header there too.
+
+Why: The team lead reported every page looked cluttered with two headers. Now each page shows exactly one clear header, and the top bar is simpler.
+
+---
+
+### Changelog 17 — Fixed videos playing in a separate/external window instead of inside the app
+
+File(s): New `lib/core/widgets/inline_video_player.dart`; updated `lib/student/course_player_screen.dart`, `lib/courses/lesson_player_screen_premium.dart`
+
+What it was: When a student clicked play on a lesson's YouTube (or other) video, the app either launched an external browser tab/window, or (on the web-only course player) tried a workaround that only worked on the web version and would have completely broken the app if built for Android or iOS phones.
+
+What we did: Built one shared, reusable video player component (`InlineVideoPlayer`) that plays videos directly inside the app screen — never in a separate window or browser tab. It automatically detects YouTube links and plays them using an embedded YouTube player, and plays any other direct video file (like an mp4) using a standard built-in video player with play/pause and a seek bar. This same component now works identically whether the app is running in a web browser, on Android, or on iOS. Removed the old browser-only workaround code that could have broken native mobile builds.
+
+Why: The team lead flagged broken video playback as the single biggest issue in the app. Videos now play inline everywhere the app runs, matching what the team asked for.

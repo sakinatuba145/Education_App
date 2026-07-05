@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/widgets/inline_video_player.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
 import 'package:education_app/student/student_project_screen.dart';
 import 'package:education_app/quiz/quiz_player_screen_premium.dart';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 
 // ─── brand tokens ────────────────────────────────────────────────────────────
 const _orange = AppColors.primary;
@@ -717,22 +715,6 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
           ]),
         ),
 
-        // ── Open video button (when video detected) ──────────────────────
-        if (videoUrl != null && videoUrl.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-            child: OutlinedButton.icon(
-              onPressed: () => launchUrl(Uri.parse(videoUrl)),
-              icon: const Icon(Icons.open_in_new_rounded, size: 15),
-              label: const Text('Open video in browser'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: _orange,
-                side: BorderSide(color: _orange.withValues(alpha: 0.4)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-          ),
-
         // ── Quiz / Assignment section ─────────────────────────────────────
         _buildQuizSection(),
 
@@ -990,62 +972,12 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
   // ── Video Zone ───────────────────────────────────────────────────────────
 
   Widget _buildVideoZone(String url, String type) {
-    final ytId = _extractYouTubeId(url);
-    if (ytId != null) return _buildYouTubeEmbed(ytId, url);
-
-    return GestureDetector(
-      onTap: () => launchUrl(Uri.parse(url)),
-      child: Container(
-        width: double.infinity,
-        constraints: const BoxConstraints(maxHeight: 320),
-        color: _dark,
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Stack(alignment: Alignment.center, children: [
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter, end: Alignment.bottomCenter,
-                  colors: [Color(0xFF1A1A2E), Color(0xFF0D0D1A)],
-                ),
-              ),
-            ),
-            Container(
-              width: 100, height: 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: _orange.withValues(alpha: 0.4), blurRadius: 40)],
-              ),
-            ),
-            Container(
-              width: 72, height: 72,
-              decoration: BoxDecoration(
-                color: _orange, shape: BoxShape.circle,
-                boxShadow: [BoxShadow(
-                  color: _orange.withValues(alpha: 0.4), blurRadius: 20, spreadRadius: 4)],
-              ),
-              child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 42),
-            ),
-            Positioned(
-              bottom: 16,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text('Click to play video',
-                    style: TextStyle(color: Colors.white70, fontSize: 13)),
-              ),
-            ),
-          ]),
-        ),
-      ),
+    return Container(
+      width: double.infinity,
+      constraints: const BoxConstraints(maxHeight: 320),
+      color: _dark,
+      child: InlineVideoPlayer(url: url, aspectRatio: 16 / 9),
     );
-  }
-
-  Widget _buildYouTubeEmbed(String videoId, String originalUrl) {
-    return _YoutubeInlinePlayer(videoId: videoId);
   }
 
   Widget _buildMediaPlaceholder(String type) {
@@ -1090,284 +1022,9 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
-  String? _extractYouTubeId(String url) {
-    final patterns = [
-      RegExp(r'youtu\.be/([a-zA-Z0-9_-]{11})'),
-      RegExp(r'youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})'),
-      RegExp(r'youtube\.com/embed/([a-zA-Z0-9_-]{11})'),
-      RegExp(r'youtube\.com/shorts/([a-zA-Z0-9_-]{11})'),
-    ];
-    for (final p in patterns) {
-      final m = p.firstMatch(url);
-      if (m != null) return m.group(1);
-    }
-    return null;
-  }
-
   String _formatDur(Duration d) {
     if (d.inHours > 0) return '${d.inHours}h ${d.inMinutes.remainder(60)}m';
     if (d.inMinutes > 0) return '${d.inMinutes}m';
     return '${d.inSeconds}s';
-  }
-}
-
-// ── YouTube inline player ────────────────────────────────────────────────────
-// Tap thumbnail → full-screen overlay injected directly onto document.body.
-// This avoids triple-iframe nesting (Replit preview → Flutter platform view →
-// YouTube) by putting the YouTube iframe only ONE level inside our document.
-
-class _YoutubeInlinePlayer extends StatelessWidget {
-  final String videoId;
-  const _YoutubeInlinePlayer({required this.videoId});
-
-  void _openOverlay() {
-    final watchUrl = 'https://www.youtube.com/watch?v=$videoId';
-    final embedSrc =
-        'https://www.youtube-nocookie.com/embed/$videoId'
-        '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
-    final thumbUrl =
-        'https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
-
-    final overlayId = 'yt_overlay_$videoId';
-
-    // Detect if running inside a nested iframe (e.g. Replit preview pane).
-    // YouTube blocks embedding inside nested iframes, so we show a rich
-    // thumbnail UI instead. In a real browser (production) we embed inline.
-    final isNested = html.window.self != html.window.top;
-
-    void dismiss() {
-      html.document.getElementById(overlayId)?.remove();
-    }
-
-    // ── Darkened full-screen backdrop ──────────────────────────────────────
-    final backdrop = html.DivElement()
-      ..id = overlayId
-      ..style.position = 'fixed'
-      ..style.top = '0'
-      ..style.left = '0'
-      ..style.right = '0'
-      ..style.bottom = '0'
-      ..style.backgroundColor = 'rgba(0,0,0,0.92)'
-      ..style.zIndex = '2147483647'
-      ..style.display = 'flex'
-      ..style.flexDirection = 'column'
-      ..style.alignItems = 'center'
-      ..style.justifyContent = 'center';
-
-    // ── Top bar: close button ──────────────────────────────────────────────
-    final topBar = html.DivElement()
-      ..style.width = '92vw'
-      ..style.maxWidth = '960px'
-      ..style.display = 'flex'
-      ..style.justifyContent = 'flex-end'
-      ..style.marginBottom = '10px';
-
-    final closeBtn = html.ButtonElement()
-      ..text = '✕  Close'
-      ..style.background = 'rgba(255,255,255,0.12)'
-      ..style.color = 'white'
-      ..style.border = '1px solid rgba(255,255,255,0.3)'
-      ..style.borderRadius = '8px'
-      ..style.padding = '8px 20px'
-      ..style.fontSize = '15px'
-      ..style.fontFamily = 'sans-serif'
-      ..style.cursor = 'pointer';
-    closeBtn.onClick.listen((_) => dismiss());
-    topBar.append(closeBtn);
-
-    // ── Video area ─────────────────────────────────────────────────────────
-    final wrapper = html.DivElement()
-      ..style.width = '92vw'
-      ..style.maxWidth = '960px'
-      ..style.aspectRatio = '16/9'
-      ..style.borderRadius = '14px'
-      ..style.overflow = 'hidden'
-      ..style.boxShadow = '0 24px 80px rgba(0,0,0,0.7)'
-      ..style.position = 'relative'
-      ..style.background = '#111';
-
-    if (isNested) {
-      // ── Nested context: show thumbnail + big play button ────────────────
-      // (YouTube iframe is always blocked here; show a clean UI instead.)
-      final thumb = html.ImageElement()
-        ..src = thumbUrl
-        ..style.width = '100%'
-        ..style.height = '100%'
-        ..style.objectFit = 'cover'
-        ..style.position = 'absolute'
-        ..style.top = '0'
-        ..style.left = '0';
-
-      final dim = html.DivElement()
-        ..style.position = 'absolute'
-        ..style.top = '0'
-        ..style.left = '0'
-        ..style.right = '0'
-        ..style.bottom = '0'
-        ..style.background = 'rgba(0,0,0,0.45)';
-
-      final playBtn = html.AnchorElement()
-        ..href = watchUrl
-        ..target = '_blank'
-        ..style.position = 'absolute'
-        ..style.top = '50%'
-        ..style.left = '50%'
-        ..style.transform = 'translate(-50%,-50%)'
-        ..style.width = '88px'
-        ..style.height = '88px'
-        ..style.borderRadius = '50%'
-        ..style.background = '#FF0000'
-        ..style.display = 'flex'
-        ..style.alignItems = 'center'
-        ..style.justifyContent = 'center'
-        ..style.textDecoration = 'none'
-        ..style.boxShadow = '0 8px 32px rgba(0,0,0,0.6)'
-        ..style.cursor = 'pointer';
-
-      final playIcon = html.SpanElement()
-        ..text = '▶'
-        ..style.color = 'white'
-        ..style.fontSize = '36px'
-        ..style.marginLeft = '6px';
-
-      playBtn.append(playIcon);
-
-      final label = html.DivElement()
-        ..style.position = 'absolute'
-        ..style.bottom = '20px'
-        ..style.left = '0'
-        ..style.right = '0'
-        ..style.textAlign = 'center'
-        ..style.color = 'white'
-        ..style.fontFamily = 'sans-serif'
-        ..style.fontSize = '14px'
-        ..style.opacity = '0.85'
-        ..text = 'Tap ▶ to watch — opens in a new tab';
-
-      wrapper
-        ..append(thumb)
-        ..append(dim)
-        ..append(playBtn)
-        ..append(label);
-    } else {
-      // ── Production / direct URL: embed YouTube inline ───────────────────
-      final iframe = html.IFrameElement()
-        ..src = embedSrc
-        ..style.width = '100%'
-        ..style.height = '100%'
-        ..style.border = 'none'
-        ..allow =
-            'accelerometer; autoplay; clipboard-write; encrypted-media; '
-            'gyroscope; picture-in-picture; web-share; fullscreen'
-        ..allowFullscreen = true;
-
-      // Bottom fallback link always visible under the iframe
-      final bottomLink = html.AnchorElement()
-        ..href = watchUrl
-        ..target = '_blank'
-        ..text = '▶  Open in YouTube'
-        ..style.position = 'absolute'
-        ..style.bottom = '12px'
-        ..style.right = '14px'
-        ..style.color = 'rgba(255,255,255,0.6)'
-        ..style.fontFamily = 'sans-serif'
-        ..style.fontSize = '12px'
-        ..style.textDecoration = 'underline'
-        ..style.cursor = 'pointer';
-
-      wrapper
-        ..append(iframe)
-        ..append(bottomLink);
-    }
-
-    backdrop.onClick.listen((e) {
-      if (e.target == backdrop) dismiss();
-    });
-
-    backdrop
-      ..append(topBar)
-      ..append(wrapper);
-
-    html.document.body!.append(backdrop);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final thumbUrl =
-        'https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
-
-    return Container(
-      width: double.infinity,
-      color: Colors.black,
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: GestureDetector(
-          onTap: _openOverlay,
-          child: Stack(alignment: Alignment.center, children: [
-            // Thumbnail
-            Image.network(
-              thumbUrl,
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
-              errorBuilder: (_, __, ___) => Container(
-                color: const Color(0xFF1A1A2E),
-                child: const Icon(Icons.video_library_rounded,
-                    size: 56, color: Colors.white24),
-              ),
-            ),
-            // Dim overlay
-            Container(color: Colors.black.withValues(alpha: 0.28)),
-            // Red play button
-            Container(
-              width: 72, height: 72,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF0000),
-                shape: BoxShape.circle,
-                boxShadow: [BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.45),
-                  blurRadius: 24, spreadRadius: 2,
-                )],
-              ),
-              child: const Icon(Icons.play_arrow_rounded,
-                  color: Colors.white, size: 46),
-            ),
-            // "Tap to play" label
-            Positioned(
-              bottom: 12, left: 14,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.60),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text('Tap to play',
-                    style: TextStyle(color: Colors.white, fontSize: 11,
-                        fontWeight: FontWeight.w600)),
-              ),
-            ),
-            // YouTube pill
-            Positioned(
-              bottom: 12, right: 14,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.65),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.smart_display_rounded,
-                      size: 14, color: Color(0xFFFF0000)),
-                  SizedBox(width: 4),
-                  Text('YouTube',
-                      style: TextStyle(color: Colors.white70, fontSize: 11,
-                          fontWeight: FontWeight.w600)),
-                ]),
-              ),
-            ),
-          ]),
-        ),
-      ),
-    );
   }
 }

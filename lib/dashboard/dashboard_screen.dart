@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/welcome_screen.dart';
 import 'package:education_app/courses/course_discovery_screen_premium.dart';
@@ -577,29 +576,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 _scaffoldKey.currentState?.openDrawer();
               },
             ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _pages[_selectedIndex],
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: isMobile ? 20 : 26,
-                    fontWeight: FontWeight.w700,
-                    color: textColor,
-                  ),
-                ),
-                Text(
-                  'Welcome back, ${user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student'}',
-                  style: TextStyle(
-                    fontSize: isMobile ? 12 : 14,
-                    color: textColor.withValues(alpha: 0.6),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const Spacer(),
           if (!isMobile) ...[
             Container(
               width: isDeskTop ? 300 : 200,
@@ -677,6 +654,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          children: [
+            const Icon(Icons.dashboard_rounded, color: AppColors.studioGoldDark, size: 26),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Dashboard',
+                  style: TextStyle(
+                    fontSize: isMobile ? 20 : 24,
+                    fontWeight: FontWeight.bold,
+                    color: _isDarkMode ? Colors.white : AppColors.studioInk,
+                  ),
+                ),
+                Text(
+                  'Welcome back, ${user?.displayName?.split('|').first ?? user?.email?.split('@').first ?? 'Student'}',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: (_isDarkMode ? Colors.white : AppColors.studioInk).withValues(alpha: 0.6),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: isMobile ? 16 : 20),
         _EnrolledCoursesSection(isMobile: isMobile, isDesktop: isDesktop),
         SizedBox(height: 24),
         if (isDesktop)

@@ -32,17 +32,17 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: AppColors.studioCream,
       body: SafeArea(
         child: Column(
           children: [
             Container(
-              color: Colors.white,
+              color: AppColors.studioCream,
               child: TabBar(
                 controller: _tabController,
-                labelColor: AppColors.primary,
-                unselectedLabelColor: Colors.grey.shade500,
-                indicatorColor: AppColors.primary,
+                labelColor: AppColors.studioGoldDark,
+                unselectedLabelColor: AppColors.studioInk.withValues(alpha: 0.5),
+                indicatorColor: AppColors.studioGold,
                 indicatorWeight: 3,
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,

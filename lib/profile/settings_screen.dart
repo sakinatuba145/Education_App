@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/theme_provider.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/welcome_screen.dart';
@@ -54,9 +55,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
+      backgroundColor: AppColors.studioCream,
       appBar: AppBar(
         title: const Text('Settings'),
         centerTitle: true,
+        backgroundColor: AppColors.studioCream,
+        foregroundColor: AppColors.studioInk,
+        elevation: 0,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

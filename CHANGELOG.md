@@ -116,3 +116,11 @@ This file tracks every change made to the app outside of the Teacher module (`li
 - Restyled the "Activity Overview" chart and "Top Students" cards to use the same gold/cream palette instead of the old plain orange.
 - The dark mode toggle still works exactly as before and is unaffected by this redesign.
 **Why:** The team lead approved a new gold/cream visual identity for the student portal (matching a supplied reference screenshot), and this brings the sidebar, navigation, and top bar in line with that design. The Teacher module (`lib/teacher/**`) was not touched.
+
+---
+
+### Changelog 14 — Extended the gold/cream theme to the rest of the student portal (Phase 3, 4 & 5)
+**File(s):** `lib/dashboard/dashboard_screen.dart`, `lib/student/student_learn_hub_screen.dart`, `lib/student/leaderboard_screen.dart`, `lib/profile/profile_screen.dart`, `lib/profile/settings_screen.dart`
+**What it was:** After Changelog 13, only the sidebar and top bar had the new look — the My Learning tabs, Trophies (leaderboard), Course Catalog background, Profile, and Settings pages still used the old white/blue styling, so the app felt inconsistent as students moved between pages.
+**What we did:** Carried the same gold/cream colors into the rest of the student experience: the My Learning tab bar, the Trophies page (renamed from "Leaderboard" to match the sidebar and given a trophy icon), the Course Catalog's background, and the Profile/Settings page headers.
+**Why:** So the whole student portal feels like one consistent, finished design instead of a redesigned sidebar bolted onto old-looking pages.

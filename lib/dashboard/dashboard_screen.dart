@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,15 +39,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<QuizResult> _recentQuizResults = [];
   bool _activitiesLoading = true;
   int _enrolledCount = 0;
-  final List<StudentModel> _topStudents = [
-    StudentModel(name: "Ali", grade: "A", score: 95, image: "assets/images/flutter.png"),
-    StudentModel(name: "Sara", grade: "A+", score: 88, image: "assets/images/flutter.png"),
-  ];
+  List<StudentModel> _topStudents = [];
 
   @override
   void initState() {
     super.initState();
     _loadActivities();
+    _loadTopStudents();
   }
 
   Future<void> _loadActivities() async {
@@ -64,8 +63,72 @@ class _DashboardScreenState extends State<DashboardScreen> {
           _activitiesLoading = false;
         });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('DashboardScreen: failed to load activities: $e');
       if (mounted) setState(() => _activitiesLoading = false);
+    }
+  }
+
+  /// Builds the "Top Students" leaderboard preview from real quiz results
+  /// stored in Firestore (same source used by the full Leaderboard screen),
+  /// instead of the placeholder Ali/Sara sample data.
+  Future<void> _loadTopStudents() async {
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collectionGroup('quiz_results')
+          .get();
+
+      final Map<String, _StudentAggregate> agg = {};
+      for (final doc in snap.docs) {
+        final data = doc.data();
+        final uid = data['userId'] as String? ?? '';
+        if (uid.isEmpty) continue;
+        final score = (data['score'] ?? 0) as int;
+        final total = (data['totalQuestions'] ?? 1) as int;
+        final pct = total > 0 ? score / total * 100 : 0.0;
+        agg.putIfAbsent(uid, () => _StudentAggregate()).add(pct);
+      }
+
+      final students = <StudentModel>[];
+      for (final entry in agg.entries) {
+        String name = 'Student';
+        try {
+          final userDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(entry.key)
+              .get();
+          if (userDoc.exists) {
+            final raw = userDoc.data()?['name'] as String? ?? '';
+            final parsed = raw.split('|').first.trim();
+            if (parsed.isNotEmpty) name = parsed;
+          }
+        } catch (e) {
+          debugPrint('DashboardScreen: failed to load student name: $e');
+        }
+        final avg = entry.value.average;
+        students.add(StudentModel(
+          name: name,
+          grade: avg >= 90
+              ? 'A+'
+              : avg >= 80
+                  ? 'A'
+                  : avg >= 70
+                      ? 'B'
+                      : 'C',
+          score: avg.round(),
+          image: 'assets/images/flutter.png',
+        ));
+      }
+
+      students.sort((a, b) => b.score.compareTo(a.score));
+
+      if (mounted) {
+        setState(() {
+          _topStudents = students.take(5).toList();
+        });
+      }
+    } catch (e) {
+      debugPrint('DashboardScreen: failed to load top students: $e');
     }
   }
 
@@ -270,7 +333,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: EdgeInsets.all(10),
           child: CircleAvatar(
             radius: isDesktop ? 40 : 25,
-            backgroundImage: AssetImage('images/time.png'),
+            backgroundColor: Colors.white24,
+            child: Icon(
+              Icons.person,
+              color: Colors.white,
+              size: isDesktop ? 40 : 25,
+            ),
           ),
         ),
         if (isDesktop) ...[
@@ -310,7 +378,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           label: 'Settings',
           isSelected: false,
           isDesktop: isDesktop,
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            );
+          },
         ),
       ],
     );
@@ -434,7 +507,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           if (!isMobile) ...[
             SizedBox(width: 16),
-            CircleAvatar(backgroundImage: AssetImage('images/str.png')),
+            CircleAvatar(
+              backgroundColor: _isDarkMode ? Colors.grey[700] : Colors.grey[300],
+              child: Icon(
+                Icons.person,
+                color: _isDarkMode ? Colors.white70 : Colors.grey[700],
+              ),
+            ),
           ],
         ],
       ),
@@ -935,5 +1014,17 @@ class _EnrolledCoursesSectionState extends State<_EnrolledCoursesSection> {
       child: const Icon(Icons.video_library, color: AppColors.primary, size: 28),
     );
   }
+}
+
+class _StudentAggregate {
+  double _totalPct = 0;
+  int _count = 0;
+
+  void add(double pct) {
+    _totalPct += pct;
+    _count++;
+  }
+
+  double get average => _count > 0 ? _totalPct / _count : 0;
 }
 

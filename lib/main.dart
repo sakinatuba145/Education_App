@@ -1,4 +1,3 @@
-import 'package:education_app/courses/course_screen.dart';
 import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'features/forgot_password.dart';
 import 'firebase_options.dart';
 
-import 'courses/course_bloc.dart';
 import 'theme_provider.dart';
 
 import 'core/constants/theme.dart';
@@ -35,11 +33,8 @@ void main() async {
   await SharedPreferencesHelper.init();
 
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => CourseBloc()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()..loadTheme()),
-      ],
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider()..loadTheme(),
       child: const MyApp(),
     ),
   );
@@ -69,7 +64,6 @@ class MyApp extends StatelessWidget {
         'progress_screen': (context) => const ProgressScreen(),
         'favorites_screen': (context) => const FavoritesScreen(),
         'teacher_create_exam': (context) => const TeacherCreateExamScreen(),
-        CourseScreen.id: (context) => CourseScreen(),
         QuizScreen.id: (context) => QuizScreen(
               examId: ModalRoute.of(context)!.settings.arguments as String,
             ),

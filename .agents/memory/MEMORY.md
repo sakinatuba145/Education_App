@@ -1,4 +1,5 @@
-- [Student portal structure](student-portal.md) — Tab 0=Home, 1=Explore, 2=Learn(StudentLearnHubScreen), 3=Profile; LearnHub has 4 sub-tabs: Quizzes/Flashcards/Puzzle/Leaderboard.
+- [Student portal structure](student-portal.md) — Tab 0=Dashboard, 1=My Learning(StudentLearnHubScreen), 2=Course Catalog, 3=Trophies(LeaderboardScreen); LearnHub has 4 sub-tabs: Quizzes/Flashcards/Puzzle/Leaderboard.
+- [Student portal gold/cream theme](student-portal-gold-theme.md) — dashboard_screen.dart sidebar/topbar restyled to gold/cream per approved screenshot; theme tokens are additive-only in app_colors.dart, never touch teacher module.
 - [Quiz builder wiring](quiz-builder-wiring.md) — QuizBuilderScreen needs courseId+lessonId+quizId+quizTitle; quizId must be a real Firestore doc ID (new or existing), not auto-generated client-side.
 - [Quiz navigation pattern](quiz-navigation.md) — Any "open quiz" button must fetch-or-create the quiz doc first; _openQuizBuilder() in TeacherCourseHubScreen is the reference impl.
 - [Firestore seed accounts](firestore-seed-accounts.md) — Three test accounts exist in Firebase Auth and Firestore users collection; roles encoded in displayName as "Name|role".

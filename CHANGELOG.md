@@ -99,3 +99,20 @@ This file tracks every change made to the app outside of the Teacher module (`li
 **What it was:** After removing the old, unreachable "Courses" screen (Changelog 02), the app was still loading its supporting setup code at startup for no reason — one unused route entry and one unused app-wide data provider.
 **What we did:** Removed the unused imports, the unused route, and the now-unnecessary provider wrapper, simplifying startup to only what the app actually uses.
 **Why:** Keeps the app's startup code lean and avoids confusion about which providers/routes are actually in use.
+
+---
+
+## Session 02
+
+### Changelog 13 — Redesigned the student portal with the team-approved gold/cream look (Phase 1 & 2: sidebar, navigation, top bar)
+**File(s):** `lib/core/constants/app_colors.dart`, `lib/dashboard/dashboard_screen.dart`, `lib/dashboard/student_activity_widget.dart`, `lib/dashboard/top_students_widget.dart`, new `lib/student/about_us_screen.dart`, new `lib/student/contact_us_screen.dart`
+**What it was:** The student side of the app used the old blue/grey layout, and the sidebar menu only had 4 items (Home, Explore, Learn, Profile) that didn't match the gold/cream design the team lead approved.
+**What we did:**
+- Added a new set of gold/cream colors used only for the student portal, without touching colors used anywhere else in the app.
+- Rebuilt the sidebar (and the matching mobile menu) to match the approved design: a gold circular avatar with the student's initial, their name, and the full menu list — Dashboard, My Learning, Course Catalog, Trophies, Sitting, About Us, Contact Us, Sign Out — with the current page highlighted in gold.
+- Renamed the old "Explore/Learn" menu items to "Course Catalog" and "My Learning" to match the approved screen names, and added a working "Trophies" page (the leaderboard).
+- Added the two new "About Us" and "Contact Us" pages (placeholder content for now, to be finalized later) and wired them into the sidebar.
+- Restyled the top bar with a decorative "DashBoard" title, a gold-toned profile avatar (tap to open Profile), and gold notification/globe icons, on a cream background.
+- Restyled the "Activity Overview" chart and "Top Students" cards to use the same gold/cream palette instead of the old plain orange.
+- The dark mode toggle still works exactly as before and is unaffected by this redesign.
+**Why:** The team lead approved a new gold/cream visual identity for the student portal (matching a supplied reference screenshot), and this brings the sidebar, navigation, and top bar in line with that design. The Teacher module (`lib/teacher/**`) was not touched.

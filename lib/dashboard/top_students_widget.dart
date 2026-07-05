@@ -1,3 +1,4 @@
+import 'package:education_app/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class StudentModel {
@@ -15,14 +16,17 @@ class StudentModel {
 }
 class TopStudentsWidget extends StatelessWidget {
   final List<StudentModel> students;
+  final bool isDarkMode;
   const TopStudentsWidget({
     super.key,
     required this.students,
-
+    this.isDarkMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color cardColor = isDarkMode ? const Color(0xFF3A322A) : AppColors.studioGoldLight;
+    final Color textColor = isDarkMode ? Colors.white : AppColors.studioInk;
     return SizedBox(
       height: 220,
       child: ListView.builder(
@@ -36,7 +40,7 @@ class TopStudentsWidget extends StatelessWidget {
             margin: EdgeInsets.only(right: 16),
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Color(0xffFFE0B2),
+              color: cardColor,
               borderRadius:
               BorderRadius.circular(16),
             ),
@@ -44,6 +48,7 @@ class TopStudentsWidget extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 35,
+                  backgroundColor: AppColors.studioGold,
                   backgroundImage:
                     AssetImage(student.image),
                   // NetworkImage(student.image),
@@ -55,14 +60,16 @@ class TopStudentsWidget extends StatelessWidget {
                   student.name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    color: textColor,
                   ),
                 ),
 
-                Text(student.grade),
+                Text(student.grade, style: TextStyle(color: textColor.withValues(alpha: 0.7))),
                 SizedBox(height: 8),
                 Chip(
+                  backgroundColor: AppColors.studioGold,
                   label:
-                  Text("Score ${student.score}"),
+                  Text("Score ${student.score}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                 ),
               ],
             ),

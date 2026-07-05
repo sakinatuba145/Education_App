@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
@@ -44,7 +45,9 @@ class AuthService {
         role = doc.data()!['role'] as String;
         roleIsExplicit = true;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('AuthService.loginWithEmail: failed to read role from Firestore: $e');
+    }
 
     // 2. Fall back to displayName encoding
     if (role == null) {
@@ -93,7 +96,9 @@ class AuthService {
         'role': role,
         'createdAt': DateTime.now().toIso8601String(),
       });
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('AuthService.register: failed to save user profile to Firestore: $e');
+    }
 
     return user;
   }
@@ -114,7 +119,9 @@ class AuthService {
         {'role': role, 'name': name, 'email': user.email},
         SetOptions(merge: true),
       );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('AuthService.saveRoleFirstTime: failed to save role to Firestore: $e');
+    }
   }
 
   Future<String> getUserRole(String uid) async {
@@ -123,7 +130,9 @@ class AuthService {
       if (doc.exists && doc.data()?['role'] != null) {
         return doc.data()!['role'];
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('AuthService.getUserRole: failed to read role from Firestore: $e');
+    }
 
     final user = _auth.currentUser;
     if (user != null) {
@@ -160,7 +169,9 @@ class AuthService {
             'createdAt': DateTime.now().toIso8601String(),
           });
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('AuthService.signInWithGoogle: failed to save user profile to Firestore: $e');
+      }
     }
 
     return user;

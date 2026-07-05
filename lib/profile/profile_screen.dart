@@ -66,12 +66,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         loadedUniversity = data['university'] as String? ?? '';
         loadedBio = data['bio'] as String? ?? '';
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('ProfileScreen: failed to load profile from Firestore: $e');
+    }
 
     StudentStats? stats;
     try {
       stats = await _progress.getStudentStats();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('ProfileScreen: failed to load student stats: $e');
+    }
 
     if (mounted) {
       setState(() {
@@ -94,7 +98,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         {'name': name, 'email': email, 'phone': phone, 'university': university, 'bio': bio},
         SetOptions(merge: true),
       );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('ProfileScreen: failed to save profile to Firestore: $e');
+    }
   }
 
   List<_Achievement> get _achievements {

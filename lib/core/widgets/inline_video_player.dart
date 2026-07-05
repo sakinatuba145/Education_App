@@ -7,21 +7,44 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'video_nested_frame_stub.dart'
     if (dart.library.html) 'video_nested_frame_web.dart';
 
-/// Extracts a YouTube video ID from common URL formats.
-/// Returns null if [url] isn't a recognizable YouTube link.
+/// Extracts a YouTube video ID from common URL formats (youtu.be, watch?v=,
+/// embed/, shorts/, live/, m.youtube.com, with extra query params like
+/// &t=30s or &list=..., etc). Returns null if [url] isn't a YouTube link.
+///
+/// Delegates to `YoutubePlayerController.convertUrlToId`, which is the
+/// package's own battle-tested parser and covers far more URL shapes than a
+/// hand-rolled regex would.
 String? extractYouTubeId(String url) {
-  final patterns = [
-    RegExp(r'youtu\.be/([a-zA-Z0-9_-]{11})'),
-    RegExp(r'youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})'),
-    RegExp(r'youtube\.com/embed/([a-zA-Z0-9_-]{11})'),
-    RegExp(r'youtube\.com/shorts/([a-zA-Z0-9_-]{11})'),
-    RegExp(r'youtube\.com/live/([a-zA-Z0-9_-]{11})'),
-  ];
-  for (final p in patterns) {
-    final m = p.firstMatch(url);
-    if (m != null) return m.group(1);
-  }
-  return null;
+  return YoutubePlayerController.convertUrlToId(url);
+}
+
+/// File extensions that `video_player` can actually play directly.
+const _directVideoExtensions = [
+  '.mp4', '.mov', '.m4v', '.webm', '.ogg', '.ogv', '.m3u8', '.mkv', '.3gp',
+];
+
+/// Hosts that are known to serve raw, directly-playable video files even
+/// when the URL itself has no recognizable file extension (e.g. Firebase
+/// Storage download URLs, which end in a token, not `.mp4`).
+const _directVideoHosts = [
+  'firebasestorage.googleapis.com',
+  'storage.googleapis.com',
+];
+
+/// Returns true if [url] looks like a direct, playable video file rather
+/// than a "watch page" link (YouTube handled separately, this is for the
+/// video_player fallback). Links to Google Drive, Dropbox, Vimeo, Facebook,
+/// etc. "share" pages are NOT direct video files — those pages return HTML,
+/// not a video stream, so `video_player` cannot play them and would only
+/// ever show "Unable to load this video".
+bool isLikelyDirectVideoUrl(String url) {
+  final uri = Uri.tryParse(url);
+  if (uri == null) return false;
+  final path = uri.path.toLowerCase();
+  if (_directVideoExtensions.any((ext) => path.endsWith(ext))) return true;
+  final host = uri.host.toLowerCase();
+  if (_directVideoHosts.any((h) => host.contains(h))) return true;
+  return false;
 }
 
 /// A single widget that plays a video URL **inline**, right inside the app UI
@@ -72,10 +95,79 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
         aspectRatio: widget.aspectRatio,
       );
     }
-    return _InlineDirectVideoPlayer(
-      key: ValueKey('vid_${widget.url}'),
+    if (isLikelyDirectVideoUrl(widget.url)) {
+      return _InlineDirectVideoPlayer(
+        key: ValueKey('vid_${widget.url}'),
+        url: widget.url,
+        aspectRatio: widget.aspectRatio,
+      );
+    }
+    // Not YouTube and not a direct video file (e.g. a Google Drive/Dropbox
+    // "share" page link, a Vimeo/Facebook watch page, etc). Those pages
+    // return HTML, not a video stream, so `video_player` cannot play them —
+    // trying anyway just produces a confusing "unable to load" error.
+    // Show a clear message and a tap-through instead of pretending it works.
+    return _UnsupportedVideoSource(
+      key: ValueKey('unsupported_${widget.url}'),
       url: widget.url,
       aspectRatio: widget.aspectRatio,
+    );
+  }
+}
+
+// ── Unsupported link (not YouTube, not a direct video file) ────────────────
+class _UnsupportedVideoSource extends StatelessWidget {
+  final String url;
+  final double aspectRatio;
+
+  const _UnsupportedVideoSource({
+    super.key,
+    required this.url,
+    required this.aspectRatio,
+  });
+
+  Future<void> _openLink() async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: AspectRatio(
+        aspectRatio: aspectRatio,
+        child: GestureDetector(
+          onTap: _openLink,
+          child: Container(
+            color: Colors.black,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(Icons.link_off_rounded, color: Colors.white54, size: 40),
+                SizedBox(height: 8),
+                Text(
+                  "This video link can't be played inline",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 4),
+                  child: Text(
+                    'Only YouTube links and direct video files (.mp4 etc) '
+                    'are supported. Tap to open the link instead.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white38, fontSize: 11),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

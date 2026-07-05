@@ -14,6 +14,9 @@ import 'package:education_app/student/progress_service.dart';
 import 'package:education_app/student/my_courses_screen.dart';
 import 'package:education_app/student/course_player_screen.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/dashboard/student_activity_widget.dart';
+import 'package:education_app/dashboard/top_students_widget.dart';
+import 'package:education_app/dashboard/chartdata.dart';
 
 class DashboardScreen extends StatefulWidget {
   static String id = 'dashboard_screen';
@@ -35,6 +38,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<QuizResult> _recentQuizResults = [];
   bool _activitiesLoading = true;
   int _enrolledCount = 0;
+  final List<StudentModel> _topStudents = [
+    StudentModel(name: "Ali", grade: "A", score: 95, image: "assets/images/flutter.png"),
+    StudentModel(name: "Sara", grade: "A+", score: 88, image: "assets/images/flutter.png"),
+  ];
 
   @override
   void initState() {
@@ -475,6 +482,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
           SizedBox(height: 16),
           _buildRecentActivities(),
         ],
+        SizedBox(height: 24),
+        Text(
+          'Activity Overview',
+          style: TextStyle(
+            fontSize: isMobile ? 18 : 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 12),
+        StudentActivityChartWidget(chartData: chartData),
+        SizedBox(height: 24),
+        Text(
+          'Top Students',
+          style: TextStyle(
+            fontSize: isMobile ? 18 : 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 12),
+        TopStudentsWidget(students: _topStudents),
       ],
     );
   }

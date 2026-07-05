@@ -7,3 +7,4 @@
 - [Dead legacy files](dead-code.md) — dashboard_services.dart, quiz_services.dart, quiz_repository.dart, course_bloc.dart are unused dead code; course_screen.dart now redirects to CourseDiscoveryScreenPremium.
 - [Teacher Course Studio](teacher-course-studio.md) — TeacherCourseHubScreen is 5-tab Course Studio (Overview/Content/Quiz/Students/Analytics); TeacherDashboardScreen is course list + FAB only; LessonEditorScreen exists but is no longer navigated to from hub.
 - [Lesson YouTube inline](lesson-youtube.md) — youtubeUrl/notes/assignmentTitle/assignmentInstructions stored directly on lesson Firestore doc; _LessonCard in TeacherCourseHubScreen reads/writes these inline without going through LessonModel.
+- [Husna/Sakina branch naming trap](husna-branch-naming.md) — a `revert-N-<branch>` branch can be empty; check the un-reverted base branch (same name, no prefix) for real work.

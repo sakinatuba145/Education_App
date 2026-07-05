@@ -1,6 +1,11 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+
+import 'video_nested_frame_stub.dart'
+    if (dart.library.html) 'video_nested_frame_web.dart';
 
 /// Extracts a YouTube video ID from common URL formats.
 /// Returns null if [url] isn't a recognizable YouTube link.
@@ -91,11 +96,23 @@ class _InlineYoutubePlayer extends StatefulWidget {
 }
 
 class _InlineYoutubePlayerState extends State<_InlineYoutubePlayer> {
-  late YoutubePlayerController _controller;
+  YoutubePlayerController? _controller;
+  bool _blockedByNestedFrame = false;
 
   @override
   void initState() {
     super.initState();
+    // Some hosting contexts (e.g. a preview tool that shows this app inside
+    // an iframe within another iframe) get blocked by YouTube's own
+    // X-Frame-Options/frame-ancestors policy, which would otherwise render
+    // as a blank box with no error. Detect that case up front and offer a
+    // "watch on YouTube" tap-through instead. This never triggers on
+    // Android/iOS (real WebView, not an iframe) or on a normally deployed
+    // web app (not nested), so real users always get true inline playback.
+    if (kIsWeb && isRunningInNestedIframe()) {
+      _blockedByNestedFrame = true;
+      return;
+    }
     _controller = YoutubePlayerController.fromVideoId(
       videoId: widget.videoId,
       autoPlay: false,
@@ -113,23 +130,64 @@ class _InlineYoutubePlayerState extends State<_InlineYoutubePlayer> {
   void didUpdateWidget(covariant _InlineYoutubePlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.videoId != widget.videoId) {
-      _controller.loadVideoById(videoId: widget.videoId);
+      _controller?.loadVideoById(videoId: widget.videoId);
     }
   }
 
   @override
   void dispose() {
-    _controller.close();
+    _controller?.close();
     super.dispose();
+  }
+
+  Future<void> _openOnYoutube() async {
+    final uri = Uri.parse('https://www.youtube.com/watch?v=${widget.videoId}');
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_blockedByNestedFrame) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: AspectRatio(
+          aspectRatio: widget.aspectRatio,
+          child: GestureDetector(
+            onTap: _openOnYoutube,
+            child: Container(
+              color: Colors.black,
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.play_circle_fill,
+                      color: Colors.white, size: 64),
+                  SizedBox(height: 8),
+                  Text(
+                    'Tap to watch on YouTube',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(
+                      '(preview embedding is restricted here — plays\ninline normally on the published app and mobile)',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white38, fontSize: 11),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: AspectRatio(
         aspectRatio: widget.aspectRatio,
-        child: YoutubePlayer(controller: _controller),
+        child: YoutubePlayer(controller: _controller!),
       ),
     );
   }

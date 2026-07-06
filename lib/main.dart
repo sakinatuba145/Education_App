@@ -1,3 +1,4 @@
+import 'package:education_app/core/I18n/app_locales.dart';
 import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/courses/course_screen.dart';
 import 'package:education_app/dashboard/dashboard_content.dart';
@@ -54,8 +55,9 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       translations: AppTranslations(),
-      locale: Locale('en'),
+      locale: AppLocales.deviceLocale,
       fallbackLocale: Locale('en'),
+
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode:themeProvider.themeMode,

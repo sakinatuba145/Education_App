@@ -120,5 +120,72 @@ class PashtoLanguage extends AppTranslationsKeys {
     AppMessages.aboutApp: 'د اپ په اړه',
     AppMessages.version: 'نسخه',
     AppMessages.saveChanges: 'بدلونونه خوندي کړئ',
+    // Validation & Errors
+    AppMessages.passwordMinLength: 'پاسورډ باید لږ تر لږه ۶ توري ولري',
+    AppMessages.emailAlreadyRegistered: 'دا ایمیل مخکې ثبت شوی دی',
+    AppMessages.noAccountWithEmail: 'د دې ایمیل لپاره حساب ونه موندل شو',
+    AppMessages.incorrectPassword: 'پاسورډ ناسم دی',
+    AppMessages.invalidEmail: 'یو معتبر ایمیل داخل کړئ',
+    AppMessages.checkInternet: 'خپل انټرنیټ اتصال وګورئ',
+    AppMessages.somethingWentWrong: 'یوه ستونزه رامنځته شوه، بیا هڅه وکړئ',
+    AppMessages.googleSignInFailed: 'د ګوګل له لارې ننوتل ناکام شول',
+
+//  Forgot Password
+    AppMessages.forgotPassword: 'پاسورډ هېر شوی',
+    AppMessages.forgotPasswordSubtitle: 'اندېښنه مه کوئ، موږ به د پاسورډ په بیا تنظیم کې مرسته وکړو',
+    AppMessages.resetPasswordInstruction: 'د پاسورډ د بیا تنظیم لپاره خپل ایمیل داخل کړئ',
+    AppMessages.emailRequired: 'ایمیل اړین دی',
+    AppMessages.sendResetLink: 'د بیا تنظیم لینک واستوئ',
+    AppMessages.backToLogin: 'بېرته ننوتل',
+    AppMessages.resetLinkSent: 'د بیا تنظیم لینک واستول شو',
+
+// Login
+    AppMessages.welcomeBack: 'بیا ښه راغلاست',
+    AppMessages.continueJourney: 'خپل د زده کړې سفر ته دوام ورکړئ',
+    AppMessages.passwordRequired: 'پاسورډ اړین دی',
+    AppMessages.forgotPasswordQuestion: 'پاسورډ مو هېر کړی؟',
+    AppMessages.login: 'ننوتل',
+    AppMessages.noAccountRegister: 'حساب نه لرئ؟ ثبت‌نام وکړئ',
+
+//  Register
+    AppMessages.createAccountTitle: 'حساب جوړ کړئ',
+    AppMessages.startLearningJourney: 'نن خپل د زده کړې سفر پیل کړئ',
+    AppMessages.academy: 'اکاډمي',
+    AppMessages.or: 'یا',
+    AppMessages.continueWithGoogle: 'د ګوګل له لارې دوام ورکړئ',
+    AppMessages.alreadyHaveAccountLogin: 'حساب لرئ؟ ننوتل',
+
+//  Teacher Exam
+    AppMessages.createExam: 'ازموینه جوړه کړئ',
+    AppMessages.examTitle: 'د ازموینې سرلیک',
+    AppMessages.subject: 'مضمون',
+    AppMessages.addQuestions: 'پوښتنې اضافه کړئ',
+    AppMessages.mcq: 'څو انتخابي',
+    AppMessages.text: 'متن',
+    AppMessages.question: 'پوښتنه',
+    AppMessages.option1: '۱ انتخاب',
+    AppMessages.option2: '۲ انتخاب',
+    AppMessages.option3: '۳ انتخاب',
+    AppMessages.option4: '۴ انتخاب',
+    AppMessages.correctAnswer1: 'سم ځواب ۱',
+    AppMessages.correctAnswer2: 'سم ځواب ۲',
+    AppMessages.correctAnswer3: 'سم ځواب ۳',
+    AppMessages.correctAnswer4: 'سم ځواب ۴',
+    AppMessages.addQuestion: 'پوښتنه اضافه کړئ',
+    AppMessages.previewQuiz: 'د ازموینې مخکتنه',
+
+// Quiz
+    AppMessages.writeAnswer: 'خپل ځواب ولیکئ...',
+    AppMessages.previous: 'مخکینی',
+    AppMessages.next: 'بل',
+    AppMessages.submit: 'سپارل',
+
+//  Result
+    AppMessages.result: 'پایله',
+    AppMessages.yourAnswer: 'ستاسو ځواب:',
+    AppMessages.correctAnswer: 'سم ځواب:',
+    AppMessages.correct: 'سم',
+    AppMessages.wrong: 'ناسم',
+    AppMessages.backToHome: 'کور پاڼې ته ستنېدل',
   };
 }

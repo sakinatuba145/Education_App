@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
+import 'chartbar/student_activity_screen.dart';
 import 'core/I18n/translations.dart';
 import 'features/forgot_password.dart';
 import 'firebase_options.dart';
@@ -69,12 +70,13 @@ class MyApp extends StatelessWidget {
         DashboardHome.id: (context) => DashboardHome(),
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
-        TeacherCreateExamScreen.id: (context)=> TeacherCreateExamScreen(),
-        QuizScreen.id: (context) => QuizScreen(examId: (ModalRoute.of(context)!.settings.arguments as ExamModel).id),
+        // TeacherCreateExamScreen.id: (context)=> TeacherCreateExamScreen(),
+        // QuizScreen.id: (context) => QuizScreen(examId: (ModalRoute.of(context)!.settings.arguments as ExamModel).id),
         DashboardContent.id: (context) => DashboardContent(),
+        StudentActivityScreen.id: (context) => StudentActivityScreen(studentId: 'alpha',),
       },
 
-      initialRoute: WelcomeScreen.id,
+      initialRoute: StudentActivityScreen.id,
 
     );
   }

@@ -1,5 +1,8 @@
+import 'package:education_app/core/I18n/app_locales.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/courses/course_screen.dart';
 import 'package:education_app/dashboard/dashboard_content.dart';
+import 'package:education_app/quiz/create_exam_screen.dart';
 import 'package:education_app/quiz/quiz_model.dart';
 import 'package:education_app/quiz/quiz_screen.dart';
 import 'package:flutter/material.dart';
@@ -52,10 +55,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       translations: AppTranslations(),
-      locale: Locale('en'),
+      locale: AppLocales.deviceLocale,
       fallbackLocale: Locale('en'),
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode:themeProvider.themeMode,
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
@@ -65,11 +69,12 @@ class MyApp extends StatelessWidget {
         DashboardHome.id: (context) => DashboardHome(),
         TeacherDashboardScreen.id: (context) => TeacherDashboardScreen(),
         CourseScreen.id: (context) => CourseScreen(),
-        QuizScreen.id: (context) => QuizScreen(exam: ModalRoute.of(context)!. settings.arguments as ExamModel,),
+        TeacherCreateExamScreen.id: (context)=> TeacherCreateExamScreen(),
+        QuizScreen.id: (context) => QuizScreen(examId: (ModalRoute.of(context)!.settings.arguments as ExamModel).id),
         DashboardContent.id: (context) => DashboardContent(),
       },
 
-      initialRoute: DashboardContent.id,
+      initialRoute: WelcomeScreen.id,
 
     );
   }

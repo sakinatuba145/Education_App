@@ -1,63 +1,124 @@
 import 'package:education_app/core/I18n/translations.dart';
-
 import 'messages.dart';
 
 class PashtoLanguage extends AppTranslationsKeys {
   @override
   Map<String, String> get keys => {
-    AppMessages.learningDashboard: 'د زده‌کړې ډشبورډ',
+    // Dashboard
+    AppMessages.learningDashboard: 'د زده کړې ډشبورډ',
     AppMessages.dashboard: 'ډشبورډ',
-    AppMessages.myLearning: 'زما زده‌کړه',
-    AppMessages.courseCatalog: 'د کورسونو کتلاګ',
+    AppMessages.myLearning: 'زما زده کړه',
+    AppMessages.courseCatalog: 'د کورسونو فهرست',
     AppMessages.trophies: 'جایزې',
+    AppMessages.courses: 'کورسونه',
+    AppMessages.studentActivity: 'د زده کوونکي فعالیت',
+    AppMessages.score: 'ستاسو نمره',
+
+    // Navigation / Actions
     AppMessages.setting: 'تنظیمات',
     AppMessages.aboutUs: 'زموږ په اړه',
     AppMessages.contactUs: 'اړیکه',
     AppMessages.signOut: 'وتل',
-    AppMessages.studentActivity: 'د زده‌کوونکي فعالیت',
-    AppMessages.score: 'ستاسو نمره',
-    AppMessages.upWard: 'پورته ۲۵',
-    AppMessages.email: 'ایمیل',
-    AppMessages.password: 'پټ نوم',
+    AppMessages.edit: 'سمول',
+    AppMessages.publish: 'خپرول',
     AppMessages.cancel: 'لغوه',
-    AppMessages.pause: 'درول',
-    AppMessages.select: 'انتخاب',
-    AppMessages.dragDrop: 'ټوپ کړئ یا راکش کړئ',
-    AppMessages.remaining: 'پاتې وخت',
+    AppMessages.pause: 'تمول',
+    AppMessages.select: 'انتخاب شوی',
+    AppMessages.dragDrop: 'ټپ کړئ یا کش کړئ',
+
+    // Media
     AppMessages.video: 'ویډیو',
     AppMessages.audio: 'غږ',
     AppMessages.image: 'انځور',
-    AppMessages.edit: 'سمول',
-    AppMessages.publish: 'خپورول',
-    AppMessages.courses: 'کورسونه',
-    AppMessages.start: 'زده کړه. وده. راتلونکی جوړ کړه',
-    AppMessages.discover: 'د نوې زده کړې تجربه',
-    AppMessages.isHaveAccount: 'ایا حساب لرئ؟ لاګین',
-    AppMessages.createAccount: 'حساب جوړ کړئ',
-    AppMessages.journey: 'لاره',
-    AppMessages.student: 'زده‌کوونکی',
-    AppMessages.teacher: 'استاد',
-    AppMessages.fullName: 'بشپړ نوم',
-    AppMessages.emailAddress: 'ایمیل ادرس',
-    AppMessages.confirmPassword: 'پټ نوم تایید',
-    AppMessages.enterPassword: 'مهرباني وکړئ ایمیل او پټ نوم دننه کړئ',
-    AppMessages.wrongRole: 'غلط رول انتخاب شوی',
-    AppMessages.registered: 'دا حساب ثبت شوی دی د',
-    AppMessages.switchTO: 'بدل کړئ',
-    AppMessages.lFailed: 'لاګین ناکام شو',
-    AppMessages.comeBack: 'بیا ښه راغلاست',
-    AppMessages.lContinue: 'د دوام لپاره لاګین وکړئ',
-    AppMessages.yourEmail: 'ایمیل دننه کړئ',
-    AppMessages.yourPassword: 'پټ نوم دننه کړئ',
-    AppMessages.forgot: 'پټ نوم مو هیر کړی؟',
-    AppMessages.noAccount: 'حساب نه لرئ؟',
-    AppMessages.register: 'ثبت‌نام',
-    AppMessages.pReset: 'د پټ نوم ایمیل واستول شو',
-    AppMessages.error: 'خطا',
-    AppMessages.resetP: 'پټ نوم بیا تنظیم',
-    AppMessages.sendLink: 'ایمیل دننه کړئ او لینک به واستول شي',
+
+    // Time / Status
+    AppMessages.remaining: 'پاتې وخت',
+    AppMessages.daysAgo: 'ورځې مخکې',
+    AppMessages.weeksAgo: 'اونۍ مخکې',
+    AppMessages.unknown: 'ناڅرګند',
+
+    // Auth
+    AppMessages.email: 'ایمیل',
+    AppMessages.password: 'پاسورډ',
+    AppMessages.emailAddress: 'ایمیل پته',
+    AppMessages.yourEmail: 'ایمیل داخل کړئ',
+    AppMessages.yourPassword: 'پاسورډ داخل کړئ',
+    AppMessages.confirmPassword: 'پاسورډ تایید',
+    AppMessages.enterPassword: 'ایمیل او پاسورډ داخل کړئ',
+
+    AppMessages.isHaveAccount: 'اکاونټ لرئ؟ لاګ ان',
+    AppMessages.createAccount: 'اکاونټ جوړ کړئ',
+    AppMessages.register: 'راجستر',
+    AppMessages.noAccount: 'اکاونټ نه لرئ',
+    AppMessages.forgot: 'پاسورډ هیر شوی',
+    AppMessages.resetP: 'ریسیټ پاسورډ',
+    AppMessages.sendLink: 'د ریسیټ لینک واستوئ',
     AppMessages.rLink: 'لینک واستوئ',
-    AppMessages.toLogin: 'بیرته لاګین ته',
-    AppMessages.unknown: 'ناپېژندل شوی',
+    AppMessages.toLogin: 'بیرته لاګ ان',
+
+    AppMessages.lContinue: 'د دوام لپاره لاګ ان شئ',
+    AppMessages.lFailed: 'لاګ ان ناکام شو',
+    AppMessages.comeBack: 'بیرته ښه راغلاست',
+
+    // Roles / Users
+    AppMessages.student: 'شاګرد',
+    AppMessages.teacher: 'ښوونکی',
+    AppMessages.fullName: 'بشپړ نوم',
+    AppMessages.journey: 'تعلیمي سفر',
+    AppMessages.wrongRole: 'غلط رول انتخاب شوی',
+    AppMessages.registered: 'دا حساب ثبت شوی دی',
+    AppMessages.switchTO: 'بدل کړئ',
+
+    // Start / Intro
+    AppMessages.start: 'زده کړه. وده وکړه. راتلونکی جوړ کړه',
+    AppMessages.discover: 'د عصري کورسونو سره نوی زده کړه',
+
+    // Profile
+    AppMessages.profile: 'پروفایل',
+    AppMessages.editProfile: 'پروفایل سمول',
+    AppMessages.updateProfilePhoto: 'پروفایل عکس بدلول',
+    AppMessages.memberSince: 'غړی له',
+    AppMessages.bioRole: 'بیو / رول',
+    AppMessages.phone: 'ټیلیفون',
+    AppMessages.university: 'پوهنتون',
+
+    // Progress & Learning
+    AppMessages.progress: 'پرمختګ',
+    AppMessages.myProgress: 'زما پرمختګ',
+    AppMessages.quizzes: 'کوئزونه',
+    AppMessages.achievements: 'لاسته راوړنې',
+
+    AppMessages.firstQuizCompleted: 'لومړی کوئز بشپړ شو',
+    AppMessages.firstQuizDesc: 'تاسو لومړی کوئز په بریالیتوب پای ته ورساوه.',
+
+    AppMessages.coursesFinished: 'کورسونه بشپړ شول',
+    AppMessages.coursesFinishedDesc: 'تاسو د زده کړې په لاره یاست.',
+    AppMessages.activeLearner: 'فعال زده کوونکی',
+    AppMessages.activeLearnerDesc: 'هره ورځ زده کړه وکړئ.',
+
+    // Posts
+    AppMessages.posts: 'پوسټونه',
+    AppMessages.completedFlutterUI: 'Flutter UI تمرین',
+    AppMessages.flutterUIDesc: 'د پروفایل ډیزاین شریک شوی',
+    AppMessages.learningDartOOP: 'Dart OOP زده کړه',
+    AppMessages.dartOOPDesc: 'د کلاسونو یادښتونه',
+    // Settings
+    AppMessages.favorites: 'خوښې',
+    AppMessages.language: 'ژبه',
+    AppMessages.english: 'انګلیسي',
+    AppMessages.notifications: 'خبرتیاوې',
+    AppMessages.receiveUpdates: 'اپډیټونه ترلاسه کول',
+    AppMessages.darkMode: 'تیاره حالت',
+    AppMessages.useDarkMode: 'تیاره بڼه وکاروئ',
+
+    // Support
+    AppMessages.support: 'مرسته',
+    AppMessages.privacySecurity: 'محرمیت',
+    AppMessages.managePrivacy: 'محرمیت تنظیم کړئ',
+    AppMessages.helpCenter: 'مرکزي مرسته',
+    AppMessages.getSupport: 'مرسته ترلاسه کړئ',
+    AppMessages.aboutApp: 'د اپ په اړه',
+    AppMessages.version: 'نسخه',
+    AppMessages.saveChanges: 'بدلونونه خوندي کړئ',
   };
 }

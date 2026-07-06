@@ -109,5 +109,72 @@ class ArabicLanguage extends AppTranslationsKeys {
     AppMessages.aboutApp: 'حول التطبيق',
     AppMessages.version: 'الإصدار',
     AppMessages.saveChanges: 'حفظ',
+// Validation & Errors
+    AppMessages.passwordMinLength: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل',
+    AppMessages.emailAlreadyRegistered: 'هذا البريد الإلكتروني مسجل بالفعل',
+    AppMessages.noAccountWithEmail: 'لم يتم العثور على حساب بهذا البريد الإلكتروني',
+    AppMessages.incorrectPassword: 'كلمة المرور غير صحيحة',
+    AppMessages.invalidEmail: 'أدخل عنوان بريد إلكتروني صالح',
+    AppMessages.checkInternet: 'تحقق من اتصالك بالإنترنت',
+    AppMessages.somethingWentWrong: 'حدث خطأ ما. حاول مرة أخرى',
+    AppMessages.googleSignInFailed: 'فشل تسجيل الدخول باستخدام Google',
+
+//  Forgot Password
+    AppMessages.forgotPassword: 'نسيت كلمة المرور',
+    AppMessages.forgotPasswordSubtitle: 'لا تقلق، سنساعدك في إعادة تعيين كلمة المرور',
+    AppMessages.resetPasswordInstruction: 'أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور',
+    AppMessages.emailRequired: 'البريد الإلكتروني مطلوب',
+    AppMessages.sendResetLink: 'إرسال رابط إعادة التعيين',
+    AppMessages.backToLogin: 'العودة إلى تسجيل الدخول',
+    AppMessages.resetLinkSent: 'تم إرسال رابط إعادة التعيين',
+
+// Login
+    AppMessages.welcomeBack: 'مرحبًا بعودتك',
+    AppMessages.continueJourney: 'واصل رحلة التعلم الخاصة بك',
+    AppMessages.passwordRequired: 'كلمة المرور مطلوبة',
+    AppMessages.forgotPasswordQuestion: 'هل نسيت كلمة المرور؟',
+    AppMessages.login: 'تسجيل الدخول',
+    AppMessages.noAccountRegister: 'ليس لديك حساب؟ أنشئ حسابًا',
+
+// Register
+    AppMessages.createAccountTitle: 'إنشاء حساب',
+    AppMessages.startLearningJourney: 'ابدأ رحلة التعلم الخاصة بك اليوم',
+    AppMessages.academy: 'الأكاديمية',
+    AppMessages.or: 'أو',
+    AppMessages.continueWithGoogle: 'المتابعة باستخدام Google',
+    AppMessages.alreadyHaveAccountLogin: 'لديك حساب بالفعل؟ سجّل الدخول',
+
+// Teacher Exam
+    AppMessages.createExam: 'إنشاء اختبار',
+    AppMessages.examTitle: 'عنوان الاختبار',
+    AppMessages.subject: 'المادة',
+    AppMessages.addQuestions: 'إضافة أسئلة',
+    AppMessages.mcq: 'اختيار من متعدد',
+    AppMessages.text: 'نصي',
+    AppMessages.question: 'السؤال',
+    AppMessages.option1: 'الخيار 1',
+    AppMessages.option2: 'الخيار 2',
+    AppMessages.option3: 'الخيار 3',
+    AppMessages.option4: 'الخيار 4',
+    AppMessages.correctAnswer1: 'الإجابة الصحيحة 1',
+    AppMessages.correctAnswer2: 'الإجابة الصحيحة 2',
+    AppMessages.correctAnswer3: 'الإجابة الصحيحة 3',
+    AppMessages.correctAnswer4: 'الإجابة الصحيحة 4',
+    AppMessages.addQuestion: 'إضافة سؤال',
+    AppMessages.previewQuiz: 'معاينة الاختبار',
+
+//  Quiz
+    AppMessages.writeAnswer: 'اكتب إجابتك...',
+    AppMessages.previous: 'السابق',
+    AppMessages.next: 'التالي',
+    AppMessages.submit: 'إرسال',
+
+// Result
+    AppMessages.result: 'النتيجة',
+    AppMessages.yourAnswer: 'إجابتك:',
+    AppMessages.correctAnswer: 'الإجابة الصحيحة:',
+    AppMessages.correct: 'صحيح',
+    AppMessages.wrong: 'خطأ',
+    AppMessages.backToHome: 'العودة إلى الصفحة الرئيسية',
   };
 }

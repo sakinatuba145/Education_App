@@ -121,5 +121,72 @@ class UrduLanguage extends AppTranslationsKeys {
     AppMessages.aboutApp: 'ایپ کے بارے میں',
     AppMessages.version: 'ورژن',
     AppMessages.saveChanges: 'محفوظ کریں',
+    // Validation & Errors
+    AppMessages.passwordMinLength: 'پاس ورڈ کم از کم 6 حروف پر مشتمل ہونا چاہیے',
+    AppMessages.emailAlreadyRegistered: 'یہ ای میل پہلے سے رجسٹرڈ ہے',
+    AppMessages.noAccountWithEmail: 'اس ای میل سے کوئی اکاؤنٹ نہیں ملا',
+    AppMessages.incorrectPassword: 'غلط پاس ورڈ',
+    AppMessages.invalidEmail: 'درست ای میل ایڈریس درج کریں',
+    AppMessages.checkInternet: 'اپنا انٹرنیٹ کنکشن چیک کریں',
+    AppMessages.somethingWentWrong: 'کچھ غلط ہوگیا۔ دوبارہ کوشش کریں',
+    AppMessages.googleSignInFailed: 'گوگل کے ذریعے سائن ان ناکام ہوگیا',
+
+//  Forgot Password
+    AppMessages.forgotPassword: 'پاس ورڈ بھول گئے',
+    AppMessages.forgotPasswordSubtitle: 'فکر نہ کریں، ہم پاس ورڈ ری سیٹ کرنے میں مدد کریں گے',
+    AppMessages.resetPasswordInstruction: 'پاس ورڈ ری سیٹ کرنے کے لیے اپنا ای میل درج کریں',
+    AppMessages.emailRequired: 'ای میل ضروری ہے',
+    AppMessages.sendResetLink: 'ری سیٹ لنک بھیجیں',
+    AppMessages.backToLogin: 'لاگ اِن پر واپس جائیں',
+    AppMessages.resetLinkSent: 'ری سیٹ لنک بھیج دیا گیا',
+
+// Login
+    AppMessages.welcomeBack: 'واپس خوش آمدید',
+    AppMessages.continueJourney: 'اپنا سیکھنے کا سفر جاری رکھیں',
+    AppMessages.passwordRequired: 'پاس ورڈ ضروری ہے',
+    AppMessages.forgotPasswordQuestion: 'پاس ورڈ بھول گئے؟',
+    AppMessages.login: 'لاگ اِن',
+    AppMessages.noAccountRegister: 'اکاؤنٹ نہیں ہے؟ رجسٹر کریں',
+
+//  Register
+    AppMessages.createAccountTitle: 'اکاؤنٹ بنائیں',
+    AppMessages.startLearningJourney: 'آج ہی اپنا سیکھنے کا سفر شروع کریں',
+    AppMessages.academy: 'اکیڈمی',
+    AppMessages.or: 'یا',
+    AppMessages.continueWithGoogle: 'گوگل کے ساتھ جاری رکھیں',
+    AppMessages.alreadyHaveAccountLogin: 'پہلے سے اکاؤنٹ موجود ہے؟ لاگ اِن کریں',
+
+//  Teacher Exam
+    AppMessages.createExam: 'امتحان بنائیں',
+    AppMessages.examTitle: 'امتحان کا عنوان',
+    AppMessages.subject: 'مضمون',
+    AppMessages.addQuestions: 'سوالات شامل کریں',
+    AppMessages.mcq: 'کثیر الانتخابی سوال',
+    AppMessages.text: 'متن',
+    AppMessages.question: 'سوال',
+    AppMessages.option1: 'آپشن 1',
+    AppMessages.option2: 'آپشن 2',
+    AppMessages.option3: 'آپشن 3',
+    AppMessages.option4: 'آپشن 4',
+    AppMessages.correctAnswer1: 'صحیح جواب 1',
+    AppMessages.correctAnswer2: 'صحیح جواب 2',
+    AppMessages.correctAnswer3: 'صحیح جواب 3',
+    AppMessages.correctAnswer4: 'صحیح جواب 4',
+    AppMessages.addQuestion: 'سوال شامل کریں',
+    AppMessages.previewQuiz: 'کوئز کا پیش نظارہ',
+
+//  Quiz
+    AppMessages.writeAnswer: 'اپنا جواب لکھیں...',
+    AppMessages.previous: 'پچھلا',
+    AppMessages.next: 'اگلا',
+    AppMessages.submit: 'جمع کریں',
+
+//  Result
+    AppMessages.result: 'نتیجہ',
+    AppMessages.yourAnswer: 'آپ کا جواب:',
+    AppMessages.correctAnswer: 'صحیح جواب:',
+    AppMessages.correct: 'درست',
+    AppMessages.wrong: 'غلط',
+    AppMessages.backToHome: 'ہوم پر واپس جائیں',
   };
 }

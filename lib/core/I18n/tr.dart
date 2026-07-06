@@ -126,5 +126,72 @@ class TurkishLanguage extends AppTranslationsKeys {
     AppMessages.aboutApp: 'Uygulama hakkında',
     AppMessages.version: 'Sürüm',
     AppMessages.saveChanges: 'Kaydet',
+    // Validation & Errors
+    AppMessages.passwordMinLength: 'Şifre en az 6 karakter olmalıdır',
+    AppMessages.emailAlreadyRegistered: 'Bu e-posta zaten kayıtlı',
+    AppMessages.noAccountWithEmail: 'Bu e-posta ile ilişkili hesap bulunamadı',
+    AppMessages.incorrectPassword: 'Hatalı şifre',
+    AppMessages.invalidEmail: 'Geçerli bir e-posta adresi girin',
+    AppMessages.checkInternet: 'İnternet bağlantınızı kontrol edin',
+    AppMessages.somethingWentWrong: 'Bir hata oluştu. Lütfen tekrar deneyin',
+    AppMessages.googleSignInFailed: 'Google ile giriş başarısız oldu',
+
+// Forgot Password
+    AppMessages.forgotPassword: 'Şifremi Unuttum',
+    AppMessages.forgotPasswordSubtitle: 'Endişelenmeyin, şifrenizi sıfırlamanıza yardımcı olacağız',
+    AppMessages.resetPasswordInstruction: 'Şifrenizi sıfırlamak için e-posta adresinizi girin',
+    AppMessages.emailRequired: 'E-posta gereklidir',
+    AppMessages.sendResetLink: 'Sıfırlama Bağlantısını Gönder',
+    AppMessages.backToLogin: 'Girişe Dön',
+    AppMessages.resetLinkSent: 'Sıfırlama bağlantısı gönderildi',
+
+// Login
+    AppMessages.welcomeBack: 'Tekrar Hoş Geldiniz',
+    AppMessages.continueJourney: 'Öğrenme yolculuğunuza devam edin',
+    AppMessages.passwordRequired: 'Şifre gereklidir',
+    AppMessages.forgotPasswordQuestion: 'Şifrenizi mi unuttunuz?',
+    AppMessages.login: 'Giriş Yap',
+    AppMessages.noAccountRegister: 'Hesabınız yok mu? Kayıt Olun',
+
+// Register
+    AppMessages.createAccountTitle: 'Hesap Oluştur',
+    AppMessages.startLearningJourney: 'Bugün öğrenme yolculuğunuza başlayın',
+    AppMessages.academy: 'Akademi',
+    AppMessages.or: 'VEYA',
+    AppMessages.continueWithGoogle: 'Google ile Devam Et',
+    AppMessages.alreadyHaveAccountLogin: 'Zaten hesabınız var mı? Giriş Yap',
+
+// Teacher Exam
+    AppMessages.createExam: 'Sınav Oluştur',
+    AppMessages.examTitle: 'Sınav Başlığı',
+    AppMessages.subject: 'Ders',
+    AppMessages.addQuestions: 'Sorular Ekle',
+    AppMessages.mcq: 'Çoktan Seçmeli',
+    AppMessages.text: 'Metin',
+    AppMessages.question: 'Soru',
+    AppMessages.option1: 'Seçenek 1',
+    AppMessages.option2: 'Seçenek 2',
+    AppMessages.option3: 'Seçenek 3',
+    AppMessages.option4: 'Seçenek 4',
+    AppMessages.correctAnswer1: 'Doğru Cevap 1',
+    AppMessages.correctAnswer2: 'Doğru Cevap 2',
+    AppMessages.correctAnswer3: 'Doğru Cevap 3',
+    AppMessages.correctAnswer4: 'Doğru Cevap 4',
+    AppMessages.addQuestion: 'Soru Ekle',
+    AppMessages.previewQuiz: 'Sınav Önizlemesi',
+
+//  Quiz
+    AppMessages.writeAnswer: 'Cevabınızı yazın...',
+    AppMessages.previous: 'Önceki',
+    AppMessages.next: 'Sonraki',
+    AppMessages.submit: 'Gönder',
+
+//  Result
+    AppMessages.result: 'Sonuç',
+    AppMessages.yourAnswer: 'Cevabınız:',
+    AppMessages.correctAnswer: 'Doğru Cevap:',
+    AppMessages.correct: 'Doğru',
+    AppMessages.wrong: 'Yanlış',
+    AppMessages.backToHome: 'Ana Sayfaya Dön',
   };
 }

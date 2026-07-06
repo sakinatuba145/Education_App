@@ -118,5 +118,72 @@ class PersianLanguage extends AppTranslationsKeys {
     AppMessages.aboutApp: 'درباره اپ',
     AppMessages.version: 'نسخه',
     AppMessages.saveChanges: 'ذخیره تغییرات',
+    // Validation & Errors
+    AppMessages.passwordMinLength: 'رمز عبور باید حداقل ۶ کاراکتر باشد',
+    AppMessages.emailAlreadyRegistered: 'این ایمیل قبلاً ثبت شده است',
+    AppMessages.noAccountWithEmail: 'حسابی با این ایمیل یافت نشد',
+    AppMessages.incorrectPassword: 'رمز عبور اشتباه است',
+    AppMessages.invalidEmail: 'یک آدرس ایمیل معتبر وارد کنید',
+    AppMessages.checkInternet: 'اتصال اینترنت خود را بررسی کنید',
+    AppMessages.somethingWentWrong: 'مشکلی پیش آمد. دوباره تلاش کنید',
+    AppMessages.googleSignInFailed: 'ورود با گوگل ناموفق بود',
+
+//  Forgot Password
+    AppMessages.forgotPassword: 'فراموشی رمز عبور',
+    AppMessages.forgotPasswordSubtitle: 'نگران نباشید، به شما در بازیابی رمز عبور کمک می‌کنیم',
+    AppMessages.resetPasswordInstruction: 'برای بازیابی رمز عبور، ایمیل خود را وارد کنید',
+    AppMessages.emailRequired: 'ایمیل الزامی است',
+    AppMessages.sendResetLink: 'ارسال لینک بازیابی',
+    AppMessages.backToLogin: 'بازگشت به ورود',
+    AppMessages.resetLinkSent: 'لینک بازیابی ارسال شد',
+
+//  Login
+    AppMessages.welcomeBack: 'خوش آمدید',
+    AppMessages.continueJourney: 'به مسیر یادگیری خود ادامه دهید',
+    AppMessages.passwordRequired: 'رمز عبور الزامی است',
+    AppMessages.forgotPasswordQuestion: 'رمز عبور را فراموش کرده‌اید؟',
+    AppMessages.login: 'ورود',
+    AppMessages.noAccountRegister: 'حساب کاربری ندارید؟ ثبت‌نام کنید',
+
+//  Register
+    AppMessages.createAccountTitle: 'ایجاد حساب کاربری',
+    AppMessages.startLearningJourney: 'امروز مسیر یادگیری خود را آغاز کنید',
+    AppMessages.academy: 'آکادمی',
+    AppMessages.or: 'یا',
+    AppMessages.continueWithGoogle: 'ادامه با گوگل',
+    AppMessages.alreadyHaveAccountLogin: 'حساب کاربری دارید؟ وارد شوید',
+
+//  Teacher Exam
+    AppMessages.createExam: 'ایجاد آزمون',
+    AppMessages.examTitle: 'عنوان آزمون',
+    AppMessages.subject: 'موضوع',
+    AppMessages.addQuestions: 'افزودن سوالات',
+    AppMessages.mcq: 'چهارگزینه‌ای',
+    AppMessages.text: 'متنی',
+    AppMessages.question: 'سوال',
+    AppMessages.option1: 'گزینه ۱',
+    AppMessages.option2: 'گزینه ۲',
+    AppMessages.option3: 'گزینه ۳',
+    AppMessages.option4: 'گزینه ۴',
+    AppMessages.correctAnswer1: 'پاسخ صحیح ۱',
+    AppMessages.correctAnswer2: 'پاسخ صحیح ۲',
+    AppMessages.correctAnswer3: 'پاسخ صحیح ۳',
+    AppMessages.correctAnswer4: 'پاسخ صحیح ۴',
+    AppMessages.addQuestion: 'افزودن سوال',
+    AppMessages.previewQuiz: 'پیش‌نمایش آزمون',
+
+//  Quiz
+    AppMessages.writeAnswer: 'پاسخ خود را بنویسید...',
+    AppMessages.previous: 'قبلی',
+    AppMessages.next: 'بعدی',
+    AppMessages.submit: 'ثبت',
+
+//  Result
+    AppMessages.result: 'نتیجه',
+    AppMessages.yourAnswer: 'پاسخ شما:',
+    AppMessages.correctAnswer: 'پاسخ صحیح:',
+    AppMessages.correct: 'درست',
+    AppMessages.wrong: 'نادرست',
+    AppMessages.backToHome: 'بازگشت به صفحه اصلی',
   };
 }

@@ -127,5 +127,72 @@ class EnglishLanguage extends AppTranslationsKeys {
     AppMessages.aboutApp: 'About App',
     AppMessages.version: 'Version',
     AppMessages.saveChanges: 'Save Changes',
+    // Validation & Errors
+    AppMessages.passwordMinLength: 'Password must be at least 6 characters',
+    AppMessages.emailAlreadyRegistered: 'This email is already registered',
+    AppMessages.noAccountWithEmail: 'No account found with this email',
+    AppMessages.incorrectPassword: 'Incorrect password',
+    AppMessages.invalidEmail: 'Enter a valid email address',
+    AppMessages.checkInternet: 'Check your internet connection',
+    AppMessages.somethingWentWrong: 'Something went wrong. Try again',
+    AppMessages.googleSignInFailed: 'Google Sign-In Failed',
+
+// Forgot Password
+    AppMessages.forgotPassword: 'Forgot Password',
+    AppMessages.forgotPasswordSubtitle: 'No worries, we’ll help you reset it',
+    AppMessages.resetPasswordInstruction: 'Enter your email to reset password',
+    AppMessages.emailRequired: 'Email is required',
+    AppMessages.sendResetLink: 'Send Reset Link',
+    AppMessages.backToLogin: 'Back to Login',
+    AppMessages.resetLinkSent: 'Reset link sent',
+
+// Login
+    AppMessages.welcomeBack: 'Welcome Back',
+    AppMessages.continueJourney: 'Continue your learning journey',
+    AppMessages.passwordRequired: 'Password is required',
+    AppMessages.forgotPasswordQuestion: 'Forgot Password?',
+    AppMessages.login: 'Login',
+    AppMessages.noAccountRegister: "Don't have an account? Register",
+
+//  Register
+    AppMessages.createAccountTitle: 'Create Account',
+    AppMessages.startLearningJourney: 'Start your learning journey today',
+    AppMessages.academy: 'Academy',
+    AppMessages.or: 'OR',
+    AppMessages.continueWithGoogle: 'Continue with Google',
+    AppMessages.alreadyHaveAccountLogin: 'Already have an account? Login',
+
+// Teacher Exam
+    AppMessages.createExam: 'Create Exam',
+    AppMessages.examTitle: 'Exam Title',
+    AppMessages.subject: 'Subject',
+    AppMessages.addQuestions: 'Add Questions',
+    AppMessages.mcq: 'MCQ',
+    AppMessages.text: 'Text',
+    AppMessages.question: 'Question',
+    AppMessages.option1: 'Option 1',
+    AppMessages.option2: 'Option 2',
+    AppMessages.option3: 'Option 3',
+    AppMessages.option4: 'Option 4',
+    AppMessages.correctAnswer1: 'Correct Answer 1',
+    AppMessages.correctAnswer2: 'Correct Answer 2',
+    AppMessages.correctAnswer3: 'Correct Answer 3',
+    AppMessages.correctAnswer4: 'Correct Answer 4',
+    AppMessages.addQuestion: 'Add Question',
+    AppMessages.previewQuiz: 'Preview Quiz',
+
+//  Quiz
+    AppMessages.writeAnswer: 'Write answer...',
+    AppMessages.previous: 'Previous',
+    AppMessages.next: 'Next',
+    AppMessages.submit: 'Submit',
+
+// Result
+    AppMessages.result: 'Result',
+    AppMessages.yourAnswer: 'Your Answer:',
+    AppMessages.correctAnswer: 'Correct Answer:',
+    AppMessages.correct: 'Correct',
+    AppMessages.wrong: 'Wrong',
+    AppMessages.backToHome: 'Back to Home',
   };
 }

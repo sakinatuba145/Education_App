@@ -126,5 +126,72 @@ class HindiLanguage extends AppTranslationsKeys {
     AppMessages.aboutApp: 'ऐप के बारे में',
     AppMessages.version: 'संस्करण',
     AppMessages.saveChanges: 'परिवर्तन सहेजें',
+    // Validation & Errors
+    AppMessages.passwordMinLength: 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए',
+    AppMessages.emailAlreadyRegistered: 'यह ईमेल पहले से पंजीकृत है',
+    AppMessages.noAccountWithEmail: 'इस ईमेल से कोई खाता नहीं मिला',
+    AppMessages.incorrectPassword: 'गलत पासवर्ड',
+    AppMessages.invalidEmail: 'कृपया एक वैध ईमेल पता दर्ज करें',
+    AppMessages.checkInternet: 'अपना इंटरनेट कनेक्शन जांचें',
+    AppMessages.somethingWentWrong: 'कुछ गलत हो गया। कृपया फिर से प्रयास करें',
+    AppMessages.googleSignInFailed: 'Google से साइन इन विफल रहा',
+
+//  Forgot Password
+    AppMessages.forgotPassword: 'पासवर्ड भूल गए',
+    AppMessages.forgotPasswordSubtitle: 'चिंता न करें, हम आपका पासवर्ड रीसेट करने में मदद करेंगे',
+    AppMessages.resetPasswordInstruction: 'पासवर्ड रीसेट करने के लिए अपना ईमेल दर्ज करें',
+    AppMessages.emailRequired: 'ईमेल आवश्यक है',
+    AppMessages.sendResetLink: 'रीसेट लिंक भेजें',
+    AppMessages.backToLogin: 'लॉगिन पर वापस जाएँ',
+    AppMessages.resetLinkSent: 'रीसेट लिंक भेज दिया गया',
+
+// Login
+    AppMessages.welcomeBack: 'वापसी पर स्वागत है',
+    AppMessages.continueJourney: 'अपनी सीखने की यात्रा जारी रखें',
+    AppMessages.passwordRequired: 'पासवर्ड आवश्यक है',
+    AppMessages.forgotPasswordQuestion: 'पासवर्ड भूल गए?',
+    AppMessages.login: 'लॉगिन',
+    AppMessages.noAccountRegister: 'क्या आपका खाता नहीं है? पंजीकरण करें',
+
+//  Register
+    AppMessages.createAccountTitle: 'खाता बनाएँ',
+    AppMessages.startLearningJourney: 'आज ही अपनी सीखने की यात्रा शुरू करें',
+    AppMessages.academy: 'अकादमी',
+    AppMessages.or: 'या',
+    AppMessages.continueWithGoogle: 'Google के साथ जारी रखें',
+    AppMessages.alreadyHaveAccountLogin: 'क्या आपके पास पहले से खाता है? लॉगिन करें',
+
+// Teacher Exam
+    AppMessages.createExam: 'परीक्षा बनाएँ',
+    AppMessages.examTitle: 'परीक्षा का शीर्षक',
+    AppMessages.subject: 'विषय',
+    AppMessages.addQuestions: 'प्रश्न जोड़ें',
+    AppMessages.mcq: 'बहुविकल्पीय प्रश्न',
+    AppMessages.text: 'पाठ',
+    AppMessages.question: 'प्रश्न',
+    AppMessages.option1: 'विकल्प 1',
+    AppMessages.option2: 'विकल्प 2',
+    AppMessages.option3: 'विकल्प 3',
+    AppMessages.option4: 'विकल्प 4',
+    AppMessages.correctAnswer1: 'सही उत्तर 1',
+    AppMessages.correctAnswer2: 'सही उत्तर 2',
+    AppMessages.correctAnswer3: 'सही उत्तर 3',
+    AppMessages.correctAnswer4: 'सही उत्तर 4',
+    AppMessages.addQuestion: 'प्रश्न जोड़ें',
+    AppMessages.previewQuiz: 'क्विज़ पूर्वावलोकन',
+
+// Quiz
+    AppMessages.writeAnswer: 'अपना उत्तर लिखें...',
+    AppMessages.previous: 'पिछला',
+    AppMessages.next: 'अगला',
+    AppMessages.submit: 'जमा करें',
+
+// Result
+    AppMessages.result: 'परिणाम',
+    AppMessages.yourAnswer: 'आपका उत्तर:',
+    AppMessages.correctAnswer: 'सही उत्तर:',
+    AppMessages.correct: 'सही',
+    AppMessages.wrong: 'गलत',
+    AppMessages.backToHome: 'होम पर वापस जाएँ',
   };
 }

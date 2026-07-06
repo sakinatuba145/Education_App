@@ -111,4 +111,71 @@ class AppMessages {
   // Time
   static const String daysAgo = 'days ago';
   static const String weeksAgo = 'weeks ago';
+  // Validation & Errors
+  static const String passwordMinLength = 'Password must be at least 6 characters';
+  static const String emailAlreadyRegistered = 'This email is already registered';
+  static const String noAccountWithEmail = 'No account found with this email';
+  static const String incorrectPassword = 'Incorrect password';
+  static const String invalidEmail = 'Enter a valid email address';
+  static const String checkInternet = 'Check your internet connection';
+  static const String somethingWentWrong = 'Something went wrong. Try again';
+  static const String googleSignInFailed = 'Google Sign-In Failed';
+
+// Forgot Password
+  static const String forgotPassword = 'Forgot Password';
+  static const String forgotPasswordSubtitle = 'No worries, we’ll help you reset it';
+  static const String resetPasswordInstruction = 'Enter your email to reset password';
+  static const String emailRequired = 'Email is required';
+  static const String sendResetLink = 'Send Reset Link';
+  static const String backToLogin = 'Back to Login';
+  static const String resetLinkSent = 'Reset link sent';
+
+//  Login
+  static const String welcomeBack = 'Welcome Back';
+  static const String continueJourney = 'Continue your learning journey';
+  static const String passwordRequired = 'Password is required';
+  static const String forgotPasswordQuestion = 'Forgot Password?';
+  static const String login = 'Login';
+  static const String noAccountRegister = "Don't have an account? Register";
+
+//  Register
+  static const String createAccountTitle = 'Create Account';
+  static const String startLearningJourney = 'Start your learning journey today';
+  static const String academy = 'Academy';
+  static const String or = 'OR';
+  static const String continueWithGoogle = 'Continue with Google';
+  static const String alreadyHaveAccountLogin = 'Already have an account? Login';
+
+// Teacher Exam
+  static const String createExam = 'Create Exam';
+  static const String examTitle = 'Exam Title';
+  static const String subject = 'Subject';
+  static const String addQuestions = 'Add Questions';
+  static const String mcq = 'MCQ';
+  static const String text = 'Text';
+  static const String question = 'Question';
+  static const String option1 = 'Option 1';
+  static const String option2 = 'Option 2';
+  static const String option3 = 'Option 3';
+  static const String option4 = 'Option 4';
+  static const String correctAnswer1 = 'Correct Answer 1';
+  static const String correctAnswer2 = 'Correct Answer 2';
+  static const String correctAnswer3 = 'Correct Answer 3';
+  static const String correctAnswer4 = 'Correct Answer 4';
+  static const String addQuestion = 'Add Question';
+  static const String previewQuiz = 'Preview Quiz';
+
+//  Quiz
+  static const String writeAnswer = 'Write answer...';
+  static const String previous = 'Previous';
+  static const String next = 'Next';
+  static const String submit = 'Submit';
+
+// Result
+  static const String result = 'Result';
+  static const String yourAnswer = 'Your Answer:';
+  static const String correctAnswer = 'Correct Answer:';
+  static const String correct = 'Correct';
+  static const String wrong = 'Wrong';
+  static const String backToHome = 'Back to Home';
 }

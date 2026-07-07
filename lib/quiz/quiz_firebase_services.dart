@@ -3,31 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class QuizFirebaseService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // Get quizzes from Firestore (one-time fetch)
+  // Get quizzes from Firestore
   Future<List<Map<String, dynamic>>> getQuizzes() async {
     final snapshot = await firestore.collection('quizzes').get();
 
     return snapshot.docs.map((doc) => doc.data()).toList();
   }
-
-  /// Create a new exam/quiz
-  Future<void> createQuiz({
-    required String title,
-    required String subject,
-  }) async {
-    await firestore.collection('quizzes').add({
-      "title": title,
-      "subject": subject,
-      "questions": [],
-      "createdAt": Timestamp.now(),
-    });
-  }
-
-  /// Stream quizzes live from Firestore
-  Stream<QuerySnapshot> getQuizzesStream() {
-    return firestore.collection('quizzes').snapshots();
-  }
-
   // Save result
   Future<void> saveResult({
     required String uid,
@@ -38,7 +19,7 @@ class QuizFirebaseService {
       "uid": uid,
       "quizId": quizId,
       "score": score,
-      "createdAt": Timestamp.now(),
+      "createdAt": DateTime.now(),
     });
   }
 }

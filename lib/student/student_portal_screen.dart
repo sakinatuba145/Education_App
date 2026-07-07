@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/theme.dart';
-import 'package:education_app/student/my_courses_screen.dart';
+import 'package:education_app/student/student_home_screen.dart';
 import 'package:education_app/courses/course_discovery_screen_premium.dart';
 import 'package:education_app/student/student_learn_hub_screen.dart';
 import 'package:education_app/profile/profile_screen.dart';
@@ -16,29 +16,29 @@ class StudentPortalScreen extends StatefulWidget {
 class _StudentPortalScreenState extends State<StudentPortalScreen> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _pages = [
-    MyCoursesScreen(),
-    CourseDiscoveryScreenPremium(),
-    StudentLearnHubScreen(),
-    ProfileScreen(),
+  void _navigateTo(int index) {
+    setState(() => _selectedIndex = index);
+  }
+
+  List<Widget> get _pages => [
+    StudentHomeScreen(onNavigate: _navigateTo),
+    const CourseDiscoveryScreenPremium(),
+    const StudentLearnHubScreen(),
+    const ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      // Never allow the system back gesture to pop this route
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
-        // If not on the Home tab, go back to Home tab
         if (_selectedIndex != 0) {
           setState(() => _selectedIndex = 0);
         }
-        // If already on Home tab, swallow the back press — portal is the root
       },
       child: Scaffold(
         backgroundColor: ThemeColors.background,
-        // No outer AppBar — each tab screen manages its own
         body: IndexedStack(
           index: _selectedIndex,
           children: _pages,
@@ -50,8 +50,8 @@ class _StudentPortalScreenState extends State<StudentPortalScreen> {
           indicatorColor: ThemeColors.primary.withValues(alpha: 0.15),
           destinations: const [
             NavigationDestination(
-              icon: Icon(Icons.menu_book_outlined),
-              selectedIcon: Icon(Icons.menu_book_rounded),
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home_rounded),
               label: 'Home',
             ),
             NavigationDestination(

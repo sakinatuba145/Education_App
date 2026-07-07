@@ -6,6 +6,29 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ## Session 24
 
+### Changelog 24e — Student Home tab redesigned as full branded dashboard
+
+File(s): `lib/student/student_home_screen.dart` (new), `lib/student/student_portal_screen.dart`
+
+**What changed:**
+The Home tab previously showed only a raw course list ("My Courses" screen). It has been rebuilt as a proper dashboard home with live data throughout:
+
+1. **Branded header** — Gold gradient banner showing the EduAf logo, a time-aware greeting ("Good morning / afternoon / evening, [Name]!"), and a shortcut to the Profile tab.
+
+2. **Live stats row** — Three cards pulled from Firestore in real time: enrolled courses count, quizzes taken, and average progress percentage.
+
+3. **Continue Learning section** — Streams the student's enrolled courses showing each one with a progress bar, lesson count, completion badge, and a tap-to-continue action that opens the course player directly. Shows an "Explore Courses" prompt if nothing is enrolled yet.
+
+4. **Quiz Performance chart** — Bar chart (Syncfusion) built from the student's own quiz results, grouped by quiz title, showing average score per topic. Only appears when quiz history exists.
+
+5. **Quick Actions grid** — Four shortcut tiles (Explore, Quizzes, Flashcards, Ranking) that switch tabs instantly when tapped.
+
+6. **Pull to refresh** — Swiping down re-fetches stats and quiz data from Firestore.
+
+The portal navigation structure stays the same (Home / Explore / Learn / Profile bottom bar). Back-button behavior (PopScope) is preserved.
+
+---
+
 ### Changelog 24d — Login enforces role toggle; back button no longer exits student portal
 
 File(s): `lib/features/login_screen.dart`, `lib/student/student_portal_screen.dart`

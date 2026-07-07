@@ -1,4 +1,4 @@
-import 'package:education_app/dashboard/dashboard_content.dart';
+import 'package:education_app/student/student_portal_screen.dart';
 import 'package:education_app/features/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +34,7 @@ class Wrapper extends StatelessWidget {
                 }
 
                 if (userSnapshot.hasError || !userSnapshot.hasData) {
-                  return DashboardContent();
+                  return const StudentPortalScreen();
                 }
 
                 final userData = userSnapshot.data?.data() as Map<String, dynamic>?;
@@ -44,7 +44,7 @@ class Wrapper extends StatelessWidget {
                 if (position == 'teacher' || position == 'admin') {
                   return TeacherDashboardScreen();
                 } else {
-                   return DashboardContent();
+                  return const StudentPortalScreen();
                 }
               },
             );

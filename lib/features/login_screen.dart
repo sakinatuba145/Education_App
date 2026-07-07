@@ -53,10 +53,41 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Check both 'role' and 'position' fields — Firestore accounts may use either
       final role = (user["role"] ?? user["position"] ?? "student").toString();
+      final isTeacher = role == "teacher" || role == "admin";
 
       if (!mounted) return;
 
-      if (role == "teacher" || role == "admin") {
+      // Enforce role toggle — reject mismatched credentials with a clear message
+      if (_selectedRole == 'student' && isTeacher) {
+        await authService.logout();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "This is a teacher account. Please select 'Teacher' to log in.",
+            ),
+            duration: Duration(seconds: 4),
+          ),
+        );
+        setState(() => isLoading = false);
+        return;
+      }
+      if (_selectedRole == 'teacher' && !isTeacher) {
+        await authService.logout();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "This is a student account. Please select 'Student' to log in.",
+            ),
+            duration: Duration(seconds: 4),
+          ),
+        );
+        setState(() => isLoading = false);
+        return;
+      }
+
+      if (isTeacher) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(

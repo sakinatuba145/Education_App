@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:education_app/core/constants/theme.dart';
+import 'package:education_app/core/widgets/portal_shell.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/register_screen.dart';
 import 'package:education_app/features/forgot_password.dart';
@@ -91,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const TeacherDashboardScreen(),
+            builder: (_) => PortalShell(child: TeacherDashboardScreen()),
           ),
         );
       } else {

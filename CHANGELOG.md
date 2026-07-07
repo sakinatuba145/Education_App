@@ -4,6 +4,29 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ---
 
+## Session 26
+
+### Changelog 26 — Global language switcher added to both student and teacher portals
+
+File(s): `lib/core/widgets/language_switcher_button.dart` (new), `lib/core/widgets/portal_shell.dart` (new), `lib/student/student_portal_screen.dart`, `lib/wrapper.dart`, `lib/features/login_screen.dart`
+
+**What changed:**
+A floating language-switcher icon now appears in the top-right corner of both the student portal and the teacher dashboard. Tapping it opens an elegant bottom sheet listing all 7 supported languages. The choice saves immediately and switches the entire app without reloading.
+
+**Details:**
+
+- **New: `LanguageSwitcherButton`** — A circular white button showing the current language's country flag emoji. Tapping it opens a branded bottom sheet with flag + native name + English label for each language. The active language is highlighted with an orange checkmark badge.
+
+- **New: `PortalShell`** — A lightweight Stack wrapper that overlays the language button (SafeArea-aware, top-right) over any portal screen. Used specifically for the teacher portal so no teacher files need to be touched.
+
+- **Student portal** (`StudentPortalScreen`) — The language button is embedded as a persistent floating overlay using `Stack`, so it appears consistently on all 4 student tabs (Home, Explore, Learn, Profile) without interfering with their own AppBars or content.
+
+- **Teacher portal** — `PortalShell` is applied in `wrapper.dart` (auto-login path) and `login_screen.dart` (manual login path), wrapping `TeacherDashboardScreen()` with the language overlay. Zero files inside `lib/teacher/**` were modified.
+
+- **SharedPreferences persistence** — Selecting a language calls `Get.updateLocale()` and saves the code to `app_language-code` in SharedPreferences, consistent with the existing Settings screen behavior.
+
+---
+
 ## Session 25
 
 ### Changelog 25c — Language switcher added to Settings screen

@@ -6,6 +6,22 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ## Session 23
 
+### Changelog 23c — Login fixed: correct role detection, real teacher dashboard restored
+
+File(s): `lib/features/login_screen.dart`, `lib/features/auth_services.dart`
+
+**Three bugs fixed:**
+
+1. **Role field mismatch (login routing broken for teachers):** `login_screen.dart` was reading `user["role"]` from Firestore, but the seed accounts store their role in the `position` field (not `role`). This meant every teacher was silently routed to the student portal after login, making the teacher hub appear "gone". Fixed by checking both fields: `user["role"] ?? user["position"] ?? "student"`.
+
+2. **Wrong teacher destination:** After login, teachers were sent to `TeacherDashboardScreenPremium` — a screen with hardcoded dummy stats (12 courses, 342 students, 4.8 rating) that never loads real Firestore data. Fixed to route teachers to `TeacherDashboardScreen` — the real course-list dashboard that pulls live data, matches the `Wrapper` auth stream routing, and has the working Course Studio.
+
+3. **`invalid-credential` error unhandled:** Newer Firebase SDK versions return `invalid-credential` (not `wrong-password`) when an email/password is incorrect. This was unhandled, so a wrong password showed the confusing generic "Something went wrong. Try again" message. Added `invalid-credential` case alongside `wrong-password` → both now show "Incorrect email or password".
+
+---
+
+## Session 23
+
 ### Changelog 23b — Role selector added to login page
 
 File(s): `lib/features/login_screen.dart`

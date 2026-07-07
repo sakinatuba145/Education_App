@@ -179,7 +179,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     return Scaffold(
       backgroundColor: _bg,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight + 52),
+        preferredSize: const Size.fromHeight(kToolbarHeight + 72),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -254,18 +254,18 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
                     borderRadius: BorderRadius.circular(8),
                   ),
                   indicatorSize: TabBarIndicatorSize.tab,
-                  labelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
-                  unselectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w400),
+                  labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.3),
+                  unselectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
                   isScrollable: true,
                   tabAlignment: TabAlignment.start,
                   tabs: const [
-                    Tab(icon: Icon(Icons.tune_rounded, size: 16), text: 'Overview'),
-                    Tab(icon: Icon(Icons.play_lesson_rounded, size: 16), text: 'Content'),
-                    Tab(icon: Icon(Icons.quiz_rounded, size: 16), text: 'Quiz'),
-                    Tab(icon: Icon(Icons.people_alt_rounded, size: 16), text: 'Students'),
-                    Tab(icon: Icon(Icons.bar_chart_rounded, size: 16), text: 'Analytics'),
-                    Tab(icon: Icon(Icons.assignment_rounded, size: 16), text: 'Project'),
-                    Tab(icon: Icon(Icons.verified_rounded, size: 16), text: 'Certs'),
+                    Tab(icon: Icon(Icons.tune_rounded, size: 22), text: 'Overview'),
+                    Tab(icon: Icon(Icons.play_lesson_rounded, size: 22), text: 'Content'),
+                    Tab(icon: Icon(Icons.quiz_rounded, size: 22), text: 'Quiz'),
+                    Tab(icon: Icon(Icons.people_alt_rounded, size: 22), text: 'Students'),
+                    Tab(icon: Icon(Icons.bar_chart_rounded, size: 22), text: 'Analytics'),
+                    Tab(icon: Icon(Icons.assignment_rounded, size: 22), text: 'Project'),
+                    Tab(icon: Icon(Icons.verified_rounded, size: 22), text: 'Certs'),
                   ],
                 ),
               ],
@@ -294,30 +294,22 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
 
   Widget _buildOverviewTab() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Thumbnail upload area ─────────────────────────────────────────
+          // ── Cover Photo ────────────────────────────────────────────────────
           GestureDetector(
             onTap: _uploadingThumb ? null : _pickAndUploadThumb,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              height: 170,
+            child: Container(
+              height: 220,
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: _thumbBytes != null
-                      ? _orange
-                      : Colors.grey.withValues(alpha: 0.3),
-                  width: 2,
-                ),
+                color: const Color(0xFFF5EFE6),
+                border: Border(bottom: BorderSide(color: _orange.withValues(alpha: 0.3), width: 2)),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(14),
+              child: ClipRect(
                 child: Stack(fit: StackFit.expand, children: [
-                  // Preview: newly-picked bytes > existing URL > placeholder
                   if (_thumbBytes != null)
                     Image.memory(_thumbBytes!, fit: BoxFit.cover)
                   else if (_thumbCtrl.text.isNotEmpty)
@@ -326,48 +318,42 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
                   else
                     _thumbPlaceholder(),
 
-                  // Upload progress overlay
                   if (_uploadingThumb)
                     Container(
-                      color: Colors.black.withValues(alpha: 0.55),
+                      color: Colors.black.withValues(alpha: 0.60),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
-                            width: 48, height: 48,
+                            width: 52, height: 52,
                             child: CircularProgressIndicator(
                               value: _thumbProgress > 0 ? _thumbProgress : null,
                               color: Colors.white, strokeWidth: 3),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 12),
                           Text(
                             _thumbProgress > 0
                                 ? 'Uploading… ${(_thumbProgress * 100).toInt()}%'
                                 : 'Preparing…',
-                            style: const TextStyle(
-                                color: Colors.white, fontWeight: FontWeight.w600)),
+                            style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),
 
-                  // Edit badge
-                  if (!_uploadingThumb)
+                  if (!_uploadingThumb && (_thumbBytes != null || _thumbCtrl.text.isNotEmpty))
                     Positioned(
-                      bottom: 10, right: 10,
+                      bottom: 12, right: 12,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.60),
-                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.black.withValues(alpha: 0.65),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Row(mainAxisSize: MainAxisSize.min, children: [
-                          Icon(Icons.edit_rounded, size: 13, color: Colors.white),
-                          SizedBox(width: 4),
-                          Text('Change cover',
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 11,
-                                  fontWeight: FontWeight.w600)),
+                          Icon(Icons.edit_rounded, size: 14, color: Colors.white),
+                          SizedBox(width: 6),
+                          Text('Change Cover',
+                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
                         ]),
                       ),
                     ),
@@ -376,20 +362,21 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
             ),
           ),
 
-          const SizedBox(height: 20),
-          _sectionLabel('Course Info'),
-          const SizedBox(height: 12),
+          const SizedBox(height: 24),
 
+          // ── Course Info ────────────────────────────────────────────────────
+          _sectionLabel('Course Info'),
+          const SizedBox(height: 14),
           _field(_titleCtrl, 'Course Title *', Icons.title_rounded),
           const SizedBox(height: 12),
           _field(_subtitleCtrl, 'Subtitle / Tagline', Icons.subtitles_outlined),
           const SizedBox(height: 12),
           _field(_descCtrl, 'Description', Icons.description_outlined, maxLines: 4),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
 
+          // ── Details ───────────────────────────────────────────────────────
           _sectionLabel('Details'),
-          const SizedBox(height: 12),
-
+          const SizedBox(height: 14),
           Row(children: [
             Expanded(child: _dropdown('Category', _categories, _selectedCategory,
                 (v) => setState(() => _selectedCategory = v!))),
@@ -397,16 +384,17 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
             Expanded(child: _dropdown('Level', _levels, _selectedLevel,
                 (v) => setState(() => _selectedLevel = v!))),
           ]),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
 
+          // ── Pricing ───────────────────────────────────────────────────────
           _sectionLabel('Pricing'),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Row(children: [
             Expanded(
               child: GestureDetector(
                 onTap: () => setState(() => _isFree = true),
                 child: _pricingCard('Free', Icons.volunteer_activism_rounded,
-                    Colors.green, _isFree),
+                    _orange, _isFree),
               ),
             ),
             const SizedBox(width: 12),
@@ -414,35 +402,48 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
               child: GestureDetector(
                 onTap: () => setState(() => _isFree = false),
                 child: _pricingCard('Paid', Icons.attach_money_rounded,
-                    Colors.blue, !_isFree),
+                    _orange, !_isFree),
               ),
             ),
           ]),
           if (!_isFree) ...[
             const SizedBox(height: 12),
-            TextField(
-              controller: _priceCtrl,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
-              decoration: InputDecoration(
-                labelText: 'Price (USD)',
-                prefixText: '\$ ',
-                prefixIcon: const Icon(Icons.attach_money_rounded),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                filled: true, fillColor: Colors.white,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))],
+              ),
+              child: TextField(
+                controller: _priceCtrl,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                decoration: InputDecoration(
+                  labelText: 'Price (USD)',
+                  labelStyle: TextStyle(fontSize: 13, color: Colors.grey[500]),
+                  prefixText: '\$ ',
+                  prefixIcon: const Icon(Icons.attach_money_rounded, color: _orange, size: 20),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: _orange, width: 1.5)),
+                  filled: true, fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                ),
               ),
             ),
           ],
           const SizedBox(height: 24),
 
-          _sectionLabel('Status'),
-          const SizedBox(height: 12),
+          // ── Visibility ────────────────────────────────────────────────────
+          _sectionLabel('Visibility'),
+          const SizedBox(height: 14),
           Row(children: [
             Expanded(
               child: GestureDetector(
                 onTap: () => _toggleStatus('draft'),
                 child: _statusCard('Draft', Icons.edit_note_rounded,
-                    Colors.orange, _course?.status == 'draft'),
+                    _orange, _course?.status == 'draft'),
               ),
             ),
             const SizedBox(width: 12),
@@ -450,27 +451,39 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
               child: GestureDetector(
                 onTap: () => _toggleStatus('published'),
                 child: _statusCard('Published', Icons.public_rounded,
-                    Colors.green, _course?.status == 'published'),
+                    _orange, _course?.status == 'published'),
               ),
             ),
           ]),
           const SizedBox(height: 32),
 
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: _overviewSaving ? null : _saveOverview,
-              style: FilledButton.styleFrom(
-                backgroundColor: _orange,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          GestureDetector(
+            onTap: _overviewSaving ? null : _saveOverview,
+            child: Container(
+              width: double.infinity,
+              height: 56,
+              decoration: BoxDecoration(
+                gradient: _overviewSaving
+                    ? null
+                    : const LinearGradient(colors: [Color(0xFFFFA726), Color(0xFFE65100)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                color: _overviewSaving ? Colors.grey[300] : null,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: _overviewSaving ? [] : [BoxShadow(color: _orange.withValues(alpha: 0.35), blurRadius: 14, offset: const Offset(0, 5))],
               ),
-              icon: _overviewSaving
-                  ? const SizedBox(width: 18, height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.save_rounded),
-              label: Text(_overviewSaving ? 'Saving…' : 'Save Changes',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_overviewSaving)
+                    const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
+                  else
+                    const Icon(Icons.save_rounded, color: Colors.white, size: 20),
+                  const SizedBox(width: 10),
+                  Text(
+                    _overviewSaving ? 'Saving…' : 'Save Changes',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 0.3),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -620,18 +633,34 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
 
   Widget _contentHeader() {
     return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 2))],
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 14, 16, 14),
       child: Row(
         children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: _orange.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.play_lesson_rounded, color: _orange, size: 20),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${_lessons.length} lesson${_lessons.length == 1 ? '' : 's'}',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                Text('Drag to reorder · Tap to edit',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                Text(
+                  '${_lessons.length} Lesson${_lessons.length == 1 ? '' : 's'}',
+                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF1A1A1A)),
+                ),
+                Text(
+                  _lessons.isEmpty ? 'Add your first lesson below' : 'Drag to reorder · Tap to edit',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                ),
               ],
             ),
           ),
@@ -639,10 +668,11 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
             onPressed: _addLesson,
             style: FilledButton.styleFrom(
               backgroundColor: _orange,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
-            icon: const Icon(Icons.add, size: 18),
-            label: const Text('Add Lesson'),
+            icon: const Icon(Icons.add_rounded, size: 18),
+            label: const Text('Add Lesson', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
           ),
         ],
       ),
@@ -1312,65 +1342,126 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
 
   Widget _thumbPlaceholder() {
     return Container(
-      height: 160,
+      height: 220,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(
-          colors: [_orange.withValues(alpha: 0.3), _orange.withValues(alpha: 0.6)],
+          colors: [const Color(0xFFFFA726).withValues(alpha: 0.12), const Color(0xFFE65100).withValues(alpha: 0.06)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
-      child: const Icon(Icons.play_circle_outline_rounded, size: 48, color: Colors.white),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: _orange.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.add_photo_alternate_rounded, size: 40, color: _orange),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'Upload Cover Photo',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _orange,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'JPG or PNG · Recommended 1280×720',
+            style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _field(TextEditingController ctrl, String label, IconData icon, {int maxLines = 1}) {
-    return TextField(
-      controller: ctrl,
-      maxLines: maxLines,
-      textCapitalization: TextCapitalization.sentences,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-        filled: true, fillColor: Colors.white,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))],
+      ),
+      child: TextField(
+        controller: ctrl,
+        maxLines: maxLines,
+        textCapitalization: TextCapitalization.sentences,
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF1A1A1A)),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(fontSize: 13, color: Colors.grey[500], fontWeight: FontWeight.w500),
+          prefixIcon: Icon(icon, color: _orange, size: 20),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: _orange, width: 1.5)),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: maxLines > 1 ? 16 : 14),
+        ),
       ),
     );
   }
 
   Widget _dropdown(String label, List<String> items, String value, void Function(String?) onChanged) {
-    return DropdownButtonFormField<String>(
-      value: value,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-        filled: true, fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))],
       ),
-      items: items.map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 13)))).toList(),
-      onChanged: onChanged,
+      child: DropdownButtonFormField<String>(
+        value: value,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF1A1A1A)),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(fontSize: 13, color: Colors.grey[500]),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: _orange, width: 1.5)),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)))).toList(),
+        onChanged: onChanged,
+      ),
     );
   }
 
   Widget _pricingCard(String label, IconData icon, Color color, bool selected) {
-    return Container(
-      padding: const EdgeInsets.all(14),
+    final activeColor = _orange;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
       decoration: BoxDecoration(
-        color: selected ? color.withValues(alpha: 0.1) : Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        color: selected ? activeColor.withValues(alpha: 0.08) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: selected ? color : Colors.grey[200]!,
+          color: selected ? activeColor : Colors.grey[200]!,
           width: selected ? 2 : 1,
         ),
+        boxShadow: selected
+            ? [BoxShadow(color: activeColor.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 4))]
+            : [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2))],
       ),
       child: Column(
         children: [
-          Icon(icon, color: selected ? color : Colors.grey, size: 24),
-          const SizedBox(height: 6),
+          Icon(icon, color: selected ? activeColor : Colors.grey[400], size: 26),
+          const SizedBox(height: 8),
           Text(label, style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: selected ? color : Colors.grey[600],
-              fontSize: 13)),
+              fontWeight: FontWeight.w700,
+              color: selected ? activeColor : Colors.grey[500],
+              fontSize: 14)),
+          if (selected) ...[
+            const SizedBox(height: 4),
+            Container(width: 20, height: 2, decoration: BoxDecoration(color: activeColor, borderRadius: BorderRadius.circular(1))),
+          ],
         ],
       ),
     );
@@ -1380,8 +1471,18 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
       _pricingCard(label, icon, color, selected);
 
   Widget _sectionLabel(String text) {
-    return Text(text, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700,
-        color: Colors.grey, letterSpacing: 0.5));
+    return Row(
+      children: [
+        Container(width: 3, height: 18, decoration: BoxDecoration(color: _orange, borderRadius: BorderRadius.circular(2))),
+        const SizedBox(width: 8),
+        Text(text, style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF2D2D2D),
+          letterSpacing: 0.3,
+        )),
+      ],
+    );
   }
 
   Widget _miniStat(String label, String value, Color color) {

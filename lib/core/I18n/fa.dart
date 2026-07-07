@@ -185,5 +185,53 @@ class PersianLanguage extends AppTranslationsKeys {
     AppMessages.correct: 'درست',
     AppMessages.wrong: 'نادرست',
     AppMessages.backToHome: 'بازگشت به صفحه اصلی',
+
+    // Welcome Screen
+    AppMessages.getStarted: 'شروع کن',
+    AppMessages.tagline: 'یاد بگیر • رشد کن • آینده‌ات را بساز',
+    AppMessages.poweredBy: 'پشتیبانی شده توسط EduAf',
+
+    // Home Dashboard
+    AppMessages.home: 'خانه',
+    AppMessages.goodMorning: 'صبح بخیر',
+    AppMessages.goodAfternoon: 'ظهر بخیر',
+    AppMessages.goodEvening: 'عصر بخیر',
+    AppMessages.readyToLearn: 'آماده‌ای امروز چیز جدیدی یاد بگیری؟',
+    AppMessages.continueLearning: 'ادامه یادگیری',
+    AppMessages.quizPerformance: 'عملکرد کوئیز',
+    AppMessages.quickActions: 'دسترسی سریع',
+    AppMessages.noCoursesYet: 'هنوز کورسی نیست',
+    AppMessages.exploreToStart: 'کورس‌ها را کاوش کن تا سفرت شروع شود!',
+    AppMessages.exploreCourses: 'کاوش کورس‌ها',
+    AppMessages.ranking: 'رتبه‌بندی',
+    AppMessages.flashcards: 'فلش‌کارت‌ها',
+    AppMessages.completed: 'کامل شده',
+    AppMessages.enrolled: 'کورس‌ها',
+    AppMessages.avgProgress: 'پیشرفت',
+    AppMessages.continueBtn: 'ادامه ←',
+    AppMessages.completedCheck: 'کامل شده ✓',
+
+    // My Courses
+    AppMessages.myCourses: 'کورس‌های من',
+    AppMessages.allTab: 'همه',
+    AppMessages.inProgress: 'در حال یادگیری',
+    AppMessages.completedTab: 'کامل شده',
+    AppMessages.seeAllCourses: 'مشاهده همه کورس‌ها',
+
+    // Learn Hub
+    AppMessages.learnHub: 'یادگیری',
+    AppMessages.assignments: 'تکالیف',
+    AppMessages.puzzle: 'پازل',
+
+    // Course Discovery
+    AppMessages.exploreTab: 'کاوش',
+    AppMessages.searchCourses: 'جستجوی کورس...',
+    AppMessages.featured: 'ویژه',
+    AppMessages.allCourses: 'همه کورس‌ها',
+    AppMessages.enroll: 'ثبت‌نام',
+
+    // Settings
+    AppMessages.selectLanguage: 'انتخاب زبان',
+    AppMessages.appLanguage: 'زبان برنامه',
   };
 }

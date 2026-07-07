@@ -1,37 +1,29 @@
-import 'package:education_app/dashboard/top_students_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:education_app/dashboard/course_card.dart';
-import '../courses/course_model.dart';
 
+// DashboardHome — content shown inside the desktop sidebar layout.
+// Mobile students use StudentHomeScreen via StudentPortalScreen instead.
 class DashboardHome extends StatelessWidget {
   static String id = 'dashboard_home';
-  final List<StudentModel>? topStudents;
 
-  const DashboardHome({
-    super.key,
-    this.topStudents,
-  });
+  const DashboardHome({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+    return const Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CourseCard(
-            course: CourseModel(
-              id: 'flutter',
-              title: "Flutter",
-              teacher: "Anne",
-              progress: 0.0,
-              image: "assets/image/flutter.png",
-            ),
+          Icon(Icons.school_rounded, size: 64, color: Color(0xFFFFA726)),
+          SizedBox(height: 16),
+          Text(
+            'EduAf Dashboard',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 20),
-
-          if (topStudents != null)
-            TopStudentsWidget(students: topStudents!),
+          SizedBox(height: 8),
+          Text(
+            'Open the app on your device for the full learning experience.',
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

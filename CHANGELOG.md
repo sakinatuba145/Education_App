@@ -4,6 +4,65 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ---
 
+## Session 25
+
+### Changelog 25c — Language switcher added to Settings screen
+
+File(s): `lib/profile/settings_screen.dart`
+
+**What changed:**
+The Language tile in Settings was previously a placeholder that did nothing. It now opens a bottom sheet showing all 7 supported languages (English, Arabic, Persian, Hindi, Turkish, Urdu, Pashto). Tapping a language immediately switches the whole app to that language and saves the choice so it persists across sessions. The tile subtitle updates to show the currently active language in its own script (e.g. "العربية" for Arabic, "فارسی" for Persian). Also applied `.tr` to all settings labels (Notifications, Dark Mode, Support, Sign Out, etc.).
+
+---
+
+### Changelog 25b — All student-facing screens now fully translated
+
+File(s): `lib/features/welcome_screen.dart`, `lib/student/student_home_screen.dart`, `lib/student/student_learn_hub_screen.dart`, `lib/student/my_courses_screen.dart`
+
+**What changed:**
+Every visible string in the student-facing screens has been wired up to the localization system so that switching language instantly updates the whole UI:
+
+- **Welcome screen** — "Learn • Grow • Build Your Future", "Discover a new way of learning...", "Get Started", and "Powered by EduAf" now all respond to the active language.
+- **Home dashboard** — Greeting ("Good morning / afternoon / evening"), "Ready to learn something new today?", "Continue Learning", "Quiz Performance", "Quick Actions", stat labels (Courses / Quizzes / Progress), empty-state text, "Explore Courses" button, quick-action tiles (Explore / Quizzes / Flashcards / Ranking), and "Continue →" / "Completed ✓" course labels — all translated.
+- **Learn Hub tabs** — Quizzes, Assignments, Flashcards, Puzzle, Ranking tab names are now translated.
+- **My Courses** — AppBar title and All / In Progress / Completed tab labels are now translated.
+
+---
+
+### Changelog 25a — ~50 new translation keys added across all 7 languages
+
+File(s): `lib/core/I18n/messages.dart`, `lib/core/I18n/en.dart`, `lib/core/I18n/ar.dart`, `lib/core/I18n/fa.dart`, `lib/core/I18n/hi.dart`, `lib/core/I18n/tr.dart`, `lib/core/I18n/ur.dart`, `lib/core/I18n/ps.dart`
+
+**What changed:**
+Added ~50 new translation keys covering every student-facing screen. Categories added:
+
+- **Welcome screen** — `getStarted`, `tagline`, `poweredBy`
+- **Home dashboard** — `goodMorning`, `goodAfternoon`, `goodEvening`, `readyToLearn`, `continueLearning`, `quizPerformance`, `quickActions`, `noCoursesYet`, `exploreToStart`, `exploreCourses`, `ranking`, `flashcards`, `completed`, `enrolled`, `avgProgress`, `continueBtn`, `completedCheck`
+- **My Courses** — `myCourses`, `allTab`, `inProgress`, `completedTab`, `seeAllCourses`
+- **Learn Hub** — `learnHub`, `assignments`, `puzzle`
+- **Course Discovery** — `exploreTab`, `searchCourses`, `featured`, `allCourses`, `enroll`
+- **Settings** — `selectLanguage`, `appLanguage`
+
+All 7 language files (English, Arabic, Persian, Hindi, Turkish, Urdu, Pashto) have been updated with accurate translations for every new key.
+
+---
+
+### Changelog 25 — Dead and hardcoded dashboard code removed
+
+File(s): `lib/dashboard/dashboard_data.dart`, `lib/dashboard/dashboard_services.dart`, `lib/dashboard/dashboard_content.dart`, `lib/dashboard/dashboard_screen.dart`
+
+**What changed:**
+Cleaned out all hardcoded dummy data that had been left over from early development:
+
+- **`dashboard_data.dart`** — Removed hardcoded `CourseModel` and `StudentModel` lists (Flutter course, Physics course, Ali/Sara placeholder students). Kept only the `subjectIcons` map which is legitimately static.
+- **`dashboard_services.dart`** — Removed dummy numbers ("47", "12", "89%") returned as hardcoded strings. Replaced with real Firestore queries that count the actual user's enrollments and quiz results.
+- **`dashboard_content.dart`** — Removed hardcoded `currentUser` with name "Sakina", removed hardcoded `allStudents` list, removed placeholder page widgets (`Center(child: Text(...))`). The desktop sidebar layout now loads user info from Firebase and uses translated strings.
+- **`dashboard_screen.dart`** — Removed the hardcoded Flutter course `CourseCard` shown in `DashboardHome`. The desktop view now shows a neutral landing message directing users to the mobile app.
+
+These files are only used by the legacy desktop/web sidebar layout. The main student experience (bottom nav portal) was already clean and unaffected.
+
+---
+
 ## Session 24
 
 ### Changelog 24e — Student Home tab redesigned as full branded dashboard

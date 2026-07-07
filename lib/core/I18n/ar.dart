@@ -176,5 +176,53 @@ class ArabicLanguage extends AppTranslationsKeys {
     AppMessages.correct: 'صحيح',
     AppMessages.wrong: 'خطأ',
     AppMessages.backToHome: 'العودة إلى الصفحة الرئيسية',
+
+    // Welcome Screen
+    AppMessages.getStarted: 'ابدأ الآن',
+    AppMessages.tagline: 'تعلم • طور • ابنِ مستقبلك',
+    AppMessages.poweredBy: 'مدعوم بواسطة EduAf',
+
+    // Home Dashboard
+    AppMessages.home: 'الرئيسية',
+    AppMessages.goodMorning: 'صباح الخير',
+    AppMessages.goodAfternoon: 'مساء الخير',
+    AppMessages.goodEvening: 'مساء النور',
+    AppMessages.readyToLearn: 'هل أنت مستعد لتعلم شيء جديد اليوم؟',
+    AppMessages.continueLearning: 'مواصلة التعلم',
+    AppMessages.quizPerformance: 'أداء الاختبارات',
+    AppMessages.quickActions: 'إجراءات سريعة',
+    AppMessages.noCoursesYet: 'لا توجد دورات بعد',
+    AppMessages.exploreToStart: 'استكشف الدورات لبدء رحلتك!',
+    AppMessages.exploreCourses: 'استكشف الدورات',
+    AppMessages.ranking: 'التصنيف',
+    AppMessages.flashcards: 'بطاقات الدراسة',
+    AppMessages.completed: 'مكتمل',
+    AppMessages.enrolled: 'الدورات',
+    AppMessages.avgProgress: 'التقدم',
+    AppMessages.continueBtn: 'تابع ←',
+    AppMessages.completedCheck: 'مكتمل ✓',
+
+    // My Courses
+    AppMessages.myCourses: 'دوراتي',
+    AppMessages.allTab: 'الكل',
+    AppMessages.inProgress: 'جارٍ',
+    AppMessages.completedTab: 'مكتمل',
+    AppMessages.seeAllCourses: 'عرض كل الدورات',
+
+    // Learn Hub
+    AppMessages.learnHub: 'التعلم',
+    AppMessages.assignments: 'الواجبات',
+    AppMessages.puzzle: 'ألغاز',
+
+    // Course Discovery
+    AppMessages.exploreTab: 'استكشف',
+    AppMessages.searchCourses: 'ابحث عن دورات...',
+    AppMessages.featured: 'مميز',
+    AppMessages.allCourses: 'جميع الدورات',
+    AppMessages.enroll: 'اشترك',
+
+    // Settings
+    AppMessages.selectLanguage: 'اختر اللغة',
+    AppMessages.appLanguage: 'لغة التطبيق',
   };
 }

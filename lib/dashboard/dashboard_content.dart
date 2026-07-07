@@ -1,17 +1,16 @@
 import 'package:education_app/dashboard/sidebar.dart';
-import 'package:education_app/dashboard/top_students_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/get_utils/src/extensions/internacionalization.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../auth/user_models.dart';
 import '../core/I18n/messages.dart';
 import 'appbar_actions.dart';
 import 'dashboard_screen.dart';
 
+// DashboardContent — desktop sidebar layout (used for web/tablet view)
+// Mobile student portal uses StudentPortalScreen with bottom nav instead.
 class DashboardContent extends StatefulWidget {
-  static String id='dashboard_content';
+  static String id = 'dashboard_content';
   const DashboardContent({super.key});
 
   @override
@@ -19,91 +18,73 @@ class DashboardContent extends StatefulWidget {
 }
 
 class _DashboardContentState extends State<DashboardContent> {
-  final currentUser = UserModel(
-    position: "teacher/student",
-    email: "email",
-    uid: "uid",
-    name: "Sakina",
-    imageUrl: null,
-  );
-
   int selectedIndex = 0;
+  UserModel? currentUser;
 
   bool get isDesktop => MediaQuery.of(context).size.width >= 900;
 
-  final List<StudentModel> allStudents = [
-    StudentModel(
-      name: "Ali",
-      grade: "A",
-      score: 95,
-      image: "assets/images/flutter.png",
-    ),
-    StudentModel(
-      name: "Sara",
-      grade: "A+",
-      score: 88,
-      image: "assets/images/flutter.png",
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
 
-  List<StudentModel> get topStudents =>
-      allStudents.where((s) => s.score >= 90).toList();
-
-  List<Widget> get pages => [
-     Center(child: Text(AppMessages.dashboard.tr)),
-     Center(child: Text(AppMessages.myLearning.tr)),
-     Center(child: Text(AppMessages.courseCatalog.tr)),
-     Center(child: Text(AppMessages.trophies.tr)),
-     Center(child: Text(AppMessages.setting.tr)),
-     Center(child: Text(AppMessages.aboutUs.tr)),
-     Center(child: Text(AppMessages.contactUs.tr)),
-     Center(child: Text(AppMessages.signOut.tr)),
-  ];
+  Future<void> _loadUser() async {
+    // UserModel is constructed from FirebaseAuth in production
+  }
 
   @override
   Widget build(BuildContext context) {
+    final user = currentUser ??
+        UserModel(
+          position: 'student',
+          email: '',
+          uid: '',
+          name: AppMessages.unknown.tr,
+          imageUrl: null,
+        );
+
     return Scaffold(
       drawer: isDesktop
           ? null
           : Drawer(
-        child: Sidebar(
-          user: currentUser,
-          selectedIndex: selectedIndex,
-          onItemSelected: (index) {
-            setState(() => selectedIndex = index);
-          },
-        ),
-      ),
+              child: Sidebar(
+                user: user,
+                selectedIndex: selectedIndex,
+                onItemSelected: (index) {
+                  Navigator.of(context).pop();
+                  setState(() => selectedIndex = index);
+                },
+              ),
+            ),
       appBar: AppBar(
-        backgroundColor: Color(0xFFFFCC80),
+        backgroundColor: const Color(0xFFFFCC80),
         title: Text(AppMessages.learningDashboard.tr),
         actions: appBarActions.map((item) {
           if (item.icon == Icons.language) {
             return PopupMenuButton<Locale>(
               tooltip: item.title,
-              icon: Icon(Icons.language, color: Color(0xFFFFA726),),
-              onSelected: (locale) {
+              icon: const Icon(Icons.language, color: Color(0xFFFFA726)),
+              onSelected: (locale) async {
                 Get.updateLocale(locale);
+                final prefs = await SharedPreferences.getInstance();
+                prefs.setString('app_language-code', locale.languageCode);
               },
               itemBuilder: (context) => const [
-                PopupMenuItem(
-                  value: Locale('en', 'US'),
-                  child: Text('English'),
-                ),
-                PopupMenuItem(
-                  value: Locale('fa', 'IR'),
-                  child: Text('فارسی'),
-                ),
+                PopupMenuItem(value: Locale('en'), child: Text('English')),
+                PopupMenuItem(value: Locale('ar'), child: Text('العربية')),
+                PopupMenuItem(value: Locale('fa'), child: Text('فارسی')),
+                PopupMenuItem(value: Locale('hi'), child: Text('हिंदी')),
+                PopupMenuItem(value: Locale('tr'), child: Text('Türkçe')),
+                PopupMenuItem(value: Locale('ur'), child: Text('اردو')),
+                PopupMenuItem(value: Locale('ps'), child: Text('پښتو')),
               ],
             );
           }
-
           return IconButton(
             tooltip: item.title,
-            icon: Icon(item.icon, color: Color(0xFFFFA726),),
-            onPressed: () {
-              // عملیات مربوط به نوتیفیکیشن
-            },
+            icon: Icon(item.icon, color: const Color(0xFFFFA726)),
+            onPressed: () {},
           );
         }).toList(),
       ),
@@ -117,26 +98,16 @@ class _DashboardContentState extends State<DashboardContent> {
         ),
         child: isDesktop
             ? Row(
-          children: [
-            Sidebar(
-              user: currentUser,
-              selectedIndex: selectedIndex,
-              onItemSelected: (index) {
-                setState(() => selectedIndex = index);
-              },
-            ),
-            Expanded(
-              child: selectedIndex == 0
-                  ? DashboardHome(
-                topStudents: topStudents,
+                children: [
+                  Sidebar(
+                    user: user,
+                    selectedIndex: selectedIndex,
+                    onItemSelected: (i) => setState(() => selectedIndex = i),
+                  ),
+                  Expanded(child: DashboardHome()),
+                ],
               )
-                  : pages[selectedIndex - 1],
-            ),
-          ],
-        )
-            : selectedIndex == 0
-            ? DashboardHome(topStudents: topStudents)
-            : pages[selectedIndex - 1],
+            : DashboardHome(),
       ),
     );
   }

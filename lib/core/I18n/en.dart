@@ -194,5 +194,53 @@ class EnglishLanguage extends AppTranslationsKeys {
     AppMessages.correct: 'Correct',
     AppMessages.wrong: 'Wrong',
     AppMessages.backToHome: 'Back to Home',
+
+    // Welcome Screen
+    AppMessages.getStarted: 'Get Started',
+    AppMessages.tagline: 'Learn • Grow • Build Your Future',
+    AppMessages.poweredBy: 'Powered by EduAf',
+
+    // Home Dashboard
+    AppMessages.home: 'Home',
+    AppMessages.goodMorning: 'Good morning',
+    AppMessages.goodAfternoon: 'Good afternoon',
+    AppMessages.goodEvening: 'Good evening',
+    AppMessages.readyToLearn: 'Ready to learn something new today?',
+    AppMessages.continueLearning: 'Continue Learning',
+    AppMessages.quizPerformance: 'Quiz Performance',
+    AppMessages.quickActions: 'Quick Actions',
+    AppMessages.noCoursesYet: 'No courses yet',
+    AppMessages.exploreToStart: 'Explore courses to start your journey!',
+    AppMessages.exploreCourses: 'Explore Courses',
+    AppMessages.ranking: 'Ranking',
+    AppMessages.flashcards: 'Flashcards',
+    AppMessages.completed: 'Completed',
+    AppMessages.enrolled: 'Courses',
+    AppMessages.avgProgress: 'Progress',
+    AppMessages.continueBtn: 'Continue →',
+    AppMessages.completedCheck: 'Completed ✓',
+
+    // My Courses
+    AppMessages.myCourses: 'My Courses',
+    AppMessages.allTab: 'All',
+    AppMessages.inProgress: 'In Progress',
+    AppMessages.completedTab: 'Completed',
+    AppMessages.seeAllCourses: 'See all courses',
+
+    // Learn Hub
+    AppMessages.learnHub: 'Learn',
+    AppMessages.assignments: 'Assignments',
+    AppMessages.puzzle: 'Puzzle',
+
+    // Course Discovery
+    AppMessages.exploreTab: 'Explore',
+    AppMessages.searchCourses: 'Search courses...',
+    AppMessages.featured: 'Featured',
+    AppMessages.allCourses: 'All Courses',
+    AppMessages.enroll: 'Enroll',
+
+    // Settings
+    AppMessages.selectLanguage: 'Select Language',
+    AppMessages.appLanguage: 'App Language',
   };
 }

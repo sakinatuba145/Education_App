@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:education_app/core/constants/theme.dart';
+import 'package:education_app/core/I18n/messages.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/student/progress_service.dart';
 import 'package:education_app/student/course_player_screen.dart';
@@ -50,9 +52,9 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
   String get _greeting {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return AppMessages.goodMorning.tr;
+    if (hour < 17) return AppMessages.goodAfternoon.tr;
+    return AppMessages.goodEvening.tr;
   }
 
   String get _userName {
@@ -101,7 +103,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
             // ─── Continue Learning ───
             SliverToBoxAdapter(
-              child: _buildSectionHeader('Continue Learning', Icons.play_circle_outline_rounded, textTheme),
+              child: _buildSectionHeader(AppMessages.continueLearning.tr, Icons.play_circle_outline_rounded, textTheme),
             ),
             SliverToBoxAdapter(
               child: _buildContinueLearning(textTheme),
@@ -110,7 +112,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
             // ─── Quiz Activity Chart ───
             if (_quizResults.isNotEmpty) ...[
               SliverToBoxAdapter(
-                child: _buildSectionHeader('Quiz Performance', Icons.bar_chart_rounded, textTheme),
+                child: _buildSectionHeader(AppMessages.quizPerformance.tr, Icons.bar_chart_rounded, textTheme),
               ),
               SliverToBoxAdapter(
                 child: _buildChart(textTheme),
@@ -119,7 +121,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
             // ─── Quick Actions ───
             SliverToBoxAdapter(
-              child: _buildSectionHeader('Quick Actions', Icons.flash_on_rounded, textTheme),
+              child: _buildSectionHeader(AppMessages.quickActions.tr, Icons.flash_on_rounded, textTheme),
             ),
             SliverToBoxAdapter(
               child: _buildQuickActions(),
@@ -173,7 +175,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Ready to learn something new today?',
+                  AppMessages.readyToLearn.tr,
                   style: textTheme.bodyMedium?.copyWith(color: Colors.white70),
                 ),
               ],
@@ -204,11 +206,11 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       padding: const EdgeInsets.only(top: 20),
       child: Row(
         children: [
-          _statCard(Icons.menu_book_rounded, '${stats?.enrolledCourses ?? 0}', 'Courses', textTheme),
+          _statCard(Icons.menu_book_rounded, '${stats?.enrolledCourses ?? 0}', AppMessages.enrolled.tr, textTheme),
           const SizedBox(width: 10),
-          _statCard(Icons.quiz_rounded, '${stats?.quizzesTaken ?? 0}', 'Quizzes', textTheme),
+          _statCard(Icons.quiz_rounded, '${stats?.quizzesTaken ?? 0}', AppMessages.quizzes.tr, textTheme),
           const SizedBox(width: 10),
-          _statCard(Icons.trending_up_rounded, '${stats?.avgProgressPercent ?? 0}%', 'Progress', textTheme),
+          _statCard(Icons.trending_up_rounded, '${stats?.avgProgressPercent ?? 0}%', AppMessages.avgProgress.tr, textTheme),
         ],
       ),
     );
@@ -281,14 +283,14 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                 children: [
                   Icon(Icons.school_outlined, size: 48, color: ThemeColors.primary.withValues(alpha: 0.5)),
                   const SizedBox(height: 12),
-                  Text('No courses yet', style: textTheme.titleMedium?.copyWith(color: ThemeColors.black)),
+                  Text(AppMessages.noCoursesYet.tr, style: textTheme.titleMedium?.copyWith(color: ThemeColors.black)),
                   const SizedBox(height: 6),
-                  Text('Explore courses to start your journey!', style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade600)),
+                  Text(AppMessages.exploreToStart.tr, style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade600)),
                   const SizedBox(height: 14),
                   ElevatedButton.icon(
                     onPressed: () => widget.onNavigate(1),
                     icon: const Icon(Icons.explore_rounded, size: 18),
-                    label: const Text('Explore Courses'),
+                    label: Text(AppMessages.exploreCourses.tr),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ThemeColors.primary,
                       foregroundColor: Colors.white,
@@ -406,7 +408,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                     style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade500),
                   ),
                   Text(
-                    course.isCompleted ? 'Completed ✓' : 'Continue →',
+                    course.isCompleted ? AppMessages.completedCheck.tr : AppMessages.continueBtn.tr,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -483,10 +485,10 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
   Widget _buildQuickActions() {
     final actions = [
-      _QuickAction(Icons.explore_rounded, 'Explore', 'Browse courses', 1, const Color(0xFF6C63FF)),
-      _QuickAction(Icons.quiz_rounded, 'Quizzes', 'Test yourself', 2, const Color(0xFF00B4D8)),
-      _QuickAction(Icons.style_rounded, 'Flashcards', 'Review notes', 2, const Color(0xFF06D6A0)),
-      _QuickAction(Icons.leaderboard_rounded, 'Ranking', 'Top students', 2, const Color(0xFFFFB703)),
+      _QuickAction(Icons.explore_rounded, AppMessages.exploreTab.tr, 'Browse courses', 1, const Color(0xFF6C63FF)),
+      _QuickAction(Icons.quiz_rounded, AppMessages.quizzes.tr, 'Test yourself', 2, const Color(0xFF00B4D8)),
+      _QuickAction(Icons.style_rounded, AppMessages.flashcards.tr, 'Review notes', 2, const Color(0xFF06D6A0)),
+      _QuickAction(Icons.leaderboard_rounded, AppMessages.ranking.tr, 'Top students', 2, const Color(0xFFFFB703)),
     ];
 
     return Padding(

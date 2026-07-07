@@ -188,5 +188,53 @@ class UrduLanguage extends AppTranslationsKeys {
     AppMessages.correct: 'درست',
     AppMessages.wrong: 'غلط',
     AppMessages.backToHome: 'ہوم پر واپس جائیں',
+
+    // Welcome Screen
+    AppMessages.getStarted: 'شروع کریں',
+    AppMessages.tagline: 'سیکھیں • بڑھیں • مستقبل بنائیں',
+    AppMessages.poweredBy: 'EduAf کی طرف سے',
+
+    // Home Dashboard
+    AppMessages.home: 'ہوم',
+    AppMessages.goodMorning: 'صبح بخیر',
+    AppMessages.goodAfternoon: 'دوپہر بخیر',
+    AppMessages.goodEvening: 'شام بخیر',
+    AppMessages.readyToLearn: 'کیا آپ آج کچھ نیا سیکھنے کے لیے تیار ہیں؟',
+    AppMessages.continueLearning: 'سیکھنا جاری رکھیں',
+    AppMessages.quizPerformance: 'کوئز کارکردگی',
+    AppMessages.quickActions: 'فوری اقدامات',
+    AppMessages.noCoursesYet: 'ابھی کوئی کورس نہیں',
+    AppMessages.exploreToStart: 'اپنا سفر شروع کرنے کے لیے کورسز دیکھیں!',
+    AppMessages.exploreCourses: 'کورسز دریافت کریں',
+    AppMessages.ranking: 'درجہ بندی',
+    AppMessages.flashcards: 'فلیش کارڈز',
+    AppMessages.completed: 'مکمل',
+    AppMessages.enrolled: 'کورسز',
+    AppMessages.avgProgress: 'پیشرفت',
+    AppMessages.continueBtn: 'جاری رکھیں ←',
+    AppMessages.completedCheck: 'مکمل ✓',
+
+    // My Courses
+    AppMessages.myCourses: 'میرے کورسز',
+    AppMessages.allTab: 'سب',
+    AppMessages.inProgress: 'جاری ہے',
+    AppMessages.completedTab: 'مکمل',
+    AppMessages.seeAllCourses: 'تمام کورسز دیکھیں',
+
+    // Learn Hub
+    AppMessages.learnHub: 'سیکھیں',
+    AppMessages.assignments: 'اسائنمنٹس',
+    AppMessages.puzzle: 'پہیلی',
+
+    // Course Discovery
+    AppMessages.exploreTab: 'دریافت',
+    AppMessages.searchCourses: 'کورسز تلاش کریں...',
+    AppMessages.featured: 'نمایاں',
+    AppMessages.allCourses: 'تمام کورسز',
+    AppMessages.enroll: 'داخلہ لیں',
+
+    // Settings
+    AppMessages.selectLanguage: 'زبان منتخب کریں',
+    AppMessages.appLanguage: 'ایپ کی زبان',
   };
 }

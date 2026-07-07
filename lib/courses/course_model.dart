@@ -2,7 +2,7 @@ class CourseModel {
   final String id;
   final String title;
   final String teacher;
-  final String progress;
+  final double progress;
   final String image;
 
   CourseModel({

@@ -67,7 +67,7 @@ class _CourseScreenState extends State<CourseScreen> {
                       id: '',
                       title: titleController.text,
                       teacher: teacherController.text,
-                      progress: '10 Month',
+                      progress: 0.0,
                     );
 
                     bloc.addCourse(course);

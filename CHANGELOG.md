@@ -22,9 +22,14 @@ What we did: Replaced every primary-palette colour reference in all 15 files wit
 
 Semantic / neutral colours (`AppColors.success`, `AppColors.error`, `AppColors.warning`, `AppColors.info`, `AppColors.gray*`) were left untouched — they are shared utilities, not primary-palette colours.
 
+Additionally fixed three pre-existing bugs discovered during review:
+- `lib/main.dart`: `initialRoute` was hardcoded to `StudentActivityScreen` (a debug/test screen), bypassing the normal welcome/auth flow. Restored to `WelcomeScreen.id`.
+- `lib/courses/course_model.dart`: `progress` field declared as `String` but `fromMap` returned a `double` — a type mismatch that would crash at runtime. Fixed field type to `double`; also updated two legacy callers (`course_screen.dart`, `dashboard_screen.dart`) that passed string literals (`'10 Month'`) to use `0.0`.
+- `lib/core/constants/theme.dart`: Light theme `ElevatedButton` had `foregroundColor: ThemeColors.primary` identical to `backgroundColor`, making button labels invisible. Fixed `foregroundColor` to `Colors.white`.
+
 Confirmed zero compilation errors with `flutter build web` after all changes.
 
-Why: The team agreement requires all student screens to source their primary colours exclusively from the leader's `theme.dart`. This makes the student UI consistent with the rest of the app and ensures future theme updates flow through automatically.
+Why: The team agreement requires all student screens to source their primary colours exclusively from the leader's `theme.dart`. This makes the student UI consistent with the rest of the app and ensures future theme updates flow through automatically. The three bug fixes were blocking compile-time and runtime correctness.
 
 ---
 

@@ -92,19 +92,6 @@ class AppColors {
   static const Color shimmerBase = Color(0xFFEBEBEB);
   static const Color shimmerHighlight = Color(0xFFFAFAFA);
 
-  // =============== STUDENT PORTAL THEME (Gold/Cream) ===============
-  // Approved by team lead - warm gold-and-cream palette used across the
-  // entire student portal (sidebar, top bar, dashboard cards, charts).
-  // Kept separate from the general `primary` palette above so other
-  // modules (e.g. lib/teacher/**) are unaffected.
-  static const Color studioGold = Color(0xFFF2A93C);
-  static const Color studioGoldDark = Color(0xFFB8791E);
-  static const Color studioGoldLight = Color(0xFFFCE4BC);
-  static const Color studioCream = Color(0xFFFFF8EF);
-  static const Color studioCreamDark = Color(0xFFF7ECDA);
-  static const Color studioInk = Color(0xFF2B2620);
-  static const Color studioInactive = Color(0xFFD9D2C4);
-
   // =============== HELPER METHODS ===============
 
   /// Get text color based on background - for good contrast

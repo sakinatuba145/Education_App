@@ -135,25 +135,6 @@ class _CourseDiscoveryScreenPremiumState
 
     return CustomScrollView(
       slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Row(
-              children: [
-                const Icon(Icons.explore_rounded, color: AppColors.studioGoldDark, size: 26),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Course Catalog', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.studioInk)),
-                    SizedBox(height: 2),
-                    Text('Browse and enroll in courses', style: TextStyle(fontSize: 13, color: Colors.grey)),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
         // ── Search bar ──────────────────────────────────────────────────
         SliverToBoxAdapter(child: _buildSearch()),
 

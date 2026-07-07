@@ -32,34 +32,17 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.studioCream,
+      backgroundColor: AppColors.lightBackground,
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-              child: Row(
-                children: [
-                  const Icon(Icons.menu_book_rounded, color: AppColors.studioGoldDark, size: 26),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('My Learning', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.studioInk)),
-                      SizedBox(height: 2),
-                      Text('Quizzes, assignments, flashcards & more', style: TextStyle(fontSize: 13, color: Colors.grey)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
             Container(
-              color: AppColors.studioCream,
+              color: Colors.white,
               child: TabBar(
                 controller: _tabController,
-                labelColor: AppColors.studioGoldDark,
-                unselectedLabelColor: AppColors.studioInk.withValues(alpha: 0.5),
-                indicatorColor: AppColors.studioGold,
+                labelColor: AppColors.primary,
+                unselectedLabelColor: Colors.grey.shade500,
+                indicatorColor: AppColors.primary,
                 indicatorWeight: 3,
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,
@@ -82,7 +65,7 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
                   StudentAssignmentsTab(),
                   FlashcardScreen(),
                   WordPuzzleScreen(),
-                  LeaderboardScreen(showHeader: false),
+                  LeaderboardScreen(),
                 ],
               ),
             ),

@@ -1,185 +1,148 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+/// 3.21 AUTH SERVICE
+/// This class handles all authentication
+/// Email/Password Login
+/// User Registration
+/// Google Sign-In
+/// Logout
+/// It also stores user data in Firestore (role based system)
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  String _encodeName(String name, String role) => '$name|$role';
-
-  /// Returns the role stored in displayName (null if never explicitly set).
-  String? _roleFromDisplayName(User user) {
-    final dn = user.displayName ?? '';
-    if (dn.contains('|')) return dn.split('|').last;
-    return null; // never explicitly set
-  }
-
-  String _nameFromDisplayName(User user) {
-    final dn = user.displayName ?? '';
-    if (dn.contains('|')) return dn.split('|').first;
-    return dn;
-  }
-
-  /// Login and return the stored role + whether it was explicitly stored.
-  /// {role: String, roleIsExplicit: bool, user: User}
-  Future<Map<String, dynamic>?> loginWithEmail({
-    required String email,
-    required String password,
-  }) async {
-    final credential = await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    final user = credential.user;
-    if (user == null) return null;
-
-    String? role;
-    bool roleIsExplicit = false;
-
-    // 1. Try Firestore first (most reliable)
+  /// LOGIN WITH EMAIL & PASSWORD
+  /// Returns user role from Firestore after login
+  Future<Map<String, dynamic>> login(
+      String email,
+      String password,
+      ) async {
     try {
-      final doc = await _firestore.collection('users').doc(user.uid).get();
-      if (doc.exists && doc.data()?['role'] != null) {
-        role = doc.data()!['role'] as String;
-        roleIsExplicit = true;
-      }
-    } catch (e) {
-      debugPrint('AuthService.loginWithEmail: failed to read role from Firestore: $e');
-    }
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    // 2. Fall back to displayName encoding
-    if (role == null) {
-      final dnRole = _roleFromDisplayName(user);
-      if (dnRole != null) {
-        role = dnRole;
-        roleIsExplicit = true;
-      }
-    }
+      final uid = credential.user!.uid;
 
-    // 3. No role ever stored for this account
-    if (role == null) {
-      roleIsExplicit = false;
-      role = 'unknown';
-    }
+      final doc = await _firestore.collection("users").doc(uid).get();
 
-    return {
-      'user': user,
-      'role': role,
-      'roleIsExplicit': roleIsExplicit,
-    };
+      return doc.data() ?? {"role": "student"};
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_getAuthErrorMessage(e.code));
+    }
   }
 
+  /// REGISTER NEW USER
+  /// 1. Creates Firebase Auth account
+  /// 2. Saves user info in Firestore (name, role, email)
   Future<User?> register(
-    String name,
-    String email,
-    String password,
-    String role,
-  ) async {
-    final credential = await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    final user = credential.user;
-    if (user == null) return null;
-
-    // Store name + role in displayName — always works regardless of Firestore rules
-    await user.updateDisplayName(_encodeName(name, role));
-
-    // Also write to Firestore (non-critical)
+      String name,
+      String email,
+      String password,
+      String role,
+      ) async {
     try {
-      await _firestore.collection('users').doc(user.uid).set({
-        'uid': user.uid,
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final user = credential.user;
+
+      await user?.updateDisplayName(name);
+
+      await _firestore.collection('users').doc(user!.uid).set({
         'name': name,
         'email': email,
         'role': role,
-        'createdAt': DateTime.now().toIso8601String(),
+        'uid': user.uid,
+        'createdAt': FieldValue.serverTimestamp(),
       });
-    } catch (e) {
-      debugPrint('AuthService.register: failed to save user profile to Firestore: $e');
-    }
 
-    return user;
-  }
-
-  /// Save a role for the first time (only for old accounts that have no stored role).
-  Future<void> saveRoleFirstTime(String role) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
-    final name = _nameFromDisplayName(user).isNotEmpty
-        ? _nameFromDisplayName(user)
-        : (user.displayName ?? 'User');
-
-    await user.updateDisplayName(_encodeName(name, role));
-
-    try {
-      await _firestore.collection('users').doc(user.uid).set(
-        {'role': role, 'name': name, 'email': user.email},
-        SetOptions(merge: true),
-      );
-    } catch (e) {
-      debugPrint('AuthService.saveRoleFirstTime: failed to save role to Firestore: $e');
+      return user;
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_getAuthErrorMessage(e.code));
     }
   }
 
-  Future<String> getUserRole(String uid) async {
-    try {
-      final doc = await _firestore.collection('users').doc(uid).get();
-      if (doc.exists && doc.data()?['role'] != null) {
-        return doc.data()!['role'];
-      }
-    } catch (e) {
-      debugPrint('AuthService.getUserRole: failed to read role from Firestore: $e');
-    }
-
-    final user = _auth.currentUser;
-    if (user != null) {
-      final dnRole = _roleFromDisplayName(user);
-      if (dnRole != null) return dnRole;
-    }
-    return 'student';
-  }
-
-  String getDisplayName(User user) => _nameFromDisplayName(user);
-
+  /// GOOGLE SIGN IN (FIXED + ROLE SAFE)
   Future<User?> signInWithGoogle() async {
-    final googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return null;
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      final GoogleSignInAccount? googleUser =
+      await googleSignIn.signIn();
 
-    final userCredential = await _auth.signInWithCredential(credential);
-    final user = userCredential.user;
+      if (googleUser == null) return null;
 
-    if (user != null) {
-      try {
-        final doc = await _firestore.collection('users').doc(user.uid).get();
-        if (!doc.exists) {
-          await _firestore.collection('users').doc(user.uid).set({
-            'uid': user.uid,
-            'name': user.displayName ?? '',
-            'email': user.email ?? '',
-            'role': 'student',
-            'createdAt': DateTime.now().toIso8601String(),
-          });
-        }
-      } catch (e) {
-        debugPrint('AuthService.signInWithGoogle: failed to save user profile to Firestore: $e');
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential =
+      await _auth.signInWithCredential(credential);
+
+      final user = userCredential.user;
+
+      if (user == null) return null;
+
+      final docRef = _firestore.collection("users").doc(user.uid);
+      final doc = await docRef.get();
+
+      /// If first time login → create user in Firestore
+      if (!doc.exists) {
+        await docRef.set({
+          'name': user.displayName ?? "",
+          'email': user.email,
+          'role': "student",
+          'uid': user.uid,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
       }
-    }
 
-    return user;
+      return user;
+    } catch (e) {
+      throw Exception("Google Sign-In Failed: $e");
+    }
   }
 
+  /// LOGOUT
   Future<void> logout() async {
     await _auth.signOut();
+    await GoogleSignIn().signOut();
   }
 
-  User? get currentUser => _auth.currentUser;
+  /// ERROR HANDLER
+  String _getAuthErrorMessage(String code) {
+    switch (code) {
+      case 'weak-password':
+        return 'Password must be at least 6 characters';
+
+      case 'email-already-in-use':
+        return 'This email is already registered';
+
+      case 'user-not-found':
+        return 'No account found with this email';
+
+      case 'wrong-password':
+        return 'Incorrect password';
+
+      case 'invalid-email':
+        return 'Enter a valid email address';
+
+      case 'network-request-failed':
+        return 'Check your internet connection';
+
+      default:
+        return 'Something went wrong. Try again';
+    }
+  }
 }

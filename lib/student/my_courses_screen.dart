@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/core/constants/theme.dart';
+import 'package:education_app/core/I18n/messages.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/student/course_player_screen.dart';
 
@@ -32,7 +34,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Courses'),
+        title: Text(AppMessages.myCourses.tr),
         centerTitle: true,
         elevation: 0,
         backgroundColor: ThemeColors.primary,
@@ -42,10 +44,10 @@ class _MyCoursesScreenState extends State<MyCoursesScreen>
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'In Progress'),
-            Tab(text: 'Completed'),
+          tabs: [
+            Tab(text: AppMessages.allTab.tr),
+            Tab(text: AppMessages.inProgress.tr),
+            Tab(text: AppMessages.completedTab.tr),
           ],
         ),
       ),

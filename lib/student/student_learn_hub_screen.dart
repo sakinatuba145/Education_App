@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/I18n/messages.dart';
 import 'package:education_app/student/student_quiz_browser_screen.dart';
 import 'package:education_app/student/flashcard_screen.dart';
 import 'package:education_app/student/word_puzzle_screen.dart';
@@ -48,12 +50,12 @@ class _StudentLearnHubScreenState extends State<StudentLearnHubScreen>
                 tabAlignment: TabAlignment.start,
                 labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                 unselectedLabelStyle: const TextStyle(fontSize: 12),
-                tabs: const [
-                  Tab(icon: Icon(Icons.quiz_rounded, size: 20), text: 'Quizzes'),
-                  Tab(icon: Icon(Icons.assignment_rounded, size: 20), text: 'Assignments'),
-                  Tab(icon: Icon(Icons.style_rounded, size: 20), text: 'Flashcards'),
-                  Tab(icon: Icon(Icons.extension_rounded, size: 20), text: 'Puzzle'),
-                  Tab(icon: Icon(Icons.leaderboard_rounded, size: 20), text: 'Ranking'),
+                tabs: [
+                  Tab(icon: const Icon(Icons.quiz_rounded, size: 20), text: AppMessages.quizzes.tr),
+                  Tab(icon: const Icon(Icons.assignment_rounded, size: 20), text: AppMessages.assignments.tr),
+                  Tab(icon: const Icon(Icons.style_rounded, size: 20), text: AppMessages.flashcards.tr),
+                  Tab(icon: const Icon(Icons.extension_rounded, size: 20), text: AppMessages.puzzle.tr),
+                  Tab(icon: const Icon(Icons.leaderboard_rounded, size: 20), text: AppMessages.ranking.tr),
                 ],
               ),
             ),

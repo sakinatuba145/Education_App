@@ -9,7 +9,8 @@ class CourseModel {
     required this.id,
     required this.title,
     required this.teacher,
-    required this.progress, required this.image,
+    required this.progress,
+    this.image = '',
   });
 
   factory CourseModel.fromMap(Map<String, dynamic> map, String id) {
@@ -17,7 +18,8 @@ class CourseModel {
       id: id,
       title: map['title'] ?? '',
       teacher: map['teacher'] ?? '',
-      progress: (map['progress'] ?? 0).toDouble(), image: '',
+      progress: (map['progress'] ?? 0).toDouble(),
+      image: map['image'] ?? '',
     );
   }
 
@@ -26,6 +28,7 @@ class CourseModel {
       'title': title,
       'teacher': teacher,
       'progress': progress,
+      'image': image,
     };
   }
 }

@@ -22,10 +22,12 @@ What we did: Replaced every primary-palette colour reference in all 15 files wit
 
 Semantic / neutral colours (`AppColors.success`, `AppColors.error`, `AppColors.warning`, `AppColors.info`, `AppColors.gray*`) were left untouched — they are shared utilities, not primary-palette colours.
 
-Additionally fixed three pre-existing bugs discovered during review:
+Additionally fixed five pre-existing bugs discovered during review:
 - `lib/main.dart`: `initialRoute` was hardcoded to `StudentActivityScreen` (a debug/test screen), bypassing the normal welcome/auth flow. Restored to `WelcomeScreen.id`.
-- `lib/courses/course_model.dart`: `progress` field declared as `String` but `fromMap` returned a `double` — a type mismatch that would crash at runtime. Fixed field type to `double`; also updated two legacy callers (`course_screen.dart`, `dashboard_screen.dart`) that passed string literals (`'10 Month'`) to use `0.0`.
+- `lib/courses/course_model.dart`: `progress` field declared as `String` but `fromMap` returned a `double` — a type mismatch that would crash at runtime. Fixed field type to `double`, made `image` optional with proper fromMap/toMap round-trip. Updated two legacy callers (`course_screen.dart`, `dashboard_screen.dart`) that passed `'10 Month'` strings to use `0.0`.
 - `lib/core/constants/theme.dart`: Light theme `ElevatedButton` had `foregroundColor: ThemeColors.primary` identical to `backgroundColor`, making button labels invisible. Fixed `foregroundColor` to `Colors.white`.
+- `lib/auth/user_models.dart`: Constructor had a phantom `required String role` parameter with no backing field, and `imageUrl` was declared but never serialized. Removed the phantom parameter, added `imageUrl` to fromJson/toJson.
+- `lib/dashboard/dashboard_content.dart`: Removed the now-obsolete `role: "Student"` argument from the `UserModel` constructor call.
 
 Confirmed zero compilation errors with `flutter build web` after all changes.
 

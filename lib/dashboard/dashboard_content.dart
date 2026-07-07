@@ -24,7 +24,6 @@ class _DashboardContentState extends State<DashboardContent> {
     email: "email",
     uid: "uid",
     name: "Sakina",
-    role: "Student",
     imageUrl: null,
   );
 

@@ -6,6 +6,20 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ## Session 24
 
+### Changelog 24d — Login enforces role toggle; back button no longer exits student portal
+
+File(s): `lib/features/login_screen.dart`, `lib/student/student_portal_screen.dart`
+
+**Two bugs fixed:**
+
+1. **Wrong role could log in on the wrong tab:** If a user selected "Student" on the login screen but entered teacher credentials (or vice versa), Firebase would authenticate them successfully and route them to the wrong dashboard. Fixed: after Firebase login, the app now compares the selected toggle against the actual Firestore role. If they don't match, the session is immediately signed out and a clear message is shown:
+   - Selecting Student + teacher credentials → *"This is a teacher account. Please select 'Teacher' to log in."*
+   - Selecting Teacher + student credentials → *"This is a student account. Please select 'Student' to log in."*
+
+2. **Back button logged students out:** Pressing the device/browser back button from the student portal would navigate back to the Login screen because the navigation history still held the login route. Fixed: the student portal now intercepts all back-press events using `PopScope`. If the student is on any tab other than Home, back takes them to the Home tab. If already on Home, the back press is swallowed — the portal is the navigation root for logged-in students.
+
+---
+
 ### Changelog 24b — Wrapper routing: teachers also detected by 'role' field
 
 File(s): `lib/wrapper.dart`

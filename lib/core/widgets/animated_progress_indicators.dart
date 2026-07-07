@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
 import '../constants/app_shadows.dart';
+import '../constants/theme.dart';
 
 /// Animated linear progress bar with gradient
 class LinearProgressAnimated extends StatefulWidget {
@@ -110,8 +111,8 @@ class _LinearProgressAnimatedState extends State<LinearProgressAnimated>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            widget.color ?? AppColors.primary,
-                            (widget.color ?? AppColors.primary).withValues(alpha: 0.7),
+                            widget.color ?? ThemeColors.primary,
+                            (widget.color ?? ThemeColors.primary).withValues(alpha: 0.7),
                           ],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
@@ -129,8 +130,8 @@ class _LinearProgressAnimatedState extends State<LinearProgressAnimated>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              widget.color ?? AppColors.primary,
-                              (widget.color ?? AppColors.primary).withValues(alpha: 0.7),
+                              widget.color ?? ThemeColors.primary,
+                              (widget.color ?? ThemeColors.primary).withValues(alpha: 0.7),
                             ],
                           ),
                         ),
@@ -238,7 +239,7 @@ class _CircularProgressAnimatedState extends State<CircularProgressAnimated>
                 size: Size(widget.size, widget.size),
                 painter: CircleProgressPainter(
                   progress: _animation.value,
-                  color: widget.color ?? AppColors.primary,
+                  color: widget.color ?? ThemeColors.primary,
                   strokeWidth: widget.strokeWidth,
                 ),
               ),
@@ -382,12 +383,12 @@ class _StepProgressIndicatorState extends State<StepProgressIndicator>
                       height: widget.height,
                       decoration: BoxDecoration(
                         color: isCompleted || isCurrent
-                            ? (widget.activeColor ?? AppColors.primary)
+                            ? (widget.activeColor ?? ThemeColors.primary)
                             : (widget.inactiveColor ?? AppColors.gray300),
                         borderRadius: BorderRadius.circular(widget.height / 2),
                         boxShadow: isCurrent
                             ? AppShadows.shadowPrimary(
-                                color: widget.activeColor ?? AppColors.primary,
+                                color: widget.activeColor ?? ThemeColors.primary,
                               )
                             : null,
                       ),
@@ -411,7 +412,7 @@ class _StepProgressIndicatorState extends State<StepProgressIndicator>
                     style: TextStyle(
                       fontSize: 12,
                       color: index <= widget.currentStep
-                          ? AppColors.dark
+                          ? ThemeColors.black
                           : AppColors.gray500,
                       fontWeight: index <= widget.currentStep
                           ? FontWeight.w600
@@ -513,7 +514,7 @@ class _PercentageRingProgressState extends State<PercentageRingProgress>
                 size: Size(widget.size, widget.size),
                 painter: RingProgressPainter(
                   progress: _animation.value,
-                  color: widget.color ?? AppColors.primary,
+                  color: widget.color ?? ThemeColors.primary,
                   strokeWidth: widget.strokeWidth,
                 ),
               ),
@@ -525,7 +526,7 @@ class _PercentageRingProgressState extends State<PercentageRingProgress>
                     Text(
                       '${(_animation.value * 100).toStringAsFixed(0)}%',
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: widget.color ?? AppColors.primary,
+                        color: widget.color ?? ThemeColors.primary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

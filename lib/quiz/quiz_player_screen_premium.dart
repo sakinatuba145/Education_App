@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/core/constants/app_dimensions.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/core/widgets/animated_button.dart';
 import 'package:education_app/core/widgets/animated_progress_indicators.dart';
 import 'package:education_app/student/progress_service.dart';
@@ -276,7 +277,7 @@ class _QuizPlayerScreenPremiumState extends State<QuizPlayerScreenPremium>
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: ThemeColors.primary,
               foregroundColor: Colors.white,
             ),
             child: const Text('Done'),
@@ -290,7 +291,7 @@ class _QuizPlayerScreenPremiumState extends State<QuizPlayerScreenPremium>
   Widget build(BuildContext context) {
     if (_loading) {
       return Scaffold(
-        backgroundColor: AppColors.lightBackground,
+        backgroundColor: ThemeColors.background,
         appBar: AppBar(
           title: const Text('Quizzes'),
           elevation: 0,
@@ -302,7 +303,7 @@ class _QuizPlayerScreenPremiumState extends State<QuizPlayerScreenPremium>
 
     if (_quizzes.isEmpty) {
       return Scaffold(
-        backgroundColor: AppColors.lightBackground,
+        backgroundColor: ThemeColors.background,
         appBar: AppBar(
           title: const Text('Quizzes'),
           elevation: 0,
@@ -340,7 +341,7 @@ class _QuizPlayerScreenPremiumState extends State<QuizPlayerScreenPremium>
     final progress = (_currentQuestion + 1) / _quizzes.length;
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: ThemeColors.background,
       appBar: AppBar(
         title: Text(_quizTitle ?? 'Quiz'),
         elevation: 0,
@@ -351,7 +352,7 @@ class _QuizPlayerScreenPremiumState extends State<QuizPlayerScreenPremium>
             value: progress,
             backgroundColor: AppColors.gray300,
             valueColor:
-                const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                const AlwaysStoppedAnimation<Color>(ThemeColors.primary),
             minHeight: 3,
           ),
         ),
@@ -499,13 +500,13 @@ class _QuizPlayerScreenPremiumState extends State<QuizPlayerScreenPremium>
       }
     } else {
       if (isSelected) {
-        backgroundColor = AppColors.primary.withValues(alpha: 0.1);
-        borderColor = AppColors.primary;
-        textColor = AppColors.primary;
+        backgroundColor = ThemeColors.primary.withValues(alpha: 0.1);
+        borderColor = ThemeColors.primary;
+        textColor = ThemeColors.primary;
       } else {
         backgroundColor = Colors.white;
         borderColor = AppColors.gray300;
-        textColor = AppColors.dark;
+        textColor = ThemeColors.black;
       }
     }
 

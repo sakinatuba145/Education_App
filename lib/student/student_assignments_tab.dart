@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/student/progress_service.dart';
 import 'package:education_app/quiz/quiz_player_screen_premium.dart';
 
-const _orange = AppColors.primary;
+const _orange = ThemeColors.primary;
 const _orangeLight = Color(0xFFFFF4EE);
 
 class StudentAssignmentsTab extends StatefulWidget {
@@ -500,7 +500,7 @@ class _StartButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+            colors: [ThemeColors.primary, ThemeColors.secondary],
           ),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [

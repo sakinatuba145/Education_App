@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -77,7 +78,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: ThemeColors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,9 +92,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.leaderboard_rounded, color: AppColors.primary, size: 28),
+                          Icon(Icons.leaderboard_rounded, color: ThemeColors.primary, size: 28),
                           SizedBox(width: 10),
-                          Text('Leaderboard', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.dark)),
+                          Text('Leaderboard', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: ThemeColors.black)),
                         ],
                       ),
                       SizedBox(height: 4),
@@ -102,7 +103,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   ),
                   const Spacer(),
                   IconButton(
-                    icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
+                    icon: const Icon(Icons.refresh_rounded, color: ThemeColors.primary),
                     onPressed: _load,
                   ),
                 ],
@@ -110,7 +111,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             ),
 
             if (_loading)
-              const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.primary)))
+              const Expanded(child: Center(child: CircularProgressIndicator(color: ThemeColors.primary)))
             else if (_entries.isEmpty)
               Expanded(
                 child: Center(
@@ -205,9 +206,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: isMe ? AppColors.primary.withValues(alpha: 0.08) : Colors.white,
+        color: isMe ? ThemeColors.primary.withValues(alpha: 0.08) : Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: isMe ? Border.all(color: AppColors.primary, width: 1.5) : null,
+        border: isMe ? Border.all(color: ThemeColors.primary, width: 1.5) : null,
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2))],
       ),
       child: ListTile(
@@ -222,7 +223,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         title: Row(
           children: [
             Text(entry.displayName, style: TextStyle(fontWeight: isMe ? FontWeight.bold : FontWeight.w600, fontSize: 15)),
-            if (isMe) ...[const SizedBox(width: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(10)), child: const Text('You', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)))],
+            if (isMe) ...[const SizedBox(width: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: ThemeColors.primary, borderRadius: BorderRadius.circular(10)), child: const Text('You', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)))],
           ],
         ),
         subtitle: Text('${entry.quizzesTaken} quiz${entry.quizzesTaken == 1 ? '' : 'zes'} taken'),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/teacher/services/final_project_service.dart';
 import 'package:education_app/student/certificate_screen.dart';
 
@@ -114,7 +115,7 @@ class _StudentProjectScreenState extends State<StudentProjectScreen> {
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? const Center(child: CircularProgressIndicator(color: ThemeColors.primary))
           : _project == null
               ? _noProject()
               : _buildContent(),
@@ -184,13 +185,13 @@ class _StudentProjectScreenState extends State<StudentProjectScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary.withValues(alpha: 0.8), AppColors.primary],
+          colors: [ThemeColors.primary.withValues(alpha: 0.8), ThemeColors.primary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [BoxShadow(
-          color: AppColors.primary.withValues(alpha: 0.3),
+          color: ThemeColors.primary.withValues(alpha: 0.3),
           blurRadius: 16, offset: const Offset(0, 6),
         )],
       ),
@@ -509,7 +510,7 @@ class _StudentProjectScreenState extends State<StudentProjectScreen> {
         children: [
           const Row(
             children: [
-              Icon(Icons.upload_rounded, color: AppColors.primary),
+              Icon(Icons.upload_rounded, color: ThemeColors.primary),
               SizedBox(width: 8),
               Text('Submit Your Project', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
             ],
@@ -551,7 +552,7 @@ class _StudentProjectScreenState extends State<StudentProjectScreen> {
             child: FilledButton.icon(
               onPressed: _submitting ? null : _submit,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: ThemeColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
@@ -119,15 +120,15 @@ class _CourseDetailScreenPremiumState
   }
 
   List<Color> _heroColors(CourseModel c) =>
-      _catColors[c.category] ?? [AppColors.primary, AppColors.primaryDark];
+      _catColors[c.category] ?? [ThemeColors.primary, const Color(0xFFE65100)];
 
   @override
   Widget build(BuildContext context) {
     if (_loading) {
       return Scaffold(
-        backgroundColor: AppColors.lightBackground,
+        backgroundColor: ThemeColors.background,
         appBar: AppBar(
-          backgroundColor: AppColors.primary,
+          backgroundColor: ThemeColors.primary,
           foregroundColor: Colors.white,
           elevation: 0,
         ),
@@ -135,7 +136,7 @@ class _CourseDetailScreenPremiumState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(color: AppColors.primary),
+              CircularProgressIndicator(color: ThemeColors.primary),
               SizedBox(height: 16),
               Text('Loading course…',
                   style: TextStyle(color: AppColors.gray500)),
@@ -147,10 +148,10 @@ class _CourseDetailScreenPremiumState
 
     if (_error != null) {
       return Scaffold(
-        backgroundColor: AppColors.lightBackground,
+        backgroundColor: ThemeColors.background,
         appBar: AppBar(
           title: const Text('Course Details'),
-          backgroundColor: AppColors.primary,
+          backgroundColor: ThemeColors.primary,
           foregroundColor: Colors.white,
         ),
         body: Center(
@@ -176,7 +177,7 @@ class _CourseDetailScreenPremiumState
                   icon: const Icon(Icons.refresh_rounded),
                   label: const Text('Retry'),
                   style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary),
+                      backgroundColor: ThemeColors.primary),
                 ),
               ],
             ),
@@ -189,7 +190,7 @@ class _CourseDetailScreenPremiumState
     final colors = _heroColors(course);
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: ThemeColors.background,
       body: Stack(
         children: [
           // ── Scrollable content ───────────────────────────────────────────
@@ -326,7 +327,7 @@ class _CourseDetailScreenPremiumState
                         style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 15,
-                            color: AppColors.dark),
+                            color: ThemeColors.black),
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -408,7 +409,7 @@ class _CourseDetailScreenPremiumState
               AppColors.warning),
           _vDivider(),
           _statItem(Icons.bar_chart_rounded, _shortLevel(c.level), 'Level',
-              AppColors.primary),
+              ThemeColors.primary),
         ],
       ),
     );
@@ -494,7 +495,7 @@ class _CourseDetailScreenPremiumState
                         style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
-                            color: AppColors.dark));
+                            color: ThemeColors.black));
                   },
                 ),
                 if (c.language.isNotEmpty)
@@ -507,12 +508,12 @@ class _CourseDetailScreenPremiumState
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: ThemeColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Text('View Profile',
                 style: TextStyle(
-                    color: AppColors.primary,
+                    color: ThemeColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600)),
           ),
@@ -545,7 +546,7 @@ class _CourseDetailScreenPremiumState
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.dark)),
+                  color: ThemeColors.black)),
           const SizedBox(height: 10),
           Text(desc,
               style: const TextStyle(
@@ -560,7 +561,7 @@ class _CourseDetailScreenPremiumState
               onTap: () => setState(() => _descExpanded = true),
               child: const Text('Read more →',
                   style: TextStyle(
-                      color: AppColors.primary,
+                      color: ThemeColors.primary,
                       fontWeight: FontWeight.w600,
                       fontSize: 13)),
             ),
@@ -576,22 +577,22 @@ class _CourseDetailScreenPremiumState
       margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.primarySubtle,
+        color: ThemeColors.gradient1,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(color: ThemeColors.primary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(children: [
             Icon(Icons.emoji_objects_rounded,
-                color: AppColors.primary, size: 20),
+                color: ThemeColors.primary, size: 20),
             SizedBox(width: 8),
             Text("What You'll Learn",
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.dark)),
+                    color: ThemeColors.black)),
           ]),
           const SizedBox(height: 12),
           ...c.prerequisites.map((item) => Padding(
@@ -637,13 +638,13 @@ class _CourseDetailScreenPremiumState
         children: [
           Row(children: [
             const Icon(Icons.list_alt_rounded,
-                color: AppColors.primary, size: 20),
+                color: ThemeColors.primary, size: 20),
             const SizedBox(width: 8),
             Text('Curriculum (${_lessons.length} lessons)',
                 style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.dark)),
+                    color: ThemeColors.black)),
           ]),
           const SizedBox(height: 14),
           ...shown.map((lesson) => _lessonRow(lesson)),
@@ -689,14 +690,14 @@ class _CourseDetailScreenPremiumState
           height: 32,
           decoration: BoxDecoration(
             color: _isEnrolled
-                ? AppColors.primary.withValues(alpha: 0.12)
+                ? ThemeColors.primary.withValues(alpha: 0.12)
                 : AppColors.gray200,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
             child: Text('${lesson.sequenceNumber}',
                 style: TextStyle(
-                    color: _isEnrolled ? AppColors.primary : AppColors.gray500,
+                    color: _isEnrolled ? ThemeColors.primary : AppColors.gray500,
                     fontWeight: FontWeight.w700,
                     fontSize: 13)),
           ),
@@ -710,7 +711,7 @@ class _CourseDetailScreenPremiumState
                   style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
-                      color: AppColors.dark)),
+                      color: ThemeColors.black)),
               if (lesson.totalDuration.inSeconds > 0)
                 Text(_fmtDur(lesson.totalDuration),
                     style: const TextStyle(
@@ -722,7 +723,7 @@ class _CourseDetailScreenPremiumState
           _isEnrolled
               ? Icons.play_circle_rounded
               : Icons.lock_rounded,
-          color: _isEnrolled ? AppColors.primary : AppColors.gray300,
+          color: _isEnrolled ? ThemeColors.primary : AppColors.gray300,
           size: 22,
         ),
       ]),
@@ -786,7 +787,7 @@ class _CourseDetailScreenPremiumState
                           fontWeight: FontWeight.w800,
                           color: course.isFree
                               ? AppColors.success
-                              : AppColors.dark),
+                              : ThemeColors.black),
                     ),
                     Text(
                       course.isFree
@@ -801,7 +802,7 @@ class _CourseDetailScreenPremiumState
                     child: FilledButton(
                       onPressed: _enrolling ? null : _enroll,
                       style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.primary,
+                        backgroundColor: ThemeColors.primary,
                         padding: const EdgeInsets.symmetric(horizontal: 28),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14)),

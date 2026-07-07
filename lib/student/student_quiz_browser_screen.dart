@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/quiz/quiz_player_screen_premium.dart';
 
@@ -12,7 +12,7 @@ class StudentQuizBrowserScreen extends StatelessWidget {
     final enrollmentService = EnrollmentService();
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: ThemeColors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,11 +151,11 @@ class _CourseQuizCardState extends State<_CourseQuizCard> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.12),
+                color: ThemeColors.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.menu_book_rounded,
-                  color: AppColors.primary),
+                  color: ThemeColors.primary),
             ),
             title: Text(
               widget.course.courseTitle,
@@ -199,11 +199,11 @@ class _CourseQuizCardState extends State<_CourseQuizCard> {
                     leading: CircleAvatar(
                       radius: 16,
                       backgroundColor:
-                          AppColors.primary.withOpacity(0.15),
+                          ThemeColors.primary.withValues(alpha: 0.15),
                       child: Text(
                         '${i + 1}',
                         style: const TextStyle(
-                          color: AppColors.primary,
+                          color: ThemeColors.primary,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
@@ -215,12 +215,12 @@ class _CourseQuizCardState extends State<_CourseQuizCard> {
                       children: [
                         Text('Take Quiz',
                             style: TextStyle(
-                                color: AppColors.primary,
+                                color: ThemeColors.primary,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600)),
                         SizedBox(width: 4),
                         Icon(Icons.play_circle_fill_rounded,
-                            color: AppColors.primary, size: 20),
+                            color: ThemeColors.primary, size: 20),
                       ],
                     ),
                     onTap: () => Navigator.of(context).push(

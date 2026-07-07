@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/student/enrollment_service.dart';
 
 class FlashcardScreen extends StatefulWidget {
@@ -75,7 +75,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: ThemeColors.background,
       body: SafeArea(child: _selectedCourse == null ? _buildCourseList() : _buildCardSession()),
     );
   }
@@ -91,9 +91,9 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
             children: [
               const Row(
                 children: [
-                  Icon(Icons.style_rounded, color: AppColors.primary, size: 28),
+                  Icon(Icons.style_rounded, color: ThemeColors.primary, size: 28),
                   SizedBox(width: 10),
-                  Text('Flashcards', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.dark)),
+                  Text('Flashcards', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: ThemeColors.black)),
                 ],
               ),
               const SizedBox(height: 4),
@@ -103,7 +103,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
         ),
         Expanded(
           child: _loadingCourses
-              ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+              ? const Center(child: CircularProgressIndicator(color: ThemeColors.primary))
               : _courses.isEmpty
                   ? _emptyState('No courses enrolled', 'Enroll in a course to start studying with flashcards', Icons.style_outlined)
                   : ListView.builder(
@@ -120,14 +120,14 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                             leading: Container(
                               width: 48, height: 48,
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [AppColors.primary, AppColors.primaryLight], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                                gradient: const LinearGradient(colors: [ThemeColors.primary, ThemeColors.secondary], begin: Alignment.topLeft, end: Alignment.bottomRight),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Icon(Icons.style_rounded, color: Colors.white, size: 22),
                             ),
                             title: Text(c.courseTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
                             subtitle: Text('${c.progressPercent}% complete · tap to study'),
-                            trailing: const Icon(Icons.chevron_right, color: AppColors.primary),
+                            trailing: const Icon(Icons.chevron_right, color: ThemeColors.primary),
                             onTap: () => _selectCourse(c),
                           ),
                         );
@@ -158,7 +158,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
           ),
         ),
         if (_loadingCards)
-          const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.primary)))
+          const Expanded(child: Center(child: CircularProgressIndicator(color: ThemeColors.primary)))
         else if (_cards.isEmpty)
           Expanded(child: _emptyState('No lessons found', 'This course has no lessons yet', Icons.style_outlined))
         else if (_sessionDone)
@@ -171,7 +171,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                 LinearProgressIndicator(
                   value: (_currentIndex + 1) / _cards.length,
                   backgroundColor: Colors.grey.shade200,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  valueColor: const AlwaysStoppedAnimation<Color>(ThemeColors.primary),
                   minHeight: 4,
                 ),
                 Expanded(
@@ -202,7 +202,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                           icon: Icon(_currentIndex < _cards.length - 1 ? Icons.arrow_forward_rounded : Icons.check_circle_rounded),
                           label: Text(_currentIndex < _cards.length - 1 ? 'Next' : 'Finish'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
+                            backgroundColor: ThemeColors.primary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -228,8 +228,8 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
           children: [
             Container(
               width: 100, height: 100,
-              decoration: const BoxDecoration(color: AppColors.primarySubtle, shape: BoxShape.circle),
-              child: const Icon(Icons.celebration_rounded, size: 54, color: AppColors.primary),
+              decoration: const BoxDecoration(color: ThemeColors.gradient1, shape: BoxShape.circle),
+              child: const Icon(Icons.celebration_rounded, size: 54, color: ThemeColors.primary),
             ),
             const SizedBox(height: 24),
             const Text('Session Complete! 🎉', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
@@ -242,7 +242,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Study Again'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary, foregroundColor: Colors.white,
+                backgroundColor: ThemeColors.primary, foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -351,13 +351,13 @@ class _FlipCardState extends State<_FlipCard> with SingleTickerProviderStateMixi
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isFront
-              ? [AppColors.primary, AppColors.primaryLight]
+              ? [ThemeColors.primary, ThemeColors.secondary]
               : [const Color(0xFF1565C0), const Color(0xFF1976D2)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: (isFront ? AppColors.primary : const Color(0xFF1565C0)).withValues(alpha: 0.4), blurRadius: 20, offset: const Offset(0, 8))],
+        boxShadow: [BoxShadow(color: (isFront ? ThemeColors.primary : const Color(0xFF1565C0)).withValues(alpha: 0.4), blurRadius: 20, offset: const Offset(0, 8))],
       ),
       child: Stack(
         children: [

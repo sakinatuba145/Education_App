@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -7,12 +7,12 @@ class AboutUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.studioCream,
+      backgroundColor: ThemeColors.background,
       appBar: AppBar(
         title: const Text('About Us'),
         centerTitle: true,
-        backgroundColor: AppColors.studioCream,
-        foregroundColor: AppColors.studioInk,
+        backgroundColor: ThemeColors.background,
+        foregroundColor: ThemeColors.black,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -23,7 +23,7 @@ class AboutUsScreen extends StatelessWidget {
             Center(
               child: CircleAvatar(
                 radius: 44,
-                backgroundColor: AppColors.studioGold,
+                backgroundColor: ThemeColors.primary,
                 child: const Icon(Icons.school_rounded, color: Colors.white, size: 44),
               ),
             ),
@@ -31,14 +31,14 @@ class AboutUsScreen extends StatelessWidget {
             const Center(
               child: Text(
                 'EduAf',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppColors.studioInk),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: ThemeColors.black),
               ),
             ),
             const SizedBox(height: 4),
             Center(
               child: Text(
                 'Learn • Grow • Build Your Future',
-                style: TextStyle(fontSize: 14, color: AppColors.studioGoldDark, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 14, color: ThemeColors.primary, fontWeight: FontWeight.w600),
               ),
             ),
             const SizedBox(height: 28),
@@ -77,15 +77,15 @@ class AboutUsScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.studioCreamDark,
+        color: ThemeColors.gradient2,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppColors.studioInk)),
+          Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: ThemeColors.black)),
           const SizedBox(height: 10),
-          Text(body, style: TextStyle(fontSize: 14, height: 1.5, color: AppColors.studioInk.withValues(alpha: 0.85))),
+          Text(body, style: TextStyle(fontSize: 14, height: 1.5, color: ThemeColors.black.withValues(alpha: 0.85))),
         ],
       ),
     );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 
 class ContactUsScreen extends StatelessWidget {
   const ContactUsScreen({super.key});
@@ -7,12 +7,12 @@ class ContactUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.studioCream,
+      backgroundColor: ThemeColors.background,
       appBar: AppBar(
         title: const Text('Contact Us'),
         centerTitle: true,
-        backgroundColor: AppColors.studioCream,
-        foregroundColor: AppColors.studioInk,
+        backgroundColor: ThemeColors.background,
+        foregroundColor: ThemeColors.black,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -22,12 +22,12 @@ class ContactUsScreen extends StatelessWidget {
           children: [
             const Text(
               "We'd love to hear from you",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.studioInk),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: ThemeColors.black),
             ),
             const SizedBox(height: 6),
             Text(
               'Questions, feedback or suggestions? Reach out through any of the channels below.',
-              style: TextStyle(fontSize: 14, color: AppColors.studioInk.withValues(alpha: 0.75)),
+              style: TextStyle(fontSize: 14, color: ThemeColors.black.withValues(alpha: 0.75)),
             ),
             const SizedBox(height: 24),
             _contactTile(icon: Icons.email_rounded, label: 'Email', value: 'support@eduaf.com'),
@@ -42,17 +42,17 @@ class ContactUsScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.studioGoldLight,
+                color: ThemeColors.secondary,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline_rounded, color: AppColors.studioGoldDark),
+                  const Icon(Icons.info_outline_rounded, color: Color(0xFFE65100)),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'For account or course issues, please include your registered email so our team can help faster.',
-                      style: TextStyle(fontSize: 13, color: AppColors.studioInk.withValues(alpha: 0.85)),
+                      style: TextStyle(fontSize: 13, color: ThemeColors.black.withValues(alpha: 0.85)),
                     ),
                   ),
                 ],
@@ -68,23 +68,23 @@ class ContactUsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.studioCreamDark,
+        color: ThemeColors.gradient2,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: AppColors.studioGold,
+            backgroundColor: ThemeColors.primary,
             child: Icon(icon, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(fontSize: 12, color: AppColors.studioInk.withValues(alpha: 0.6))),
+              Text(label, style: TextStyle(fontSize: 12, color: ThemeColors.black.withValues(alpha: 0.6))),
               const SizedBox(height: 2),
-              Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.studioInk)),
+              Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: ThemeColors.black)),
             ],
           ),
         ],

@@ -5,7 +5,7 @@ import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/register_screen.dart';
 import 'package:education_app/features/forgot_password.dart';
 import 'package:education_app/student/student_portal_screen.dart';
-import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
+import 'package:education_app/teacher/screens/teacher_dashboard_screen.dart';
 /// 3.10 LOGIN SCREEN
 /// This screen lets users login using email + password
 /// After login, user is redirected based on their role
@@ -51,15 +51,16 @@ class _LoginScreenState extends State<LoginScreen> {
         passwordController.text.trim(),
       );
 
-      final role = user["role"];
+      // Check both 'role' and 'position' fields — Firestore accounts may use either
+      final role = (user["role"] ?? user["position"] ?? "student").toString();
 
       if (!mounted) return;
 
-      if (role == "teacher") {
+      if (role == "teacher" || role == "admin") {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const TeacherDashboardScreenPremium(),
+            builder: (_) => const TeacherDashboardScreen(),
           ),
         );
       } else {

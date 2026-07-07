@@ -6,7 +6,17 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ## Session 23
 
-### Changelog 23 — Student portal wired up: students now land on the real 4-tab home screen after login
+### Changelog 23b — Role selector added to login page
+
+File(s): `lib/features/login_screen.dart`
+
+What it was: The login page showed a generic "Welcome Back" form with no indication of whether you were logging in as a student or teacher. Users had no visual cue about their role.
+
+What we did: Added an animated pill-style **Student / Teacher toggle** between the title and the email field. Selecting a tab highlights it in the app's primary colour and updates the subtitle text ("Continue your learning journey" for students, "Sign in to manage your courses" for teachers). The actual routing after login still uses the Firestore role — this toggle is a UX guide so users know they're on the right form, and it animates smoothly between selections.
+
+---
+
+### Changelog 23a — Student portal wired up: students now land on the real 4-tab home screen after login
 
 File(s): `lib/student/student_portal_screen.dart` *(new)*, `lib/features/login_screen.dart`, `lib/wrapper.dart`
 

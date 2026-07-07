@@ -30,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   /// Controls loading spinner & password visibility
   bool isLoading = false;
   bool obscurePassword = true;
+  String _selectedRole = 'student';
 
   final AuthService authService = AuthService();
 
@@ -81,6 +82,40 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = false);
   }
 
+  Widget _roleTab(String role, IconData icon, String label) {
+    final selected = _selectedRole == role;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedRole = role),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: selected ? ThemeColors.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon,
+                  size: 18,
+                  color: selected ? Colors.white : Colors.grey.shade600),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: selected ? Colors.white : Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,12 +146,31 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
 
                         Text(
-                          "Continue your learning journey",
+                          _selectedRole == 'teacher'
+                              ? "Sign in to manage your courses"
+                              : "Continue your learning journey",
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
 
-                        const SizedBox(height: 35),
+                        const SizedBox(height: 28),
+
+                        // Role toggle
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.55),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          child: Row(
+                            children: [
+                              _roleTab('student', Icons.school_rounded, 'Student'),
+                              _roleTab('teacher', Icons.person_rounded, 'Teacher'),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 28),
 
 
                         TextFormField(

@@ -41,7 +41,7 @@ class CertificatePreviewScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {},
                     style: FilledButton.styleFrom(
                       backgroundColor: const Color(0xFFD4AF37),
                       foregroundColor: const Color(0xFF0D1B3E),

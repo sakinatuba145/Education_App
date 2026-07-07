@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 
 class LeaderboardScreen extends StatefulWidget {
-  final bool showHeader;
-  const LeaderboardScreen({super.key, this.showHeader = true});
+  const LeaderboardScreen({super.key});
 
   @override
   State<LeaderboardScreen> createState() => _LeaderboardScreenState();
@@ -78,49 +77,37 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.studioCream,
+      backgroundColor: AppColors.lightBackground,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.showHeader)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-                child: Row(
-                  children: [
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.emoji_events_rounded, color: AppColors.studioGoldDark, size: 28),
-                            SizedBox(width: 10),
-                            Text('Trophies', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.studioInk)),
-                          ],
-                        ),
-                        SizedBox(height: 4),
-                        Text('Top students by quiz average', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                      ],
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
-                      onPressed: _load,
-                    ),
-                  ],
-                ),
-              )
-            else
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+              child: Row(
+                children: [
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.leaderboard_rounded, color: AppColors.primary, size: 28),
+                          SizedBox(width: 10),
+                          Text('Leaderboard', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.dark)),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Text('Top students by quiz average', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                    ],
+                  ),
+                  const Spacer(),
+                  IconButton(
                     icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
                     onPressed: _load,
                   ),
-                ),
+                ],
               ),
+            ),
 
             if (_loading)
               const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.primary)))

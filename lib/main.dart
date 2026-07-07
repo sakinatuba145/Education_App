@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
         StudentActivityScreen.id: (context) => StudentActivityScreen(studentId: 'alpha',),
       },
 
-      initialRoute: StudentActivityScreen.id,
+      initialRoute: WelcomeScreen.id,
 
     );
   }

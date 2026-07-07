@@ -133,7 +133,7 @@ class _CourseCreationScreenState extends State<CourseCreationScreen> {
               labelText: TeacherStrings.courseCategory,
               prefixIcon: Icon(Icons.category),
             ),
-            initialValue: _selectedCategory.isEmpty ? null : _selectedCategory,
+            value: _selectedCategory.isEmpty ? null : _selectedCategory,
             items: COURSE_CATEGORIES.map((category) {
               return DropdownMenuItem(value: category, child: Text(category));
             }).toList(),
@@ -153,7 +153,7 @@ class _CourseCreationScreenState extends State<CourseCreationScreen> {
               labelText: TeacherStrings.courseLevel,
               prefixIcon: Icon(Icons.school),
             ),
-            initialValue: _selectedLevel,
+            value: _selectedLevel,
             items: ['beginner', 'intermediate', 'advanced'].map((level) {
               return DropdownMenuItem(
                 value: level,
@@ -170,7 +170,7 @@ class _CourseCreationScreenState extends State<CourseCreationScreen> {
               labelText: TeacherStrings.courseLanguage,
               prefixIcon: Icon(Icons.language),
             ),
-            initialValue: _selectedLanguage,
+            value: _selectedLanguage,
             items: SUPPORTED_LANGUAGES.map((language) {
               return DropdownMenuItem(value: language, child: Text(language));
             }).toList(),

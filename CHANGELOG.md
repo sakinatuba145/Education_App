@@ -210,6 +210,144 @@ Why: The team lead reported every page looked cluttered with two headers. Now ea
 
 ---
 
+## Session 03
+
+### Changelog 18 — Fixed a typo in the leader's theme file that caused an invalid color value
+
+File(s): `lib/core/constants/theme.dart`
+
+**What was broken:**
+In `ThemeColors`, the `button` color was written as `Color(0xFFFf5b400)` — this has 9 hexadecimal digits instead of the required 8. Flutter's `Color` class expects exactly 8 hex digits (AARRGGBB format). The extra digit made this an invalid value that Flutter silently accepted at compile time but would render the wrong color at runtime.
+
+**Where the mistake is:**
+`lib/core/constants/theme.dart`, line 308 — inside the `ThemeColors` class:
+```dart
+// BEFORE (broken — 9 hex digits):
+static const button = Color(0xFFFf5b400);
+
+// AFTER (fixed — 8 hex digits, correct gold color):
+static const button = Color(0xFFF5B400);
+```
+
+**What we fixed:**
+Removed the extra `F` digit so the value is a valid 8-digit hex color: `0xFFF5B400` — a warm gold colour that fits the amber/orange theme the leader designed.
+
+**What we did NOT change:**
+Everything else in `theme.dart` is untouched — `AppTheme.lightTheme`, `AppTheme.darkTheme`, `ThemeColors`, `AppDarkColors`, and the `AppBackground` widget are all exactly as the leader wrote them.
+
+**Why this matters:**
+`ThemeColors.button` is used inside `AppTheme.darkTheme`'s `ElevatedButtonThemeData` — so every primary button in dark mode was silently rendering the wrong colour. This fix makes buttons display the intended gold the leader specified.
+
+---
+
+### Changelog 19 — Removed orphaned chart_painter.dart (its data source was deleted)
+
+File(s): Deleted `lib/dashboard/chart_painter.dart`
+
+**What was broken:**
+`chart_painter.dart` is a custom chart drawing file that we added in an earlier session. It imported a data class called `ChartColumnData` from a companion file `chartdata.dart`. When the team leader synced the main repo, she deleted `lib/dashboard/chartdata.dart` (replacing the old chart system with the new `lib/chartbar/` folder). This left `chart_painter.dart` with a broken import pointing to a file that no longer exists — causing 4 compile errors every time the project was built.
+
+**Errors it was causing (exact Flutter output):**
+```
+error • Target of URI doesn't exist: 'chartdata.dart' — lib/dashboard/chart_painter.dart:3
+error • The name 'ChartColumnData' isn't a type — lib/dashboard/chart_painter.dart:6
+error • The property 'y' can't be unconditionally accessed — lib/dashboard/chart_painter.dart:23
+error • The property 'y1' can't be unconditionally accessed — lib/dashboard/chart_painter.dart:23
+```
+
+**What we did:**
+Deleted `lib/dashboard/chart_painter.dart`. It was not referenced or used by any screen in the app — its only connection was to the now-deleted `chartdata.dart`. Removing it eliminates all 4 errors with no visible effect on any student or teacher screen.
+
+**Why it is safe to delete:**
+The leader's new chart system lives entirely in `lib/chartbar/` and has its own data classes. `chart_painter.dart` was dead code the moment its data source was removed.
+
+---
+
+### Changelog 20 — Fixed 3 wrong parameter names in the teacher's Course Creation screen
+
+File(s): `lib/teacher/screens/course_creation_screen.dart`
+
+**What was broken:**
+The course creation form (step 2 — the dropdowns for Category, Level, and Language) used a parameter called `initialValue:` on Flutter's `DropdownButtonFormField` widget. That parameter does not exist in `DropdownButtonFormField` — the correct parameter name is `value:`. This caused 3 compile errors every time the project built.
+
+**Errors it was causing (exact Flutter output):**
+```
+error • The named parameter 'initialValue' isn't defined — line 136 (Category dropdown)
+error • The named parameter 'initialValue' isn't defined — line 156 (Level dropdown)
+error • The named parameter 'initialValue' isn't defined — line 173 (Language dropdown)
+```
+
+**Where the mistake is (before and after):**
+```dart
+// BEFORE (broken — 'initialValue' does not exist on DropdownButtonFormField):
+DropdownButtonFormField<String>(
+  initialValue: _selectedCategory.isEmpty ? null : _selectedCategory,
+  ...
+)
+
+// AFTER (fixed — correct parameter name is 'value'):
+DropdownButtonFormField<String>(
+  value: _selectedCategory.isEmpty ? null : _selectedCategory,
+  ...
+)
+```
+The same rename was applied to the Level dropdown (`initialValue: _selectedLevel` → `value: _selectedLevel`) and the Language dropdown (`initialValue: _selectedLanguage` → `value: _selectedLanguage`).
+
+**What we did NOT change:**
+Only the three parameter names were changed — `initialValue:` to `value:` — on lines 136, 156, and 173. No logic, layout, validation, or styling was modified. The full `course_creation_screen.dart` is otherwise exactly as the leader's team wrote it.
+
+**Why this matters:**
+Without this fix the app cannot compile at all, which means nobody on the team can run or test any part of the app, not just the teacher course creation flow.
+
+---
+
+### Changelog 21 — Migrated About Us and Contact Us screens from deleted colors to the leader's official theme
+
+File(s): `lib/student/about_us_screen.dart`, `lib/student/contact_us_screen.dart`
+
+**What was broken:**
+These two student screens (written by our team in Session 02) used a set of color constants from `AppColors` that we created during the gold/cream redesign phase:
+- `AppColors.studioCream`
+- `AppColors.studioInk`
+- `AppColors.studioGold`
+- `AppColors.studioGoldDark`
+- `AppColors.studioCreamDark`
+- `AppColors.studioGoldLight`
+
+When the team leader synced her updated `app_colors.dart` to the main repo, these custom constants were removed (she replaced the file with a clean, semantic color system). This left both screens with 29 compile errors — the app could not build at all.
+
+**Errors it was causing (exact Flutter output — sample):**
+```
+error • The getter 'studioCream' isn't defined for the type 'AppColors' — about_us_screen.dart:10
+error • The getter 'studioInk' isn't defined for the type 'AppColors' — about_us_screen.dart:15
+error • The getter 'studioGold' isn't defined for the type 'AppColors' — about_us_screen.dart:26
+error • The getter 'studioGoldDark' isn't defined for the type 'AppColors' — about_us_screen.dart:41
+error • The getter 'studioCreamDark' isn't defined for the type 'AppColors' — about_us_screen.dart:80
+error • The getter 'studioCream' isn't defined for the type 'AppColors' — contact_us_screen.dart:10
+... (29 errors total across both files)
+```
+
+**What we did:**
+Migrated both screens to import and use `ThemeColors` from `lib/core/constants/theme.dart` — the leader's official theme file — instead of the old `AppColors.studioX` constants. This also fulfills the team leader's instruction that all student screens must use `theme.dart` as their single source of colour truth.
+
+**Color mapping used (old → new):**
+| Old constant removed from AppColors | Replaced with ThemeColors |
+|---|---|
+| `AppColors.studioCream` | `ThemeColors.background` (`#FFF3E0` warm cream) |
+| `AppColors.studioInk` | `ThemeColors.black` (`Colors.black`) |
+| `AppColors.studioGold` | `ThemeColors.primary` (`#FFA726` amber) |
+| `AppColors.studioGoldDark` | `Color(0xFFE65100)` (dark amber — same visual intent) |
+| `AppColors.studioGoldLight` | `ThemeColors.secondary` (`#FFCC80` light amber) |
+| `AppColors.studioCreamDark` | `ThemeColors.gradient2` (`#FFE0B2` deeper cream) |
+
+**What was NOT changed:**
+The layout, copy, card structure, icons, spacing, and overall visual design of both screens are identical to what they were. Only the color source changed — from deleted constants to the leader's official theme values.
+
+**Result:**
+All 33 compile errors across the project are now resolved. `flutter analyze` reports zero errors. The app builds and runs cleanly.
+
+---
+
 ### Changelog 17 — Fixed videos playing in a separate/external window instead of inside the app
 
 File(s): New `lib/core/widgets/inline_video_player.dart`; updated `lib/student/course_player_screen.dart`, `lib/courses/lesson_player_screen_premium.dart`

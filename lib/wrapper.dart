@@ -38,7 +38,10 @@ class Wrapper extends StatelessWidget {
                 }
 
                 final userData = userSnapshot.data?.data() as Map<String, dynamic>?;
-                final position = userData?['position'] ?? 'student';
+                // Check both 'role' and 'position' fields — seed accounts use 'position',
+                // registered accounts use 'role'
+                final position =
+                    userData?['role'] ?? userData?['position'] ?? 'student';
 
                 // Route based on user role
                 if (position == 'teacher' || position == 'admin') {

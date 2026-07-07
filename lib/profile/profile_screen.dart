@@ -2,11 +2,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'edit_profile_screen.dart';
 import 'progress_screen.dart';
 import 'favorites_screen.dart';
 import 'settings_screen.dart';
+import '../features/login_screen.dart';
+import '../student/about_us_screen.dart';
+import '../student/contact_us_screen.dart';
+import '../student/progress_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,12 +22,19 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
-  String name = "Zeynab";
-  String email = "zeynab@gmail.com";
-  String phone = "+971 555555555";
-  String university = "University of Kabul";
+  String name = "";
+  String email = "";
+  String phone = "";
+  String university = "";
   String bio = "Education App Student";
   XFile? profileImage;
+
+  // Real stats from Firestore
+  int _enrolledCourses = 0;
+  int _quizzesTaken = 0;
+  int _avgProgressPercent = 0;
+  bool _statsLoaded = false;
+  String _memberSince = "2026";
 
   late final AnimationController _controller;
 
@@ -30,6 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   void initState() {
     super.initState();
     loadProfileData();
+    _loadStats();
 
     _controller = AnimationController(
       vsync: this,
@@ -38,20 +51,49 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> loadProfileData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final authName =
+        user?.displayName?.split('|').first.trim() ?? '';
+    final authEmail = user?.email ?? '';
+
+    // Use creation time for "Member since"
+    final createdAt = user?.metadata.creationTime;
+    if (createdAt != null) {
+      _memberSince = createdAt.year.toString();
+    }
+
     final prefs = await SharedPreferences.getInstance();
 
-    setState(() {
-      name = prefs.getString("name") ?? name;
-      email = prefs.getString("email") ?? email;
-      phone = prefs.getString("phone") ?? phone;
-      university = prefs.getString("university") ?? university;
-      bio = prefs.getString("bio") ?? bio;
+    if (mounted) {
+      setState(() {
+        name = prefs.getString("name") ?? authName;
+        email = prefs.getString("email") ?? authEmail;
+        phone = prefs.getString("phone") ?? '';
+        university = prefs.getString("university") ?? '';
+        bio = prefs.getString("bio") ?? 'Education App Student';
 
-      final imagePath = prefs.getString("profileImage");
-      if (imagePath != null) {
-        profileImage = XFile(imagePath);
+        final imagePath = prefs.getString("profileImage");
+        if (imagePath != null) {
+          profileImage = XFile(imagePath);
+        }
+      });
+    }
+  }
+
+  Future<void> _loadStats() async {
+    try {
+      final stats = await ProgressService().getStudentStats();
+      if (mounted) {
+        setState(() {
+          _enrolledCourses = stats.enrolledCourses;
+          _quizzesTaken = stats.quizzesTaken;
+          _avgProgressPercent = stats.avgProgressPercent;
+          _statsLoaded = true;
+        });
       }
-    });
+    } catch (_) {
+      if (mounted) setState(() => _statsLoaded = true);
+    }
   }
 
   Future<void> saveProfileData() async {
@@ -93,10 +135,36 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.dispose();
   }
 
+  List<Map<String, dynamic>> _buildAchievements() {
+    final list = <Map<String, dynamic>>[];
+    if (_quizzesTaken >= 1) {
+      list.add({
+        'icon': Icons.emoji_events,
+        'title': 'First Quiz Completed',
+        'subtitle': 'You completed your first quiz successfully.',
+      });
+    }
+    if (_enrolledCourses >= 1) {
+      list.add({
+        'icon': Icons.auto_stories,
+        'title': '$_enrolledCourses Course${_enrolledCourses == 1 ? '' : 's'} Enrolled',
+        'subtitle': 'You are building your learning journey.',
+      });
+    }
+    list.add({
+      'icon': Icons.star,
+      'title': 'Active Learner',
+      'subtitle': 'Keep learning and improving every day.',
+    });
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     final textTheme = Theme.of(context).textTheme;
+
+    final achievements = _buildAchievements();
 
     return Scaffold(
         appBar: AppBar(
@@ -134,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           height: 126,
                           width: 126,
                           child: CircularProgressIndicator(
-                            value: 0.7,
+                            value: _avgProgressPercent / 100,
                             strokeWidth: 6,
                             backgroundColor: Colors.white,
                             color: primary,
@@ -158,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Text(name, style: textTheme.headlineLarge),
+                  Text(name.isNotEmpty ? name : 'Student', style: textTheme.headlineLarge),
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -176,7 +244,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Member since 2026",
+                    "Member since $_memberSince",
                     style: textTheme.bodySmall,
                   ),
                 ],
@@ -192,21 +260,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                 _statBox(
                   context,
                   Icons.menu_book,
-                  "3",
+                  _statsLoaded ? '$_enrolledCourses' : '—',
                   "Courses",
                 ),
                 const SizedBox(width: 10),
                 _statBox(
                   context,
                   Icons.quiz,
-                  "5",
+                  _statsLoaded ? '$_quizzesTaken' : '—',
                   "Quizzes",
                 ),
                 const SizedBox(width: 10),
                 _statBox(
                   context,
                   Icons.workspace_premium,
-                  "70%",
+                  _statsLoaded ? '$_avgProgressPercent%' : '—',
                   "Progress",
                 ),
               ],
@@ -221,36 +289,37 @@ class _ProfileScreenState extends State<ProfileScreen>
               context,
               Icons.email,
               "Email",
-              email,
+              email.isNotEmpty ? email : '—',
             ),
           ),
           const SizedBox(height: 14),
 
-
-
-
-          _animate(
-            4,
-            _infoCard(
-              context,
-              Icons.phone,
-              "Phone",
-              phone,
+          if (phone.isNotEmpty) ...[
+            _animate(
+              4,
+              _infoCard(
+                context,
+                Icons.phone,
+                "Phone",
+                phone,
+              ),
             ),
-          ),
-          const SizedBox(height: 14),
+            const SizedBox(height: 14),
+          ],
 
-          _animate(
-            5,
-            _infoCard(
-              context,
-              Icons.school,
-              "University",
-              university,
+          if (university.isNotEmpty) ...[
+            _animate(
+              5,
+              _infoCard(
+                context,
+                Icons.school,
+                "University",
+                university,
+              ),
             ),
-          ),
-
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
+          ] else
+            const SizedBox(height: 24),
 
           _animate(
             6,
@@ -261,98 +330,46 @@ class _ProfileScreenState extends State<ProfileScreen>
           ),
           const SizedBox(height: 12),
 
-              _animate(
-                7,
-                _achievementCard(
-                  context: context,
-
-                  icon: Icons.emoji_events,
-                  title: "First Quiz Completed",
-                  subtitle: "You completed your first quiz successfully.",
+          ...achievements.asMap().entries.map((entry) {
+            final i = entry.key;
+            final a = entry.value;
+            return Column(
+              children: [
+                _animate(
+                  7 + i,
+                  _achievementCard(
+                    context: context,
+                    icon: a['icon'] as IconData,
+                    title: a['title'] as String,
+                    subtitle: a['subtitle'] as String,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 12),
+              ],
+            );
+          }),
 
-              const SizedBox(height: 12),
-
-              _animate(
-                8,
-                _achievementCard(
-                  context: context,
-                  icon: Icons.auto_stories,
-                  title: "3 Courses Finished",
-                  subtitle: "You are building your learning journey.",
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              _animate(
-                9,
-                _achievementCard(
-                  context: context,
-                  icon: Icons.star,
-                  title: "Active Learner",
-                  subtitle: "Keep learning and improving every day.",
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              _animate(
-                10,
-                _sectionTitle(
-                  context,
-                  "Posts",
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              _animate(
-                11,
-                _postCard(
-                  context: context,
-                  icon: Icons.post_add,
-                  title: "Completed Flutter UI Practice",
-                  subtitle: "Shared progress about profile screen design.",
-                  time: "2 days ago",
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              _animate(
-                12,
-                _postCard(
-                  context: context,
-                  icon: Icons.lightbulb_outline,
-                  title: "Learning Dart OOP",
-                  subtitle: "Posted notes about classes and objects.",
-                  time: "1 week ago",
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              _animate(
-                13,
-                _menuTile(
-                  context,
-                  icon: Icons.bar_chart,
-                  title: "My Progress",
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ProgressScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
+          const SizedBox(height: 12),
 
           _animate(
-            14,
+            11,
+            _menuTile(
+              context,
+              icon: Icons.bar_chart,
+              title: "My Progress",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ProgressScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+
+          _animate(
+            12,
             _menuTile(
               context,
               icon: Icons.favorite,
@@ -369,7 +386,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           ),
 
           _animate(
-            15,
+            13,
             _menuTile(
               context,
               icon: Icons.settings,
@@ -384,6 +401,41 @@ class _ProfileScreenState extends State<ProfileScreen>
               },
             ),
           ),
+
+          _animate(
+            14,
+            _menuTile(
+              context,
+              icon: Icons.info_outline,
+              title: "About Us",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AboutUsScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+
+          _animate(
+            15,
+            _menuTile(
+              context,
+              icon: Icons.contact_support_outlined,
+              title: "Contact Us",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ContactUsScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+
           _animate(
             16,
             _menuTile(
@@ -444,17 +496,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                               BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             Navigator.pop(dialogContext);
-
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "Logged out successfully",
-                                ),
-                              ),
-                            );
+                            await FirebaseAuth.instance.signOut();
+                            if (context.mounted) {
+                              Navigator.of(context)
+                                  .pushNamedAndRemoveUntil(
+                                LoginScreen.id,
+                                (_) => false,
+                              );
+                            }
                           },
                           child: const Text("Logout"),
                         ),
@@ -615,45 +666,6 @@ class _ProfileScreenState extends State<ProfileScreen>
         subtitle: Text(
           subtitle,
           style: textTheme.bodyMedium,
-        ),
-      ),
-    );
-  }
-
-  Widget _postCard({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required String time,
-  }) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Card(
-      child: ListTile(
-        leading: Icon(
-          icon,
-          color: primary,
-        ),
-        title: Text(
-          title,
-          style: textTheme.titleMedium,
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              time,
-              style: textTheme.bodySmall,
-            ),
-          ],
         ),
       ),
     );

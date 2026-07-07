@@ -4,6 +4,40 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ---
 
+## Session 24
+
+### Changelog 24b — Wrapper routing: teachers also detected by 'role' field
+
+File(s): `lib/wrapper.dart`
+
+**Bug:** When the app reloads with an existing session (e.g. browser refresh), the `Wrapper` stream re-checks Firestore for the user's role. It was only reading the `position` field. Teachers who registered through the Register screen have a `role` field in Firestore (not `position`), so they would land on the student portal after a refresh instead of the teacher dashboard.
+
+**Fix:** `Wrapper` now reads `userData['role'] ?? userData['position'] ?? 'student'` — matching the same logic used in the Login screen — so both seed accounts and registered accounts route correctly every time.
+
+---
+
+### Changelog 24a — Student portal: Profile screen fixed, About Us & Contact Us linked
+
+File(s): `lib/profile/profile_screen.dart`
+
+**Four issues fixed in the Profile screen:**
+
+1. **Logout was broken:** Pressing "Logout" showed a confirmation dialog and then just displayed a SnackBar saying "Logged out successfully" — but never actually signed the user out. The app stayed open on the same screen. Fixed: the Logout button now calls `FirebaseAuth.instance.signOut()` and then navigates the user back to the Login screen, clearing the navigation stack.
+
+2. **Hardcoded "Zeynab" default data:** The profile defaulted to a fictional user ("Zeynab", "zeynab@gmail.com") if nothing was saved in local storage. Fixed: the profile now loads the logged-in user's real name and email from Firebase Auth (`currentUser.displayName` and `currentUser.email`) as the default, falling back to local storage for edited fields like phone, university, and bio.
+
+3. **Hardcoded stats (3 Courses, 5 Quizzes, 70% Progress):** The three stat boxes always showed these fixed values regardless of what the student had actually done. Fixed: stats now load from the real Firestore data via `ProgressService.getStudentStats()`, showing the student's actual enrolled course count, quizzes taken, and average progress percentage. While loading, the boxes show "—".
+
+4. **About Us and Contact Us were unreachable:** Both screens existed in the codebase but were not linked from anywhere — no user could ever navigate to them. Fixed: two new menu tiles added to the Profile screen under Settings — "About Us" (opens `AboutUsScreen`) and "Contact Us" (opens `ContactUsScreen`).
+
+**Also improved:**
+- "Member since" now shows the actual year the account was created (from `FirebaseAuth.instance.currentUser?.metadata.creationTime`) instead of the hardcoded "2026".
+- The avatar progress ring now reflects the student's real average progress instead of a hardcoded 70%.
+- Achievements section is now dynamic: shows "First Quiz Completed" only if the student has taken at least one quiz, shows real course enrollment count.
+- Phone and University info cards only appear if the student has filled them in (no more blank cards).
+
+---
+
 ## Session 23
 
 ### Changelog 23c — Login fixed: correct role detection, real teacher dashboard restored

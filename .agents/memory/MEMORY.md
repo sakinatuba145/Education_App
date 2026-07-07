@@ -12,3 +12,5 @@
 - [Lesson YouTube inline](lesson-youtube.md) — youtubeUrl/notes/assignmentTitle/assignmentInstructions stored directly on lesson Firestore doc; _LessonCard in TeacherCourseHubScreen reads/writes these inline without going through LessonModel.
 - [Husna/Sakina branch naming trap](husna-branch-naming.md) — a `revert-N-<branch>` branch can be empty; check the un-reverted base branch (same name, no prefix) for real work.
 - [Inline video playback](inline-video-playback.md) — shared `InlineVideoPlayer` widget (YouTube iframe + video_player) replaces dart:html/url_launcher hacks; keeps video playback in-app on web/Android/iOS.
+- [Profile screen real data](profile-screen-data.md) — profile loads name/email from FirebaseAuth.currentUser; stats from ProgressService; logout calls signOut()+navigate; About/Contact Us linked via menu tiles.
+- [Wrapper dual-field routing](wrapper-routing.md) — Wrapper checks role??position??'student'; login_screen checks same; both fields needed because seed accounts use position, registered accounts use role.

@@ -4,7 +4,7 @@ import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/register_screen.dart';
 import 'package:education_app/features/forgot_password.dart';
-import 'package:education_app/dashboard/dashboard_screen.dart';
+import 'package:education_app/student/student_portal_screen.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
 /// 3.10 LOGIN SCREEN
 /// This screen lets users login using email + password
@@ -65,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => DashboardHome(),
+            builder: (_) => const StudentPortalScreen(),
           ),
         );
       }

@@ -4,6 +4,27 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ---
 
+## Session 23
+
+### Changelog 23 — Student portal wired up: students now land on the real 4-tab home screen after login
+
+File(s): `lib/student/student_portal_screen.dart` *(new)*, `lib/features/login_screen.dart`, `lib/wrapper.dart`
+
+What it was: After a student logged in, the app navigated them to `DashboardHome` — an old placeholder screen that showed a single hardcoded "Flutter course" card with "Teacher: Anne, Duration: 0" in garish colours. This screen has no real data, no navigation, and nothing a student can actually use.
+
+What we did:
+- **Created `lib/student/student_portal_screen.dart`** — a proper student home with a bottom navigation bar containing four tabs:
+  - **Home** (tab 0) → `MyCoursesScreen` — shows the student's enrolled courses and progress
+  - **Explore** (tab 1) → `CourseDiscoveryScreenPremium` — lets students browse and enrol in courses
+  - **Learn** (tab 2) → `StudentLearnHubScreen` — Quizzes, Assignments, Flashcards, Puzzle, Ranking sub-tabs
+  - **Profile** (tab 3) → `ProfileScreen` — account settings and profile info
+- **Fixed `lib/features/login_screen.dart`** — the student login branch now navigates to `StudentPortalScreen` instead of the old `DashboardHome`.
+- **Fixed `lib/wrapper.dart`** — the Firebase auth stream routing also now sends students to `StudentPortalScreen` (both the success path and the error/fallback path), replacing the old `DashboardContent` placeholder.
+
+Result: Students who log in now arrive at a fully functional, tab-based home screen. `flutter build web` passes with zero errors.
+
+---
+
 ## Session 22
 
 ### Changelog 22 — Full theme migration: all student screens now use the leader's ThemeColors

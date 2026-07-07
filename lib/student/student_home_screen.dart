@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/core/I18n/messages.dart';
+import 'package:education_app/core/widgets/wave_header.dart';
+import 'package:education_app/core/widgets/glass_card.dart';
+import 'package:education_app/core/widgets/section_heading.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/student/progress_service.dart';
 import 'package:education_app/student/course_player_screen.dart';
-import 'package:education_app/courses/course_discovery_screen_premium.dart';
 
 class StudentHomeScreen extends StatefulWidget {
   final ValueChanged<int> onNavigate;
@@ -64,7 +66,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
     return name.isNotEmpty ? name : 'Student';
   }
 
-  // Build chart data from quiz results grouped by course title (first word)
   List<_ChartEntry> get _chartData {
     final Map<String, List<double>> byCourse = {};
     for (final r in _quizResults) {
@@ -81,8 +82,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       backgroundColor: ThemeColors.background,
       body: RefreshIndicator(
@@ -90,111 +89,140 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
         onRefresh: _loadStats,
         child: CustomScrollView(
           slivers: [
-            // ─── Branded Header ───
-            SliverToBoxAdapter(child: _buildHeader(textTheme)),
+            // ─── Wave Header ───────────────────────────────────────────────
+            SliverToBoxAdapter(child: _buildWaveHeader()),
 
-            // ─── Stats Row ───
+            // ─── Stats Row ─────────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: _buildStatsRow(textTheme),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: _buildStatsRow(),
               ),
             ),
 
-            // ─── Continue Learning ───
+            // ─── Continue Learning ─────────────────────────────────────────
             SliverToBoxAdapter(
-              child: _buildSectionHeader(AppMessages.continueLearning.tr, Icons.play_circle_outline_rounded, textTheme),
+              child: SectionHeading(
+                title: AppMessages.continueLearning.tr,
+                actionLabel: 'See All',
+                onAction: () => widget.onNavigate(1),
+              ),
             ),
-            SliverToBoxAdapter(
-              child: _buildContinueLearning(textTheme),
-            ),
+            SliverToBoxAdapter(child: _buildContinueLearning()),
 
-            // ─── Quiz Activity Chart ───
+            // ─── Quiz Performance Chart ────────────────────────────────────
             if (_quizResults.isNotEmpty) ...[
               SliverToBoxAdapter(
-                child: _buildSectionHeader(AppMessages.quizPerformance.tr, Icons.bar_chart_rounded, textTheme),
+                child: SectionHeading(title: AppMessages.quizPerformance.tr),
               ),
-              SliverToBoxAdapter(
-                child: _buildChart(textTheme),
-              ),
+              SliverToBoxAdapter(child: _buildChart()),
             ],
 
-            // ─── Quick Actions ───
+            // ─── Quick Actions ─────────────────────────────────────────────
             SliverToBoxAdapter(
-              child: _buildSectionHeader(AppMessages.quickActions.tr, Icons.flash_on_rounded, textTheme),
+              child: SectionHeading(title: AppMessages.quickActions.tr),
             ),
-            SliverToBoxAdapter(
-              child: _buildQuickActions(),
-            ),
+            SliverToBoxAdapter(child: _buildQuickActions()),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            // Bottom padding for floating nav
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(TextTheme textTheme) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 52, 20, 24),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [ThemeColors.primary, Color(0xFFE65100)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+  // ── Wave Header ────────────────────────────────────────────────────────────
+
+  Widget _buildWaveHeader() {
+    return WaveHeader(
+      waveHeight: 56,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 70, 70),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.school_rounded, color: Colors.white, size: 22),
-                    const SizedBox(width: 8),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.22),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.school_rounded, color: Colors.white, size: 16),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'EduAf',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.90),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
                     Text(
-                      'EduAf',
-                      style: textTheme.titleLarge?.copyWith(
+                      '$_greeting 👋',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _userName,
+                      style: const TextStyle(
+                        fontFamily: 'PlayfairDisplay',
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      AppMessages.readyToLearn.tr,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.75),
+                        fontSize: 13,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  '$_greeting, $_userName! 👋',
-                  style: textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+              ),
+              GestureDetector(
+                onTap: () => widget.onNavigate(3),
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.22),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 2),
                   ),
+                  child: const Icon(Icons.person_rounded, color: Colors.white, size: 26),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  AppMessages.readyToLearn.tr,
-                  style: textTheme.bodyMedium?.copyWith(color: Colors.white70),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          GestureDetector(
-            onTap: () => widget.onNavigate(3),
-            child: CircleAvatar(
-              radius: 22,
-              backgroundColor: Colors.white.withValues(alpha: 0.25),
-              child: const Icon(Icons.person_rounded, color: Colors.white, size: 24),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildStatsRow(TextTheme textTheme) {
+  // ── Stats Row ──────────────────────────────────────────────────────────────
+
+  Widget _buildStatsRow() {
     if (_statsLoading) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 24),
@@ -202,67 +230,80 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       );
     }
     final stats = _stats;
-    return Padding(
-      padding: const EdgeInsets.only(top: 20),
-      child: Row(
-        children: [
-          _statCard(Icons.menu_book_rounded, '${stats?.enrolledCourses ?? 0}', AppMessages.enrolled.tr, textTheme),
-          const SizedBox(width: 10),
-          _statCard(Icons.quiz_rounded, '${stats?.quizzesTaken ?? 0}', AppMessages.quizzes.tr, textTheme),
-          const SizedBox(width: 10),
-          _statCard(Icons.trending_up_rounded, '${stats?.avgProgressPercent ?? 0}%', AppMessages.avgProgress.tr, textTheme),
-        ],
-      ),
+    return Row(
+      children: [
+        _premiumStatCard(
+          Icons.menu_book_rounded,
+          '${stats?.enrolledCourses ?? 0}',
+          AppMessages.enrolled.tr,
+        ),
+        const SizedBox(width: 12),
+        _premiumStatCard(
+          Icons.quiz_rounded,
+          '${stats?.quizzesTaken ?? 0}',
+          AppMessages.quizzes.tr,
+        ),
+        const SizedBox(width: 12),
+        _premiumStatCard(
+          Icons.trending_up_rounded,
+          '${stats?.avgProgressPercent ?? 0}%',
+          AppMessages.avgProgress.tr,
+        ),
+      ],
     );
   }
 
-  Widget _statCard(IconData icon, String value, String label, TextTheme textTheme) {
+  Widget _premiumStatCard(IconData icon, String value, String label) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: ThemeColors.primary.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
+      child: GlassCard(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [ThemeColors.primary, Color(0xFFE65100)],
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: Colors.white, size: 18),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: const TextStyle(
+                fontFamily: 'PlayfairDisplay',
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.grey.shade500,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
-        child: Column(
-          children: [
-            Icon(icon, color: ThemeColors.primary, size: 22),
-            const SizedBox(height: 6),
-            Text(value, style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: ThemeColors.black)),
-            Text(label, style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade600)),
-          ],
-        ),
       ),
     );
   }
 
-  Widget _buildSectionHeader(String title, IconData icon, TextTheme textTheme) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-      child: Row(
-        children: [
-          Icon(icon, color: ThemeColors.primary, size: 20),
-          const SizedBox(width: 8),
-          Text(title, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: ThemeColors.black)),
-        ],
-      ),
-    );
-  }
+  // ── Continue Learning ──────────────────────────────────────────────────────
 
-  Widget _buildContinueLearning(TextTheme textTheme) {
+  Widget _buildContinueLearning() {
     return StreamBuilder<List<EnrolledCourse>>(
       stream: _enrollment.streamMyEnrollments(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: EdgeInsets.symmetric(vertical: 20),
             child: Center(child: CircularProgressIndicator(color: ThemeColors.primary)),
           );
         }
@@ -271,30 +312,68 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
         if (courses.isEmpty) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: ThemeColors.secondary.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(16),
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: GlassCard(
+              padding: const EdgeInsets.all(28),
               child: Column(
                 children: [
-                  Icon(Icons.school_outlined, size: 48, color: ThemeColors.primary.withValues(alpha: 0.5)),
-                  const SizedBox(height: 12),
-                  Text(AppMessages.noCoursesYet.tr, style: textTheme.titleMedium?.copyWith(color: ThemeColors.black)),
-                  const SizedBox(height: 6),
-                  Text(AppMessages.exploreToStart.tr, style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade600)),
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: ThemeColors.primary.withValues(alpha: 0.08),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.school_outlined, size: 40, color: ThemeColors.primary.withValues(alpha: 0.6)),
+                  ),
                   const SizedBox(height: 14),
-                  ElevatedButton.icon(
-                    onPressed: () => widget.onNavigate(1),
-                    icon: const Icon(Icons.explore_rounded, size: 18),
-                    label: Text(AppMessages.exploreCourses.tr),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ThemeColors.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  Text(
+                    AppMessages.noCoursesYet.tr,
+                    style: const TextStyle(
+                      fontFamily: 'PlayfairDisplay',
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    AppMessages.exploreToStart.tr,
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 18),
+                  GestureDetector(
+                    onTap: () => widget.onNavigate(1),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [ThemeColors.primary, Color(0xFFE65100)],
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: ThemeColors.primary.withValues(alpha: 0.35),
+                            blurRadius: 14,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.explore_rounded, color: Colors.white, size: 16),
+                          const SizedBox(width: 8),
+                          Text(
+                            AppMessages.exploreCourses.tr,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -303,119 +382,97 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
           );
         }
 
-        final display = courses.take(3).toList();
-        return Column(
-          children: [
-            ...display.map((c) => _enrolledCourseCard(c, textTheme)),
-            if (courses.length > 3)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.arrow_forward_rounded, size: 16),
-                  label: Text('See all ${courses.length} courses'),
-                  style: TextButton.styleFrom(foregroundColor: ThemeColors.primary),
-                ),
-              ),
-          ],
+        // Horizontal scroll cards
+        return SizedBox(
+          height: 158,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: courses.length,
+            itemBuilder: (_, i) => _horizontalCourseCard(courses[i]),
+          ),
         );
       },
     );
   }
 
-  Widget _enrolledCourseCard(EnrolledCourse course, TextTheme textTheme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => CoursePlayerScreen(courseId: course.courseId)),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
-            ],
-          ),
+  Widget _horizontalCourseCard(EnrolledCourse course) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => CoursePlayerScreen(courseId: course.courseId)),
+      ),
+      child: Container(
+        width: 220,
+        margin: const EdgeInsets.only(right: 14, bottom: 4),
+        child: GlassCard(
+          padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    width: 44,
-                    height: 44,
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [ThemeColors.primary, Color(0xFFE65100)],
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 24),
+                    child: const Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 20),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(course.courseTitle,
-                            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                            maxLines: 1, overflow: TextOverflow.ellipsis),
-                        Text(course.instructorName.isNotEmpty ? course.instructorName : 'EduAf',
-                            style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade600)),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(width: 10),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: course.isCompleted
-                          ? Colors.green.shade50
-                          : ThemeColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
+                          ? Colors.green.withValues(alpha: 0.12)
+                          : ThemeColors.primary.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       '${course.progressPercent}%',
                       style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: course.isCompleted ? Colors.green : ThemeColors.primary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: course.isCompleted ? Colors.green.shade700 : ThemeColors.primary,
                       ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
+              Text(
+                course.courseTitle,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: Color(0xFF1A1A1A),
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                course.instructorName.isNotEmpty ? course.instructorName : 'EduAf',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+              ),
+              const Spacer(),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
                   value: course.progress,
-                  minHeight: 6,
+                  minHeight: 5,
                   color: course.isCompleted ? Colors.green : ThemeColors.primary,
-                  backgroundColor: ThemeColors.primary.withValues(alpha: 0.12),
+                  backgroundColor: ThemeColors.primary.withValues(alpha: 0.10),
                 ),
               ),
-              const SizedBox(height: 6),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${course.completedLessons.length} / ${course.totalLessons} lessons',
-                    style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade500),
-                  ),
-                  Text(
-                    course.isCompleted ? AppMessages.completedCheck.tr : AppMessages.continueBtn.tr,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: course.isCompleted ? Colors.green : ThemeColors.primary,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 5),
+              Text(
+                '${course.completedLessons.length}/${course.totalLessons} lessons',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade400),
               ),
             ],
           ),
@@ -424,26 +481,38 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
     );
   }
 
-  Widget _buildChart(TextTheme textTheme) {
+  // ── Chart ──────────────────────────────────────────────────────────────────
+
+  Widget _buildChart() {
     final data = _chartData;
     if (data.isEmpty) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GlassCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your average quiz score per topic', style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade500)),
-            const SizedBox(height: 12),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [ThemeColors.primary, Color(0xFFE65100)],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.bar_chart_rounded, color: Colors.white, size: 14),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Average Quiz Score by Topic',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
             SizedBox(
               height: 180,
               child: SfCartesianChart(
@@ -483,50 +552,75 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
     );
   }
 
+  // ── Quick Actions ──────────────────────────────────────────────────────────
+
   Widget _buildQuickActions() {
     final actions = [
       _QuickAction(Icons.explore_rounded, AppMessages.exploreTab.tr, 'Browse courses', 1, const Color(0xFF6C63FF)),
       _QuickAction(Icons.quiz_rounded, AppMessages.quizzes.tr, 'Test yourself', 2, const Color(0xFF00B4D8)),
-      _QuickAction(Icons.style_rounded, AppMessages.flashcards.tr, 'Review notes', 2, const Color(0xFF06D6A0)),
+      _QuickAction(Icons.style_rounded, AppMessages.flashcards.tr, 'Review cards', 2, const Color(0xFF06D6A0)),
       _QuickAction(Icons.leaderboard_rounded, AppMessages.ranking.tr, 'Top students', 2, const Color(0xFFFFB703)),
     ];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GridView.count(
         crossAxisCount: 2,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 2.4,
-        children: actions.map((a) => _quickActionTile(a)).toList(),
+        childAspectRatio: 2.3,
+        children: actions.map(_quickActionTile).toList(),
       ),
     );
   }
 
   Widget _quickActionTile(_QuickAction action) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
+    return GestureDetector(
       onTap: () => widget.onNavigate(action.tabIndex),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: action.color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: action.color.withValues(alpha: 0.25)),
+          color: Colors.white.withValues(alpha: 0.95),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: action.color.withValues(alpha: 0.20)),
+          boxShadow: [
+            BoxShadow(
+              color: action.color.withValues(alpha: 0.12),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            Icon(action.icon, color: action.color, size: 22),
+            Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: action.color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: Icon(action.icon, color: action.color, size: 18),
+            ),
             const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(action.label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: ThemeColors.black)),
-                Text(action.sublabel, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    action.label,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Color(0xFF1A1A1A)),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    action.sublabel,
+                    style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

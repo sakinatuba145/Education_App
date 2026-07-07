@@ -34,19 +34,19 @@ class _StudentPortalScreenState extends State<StudentPortalScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
-        if (_selectedIndex != 0) {
-          setState(() => _selectedIndex = 0);
-        }
+        if (_selectedIndex != 0) setState(() => _selectedIndex = 0);
       },
       child: Scaffold(
         backgroundColor: ThemeColors.background,
         body: Stack(
           children: [
+            // ─── Page content ───
             IndexedStack(
               index: _selectedIndex,
               children: _pages,
             ),
-            // ─── Floating language switcher ───
+
+            // ─── Language switcher (top-right) ───
             SafeArea(
               child: Align(
                 alignment: Alignment.topRight,
@@ -56,36 +56,106 @@ class _StudentPortalScreenState extends State<StudentPortalScreen> {
                 ),
               ),
             ),
-          ],
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: (i) => setState(() => _selectedIndex = i),
-          backgroundColor: Colors.white,
-          indicatorColor: ThemeColors.primary.withValues(alpha: 0.15),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home_rounded),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.explore_outlined),
-              selectedIcon: Icon(Icons.explore_rounded),
-              label: 'Explore',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.school_outlined),
-              selectedIcon: Icon(Icons.school_rounded),
-              label: 'Learn',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline_rounded),
-              selectedIcon: Icon(Icons.person_rounded),
-              label: 'Profile',
+
+            // ─── Floating premium bottom nav ───
+            Positioned(
+              bottom: 16,
+              left: 20,
+              right: 20,
+              child: _PremiumBottomNav(
+                selectedIndex: _selectedIndex,
+                onTap: (i) => setState(() => _selectedIndex = i),
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─── Premium Floating Navigation Bar ──────────────────────────────────────────
+
+class _PremiumBottomNav extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+
+  const _PremiumBottomNav({
+    required this.selectedIndex,
+    required this.onTap,
+  });
+
+  static const _items = [
+    (Icons.home_outlined, Icons.home_rounded, 'Home'),
+    (Icons.explore_outlined, Icons.explore_rounded, 'Explore'),
+    (Icons.school_outlined, Icons.school_rounded, 'Learn'),
+    (Icons.person_outline_rounded, Icons.person_rounded, 'Profile'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 68,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.97),
+        borderRadius: BorderRadius.circular(34),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeColors.primary.withValues(alpha: 0.22),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(_items.length, (i) {
+          final (outIcon, fillIcon, label) = _items[i];
+          final active = i == selectedIndex;
+          return GestureDetector(
+            onTap: () => onTap(i),
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 240),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              decoration: BoxDecoration(
+                color: active
+                    ? ThemeColors.primary.withValues(alpha: 0.13)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      active ? fillIcon : outIcon,
+                      key: ValueKey(active),
+                      color: active ? ThemeColors.primary : Colors.grey.shade400,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: active ? FontWeight.w700 : FontWeight.w400,
+                      color: active ? ThemeColors.primary : Colors.grey.shade400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

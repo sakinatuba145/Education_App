@@ -4,6 +4,54 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ---
 
+## Session 27
+
+### Changelog 27 — Full student portal premium UI upgrade (all 4 phases)
+
+File(s): `lib/core/widgets/wave_header.dart` (new), `lib/core/widgets/glass_card.dart` (new), `lib/core/widgets/section_heading.dart` (new), `lib/student/student_portal_screen.dart`, `lib/student/student_home_screen.dart`, `lib/courses/course_discovery_screen_premium.dart`, `lib/student/student_learn_hub_screen.dart`, `lib/profile/profile_screen.dart`
+
+**What changed:**
+The entire student portal has been rebuilt with a premium, elegant look — keeping the orange/cream colour theme exactly as chosen by the team, but upgrading every visual surface: typography, cards, navigation, headers, and layout.
+
+**Details:**
+
+- **Phase 1 — Foundation widgets (3 new shared components):**
+  - `WaveHeader` — gradient hero sections with a smooth wave-shaped curved bottom edge; used on Home, Explore, Learn Hub, and Profile
+  - `GlassCard` — frosted-glass white card with soft orange shadow and subtle border; used everywhere in place of plain containers
+  - `SectionHeading` — Playfair Display bold heading + optional orange pill "See all" action button
+
+- **Phase 1 — Floating pill bottom nav:**
+  - Replaced the default `NavigationBar` with a custom floating pill-shaped nav bar that hovers above content with an orange glow shadow
+  - Active tab gets an animated orange tinted background highlight; icons switch between outlined and filled on selection
+
+- **Phase 2 — Home screen rebuild:**
+  - New wave hero header: EduAf badge, time-aware greeting, large Playfair Display username, avatar circle
+  - Stat cards rebuilt as glass cards with orange gradient icon badges
+  - "Continue Learning" changed from vertical list to a horizontal scroll of compact glass course cards
+  - Quick actions grid rebuilt as glass tiles with colour-coded icon badges
+
+- **Phase 3 — Explore screen:**
+  - Added wave header at top: "Discover Courses" title + live course count
+  - Search bar given glass card styling with orange icon
+  - Category pill buttons now use orange gradient on selection
+  - Course grid cards upgraded with orange-tinted shadow and gradient price badges
+
+- **Phase 4 — Learn Hub:**
+  - Wave header: "My Learning Hub" title + subtitle
+  - Default `TabBar` replaced with a horizontal scrollable pill-style tab selector with a gradient orange active state
+  - Tabs overlap the header slightly via `Transform.translate` for a layered premium depth effect
+
+- **Phase 4 — Profile:**
+  - Removed standard `AppBar`; replaced with wave hero banner containing avatar ring, name, bio pill, and member-since label
+  - Stat row rebuilt as glass cards with colour-coded icon badges
+  - Info rows (email, phone, university) are now glass tiles with icon badges
+  - Achievement tiles are glass cards with colour-coded icons
+  - Menu tiles (Progress, Favorites, Settings, etc.) are glass cards with tapable surface
+  - Edit Profile button is a full-width orange gradient pill with glow shadow
+  - All screens have 100px bottom padding so content is never hidden behind the floating nav
+
+---
+
 ## Session 26
 
 ### Changelog 26 — Global language switcher added to both student and teacher portals

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/core/constants/theme.dart';
+import 'package:education_app/core/widgets/wave_header.dart';
+import 'package:education_app/core/widgets/section_heading.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/courses/course_detail_screen_premium.dart';
@@ -68,7 +70,7 @@ class _CourseDiscoveryScreenPremiumState
 
   List<CourseModel> get _filtered => _allCourses.where((c) {
     final cat = _selectedCategory == 'All' || c.category == _selectedCategory;
-    final q   = _searchQuery.isEmpty ||
+    final q = _searchQuery.isEmpty ||
         c.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
         c.description.toLowerCase().contains(_searchQuery.toLowerCase());
     return cat && q;
@@ -136,27 +138,30 @@ class _CourseDiscoveryScreenPremiumState
 
     return CustomScrollView(
       slivers: [
-        // ── Search bar ──────────────────────────────────────────────────
+        // ── Wave Header ──────────────────────────────────────────────────────
+        SliverToBoxAdapter(child: _buildWaveHeader()),
+
+        // ── Search bar ───────────────────────────────────────────────────────
         SliverToBoxAdapter(child: _buildSearch()),
 
-        // ── Featured carousel ────────────────────────────────────────────
+        // ── Featured carousel ─────────────────────────────────────────────────
         if (_featured.isNotEmpty && _searchQuery.isEmpty) ...[
-          SliverToBoxAdapter(child: _sectionTitle('🔥 Featured Courses')),
+          SliverToBoxAdapter(child: SectionHeading(title: '🔥 Featured Courses')),
           SliverToBoxAdapter(child: _buildCarousel()),
           SliverToBoxAdapter(child: _buildDots()),
         ],
 
-        // ── Category pills ────────────────────────────────────────────────
-        SliverToBoxAdapter(child: _sectionTitle('Browse by Category')),
+        // ── Category pills ────────────────────────────────────────────────────
+        SliverToBoxAdapter(child: SectionHeading(title: 'Browse by Category')),
         SliverToBoxAdapter(child: _buildCategoryPills()),
         const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
-        // ── Course grid / empty ──────────────────────────────────────────
+        // ── Course grid / empty ───────────────────────────────────────────────
         if (_filtered.isEmpty)
           SliverToBoxAdapter(child: _buildEmpty())
         else
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -170,25 +175,72 @@ class _CourseDiscoveryScreenPremiumState
               ),
             ),
           ),
+
+        // Bottom padding for floating nav
+        const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
     );
   }
 
-  // ── Search ─────────────────────────────────────────────────────────────────
+  // ── Wave Header ─────────────────────────────────────────────────────────────
+
+  Widget _buildWaveHeader() {
+    return WaveHeader(
+      waveHeight: 44,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 70, 52),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Discover Courses',
+                style: TextStyle(
+                  fontFamily: 'PlayfairDisplay',
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${_allCourses.length} courses available',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.75),
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Search ──────────────────────────────────────────────────────────────────
+
   Widget _buildSearch() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+              color: ThemeColors.primary.withValues(alpha: 0.10),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
           ],
+          border: Border.all(color: ThemeColors.primary.withValues(alpha: 0.10), width: 1.2),
         ),
         child: TextField(
           controller: _searchCtrl,
@@ -196,7 +248,7 @@ class _CourseDiscoveryScreenPremiumState
           decoration: InputDecoration(
             hintText: 'Search courses, topics…',
             hintStyle: const TextStyle(color: AppColors.gray400, fontSize: 14),
-            prefixIcon: const Icon(Icons.search_rounded, color: AppColors.gray400),
+            prefixIcon: Icon(Icons.search_rounded, color: ThemeColors.primary.withValues(alpha: 0.6)),
             suffixIcon: _searchQuery.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.cancel_rounded, color: AppColors.gray400),
@@ -214,15 +266,8 @@ class _CourseDiscoveryScreenPremiumState
     );
   }
 
-  // ── Section title ──────────────────────────────────────────────────────────
-  Widget _sectionTitle(String text) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-    child: Text(text,
-        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700,
-            color: ThemeColors.black)),
-  );
+  // ── Featured carousel ────────────────────────────────────────────────────────
 
-  // ── Featured carousel ──────────────────────────────────────────────────────
   Widget _buildCarousel() {
     return SizedBox(
       height: 220,
@@ -242,34 +287,30 @@ class _CourseDiscoveryScreenPremiumState
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 6),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight),
+          borderRadius: BorderRadius.circular(22),
+          gradient: LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight),
           boxShadow: [
             BoxShadow(
-              color: colors.first.withValues(alpha: 0.4),
+              color: colors.first.withValues(alpha: 0.40),
               blurRadius: 18,
               offset: const Offset(0, 8),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           child: Stack(
             fit: StackFit.expand,
             children: [
               if (course.thumbnailUrl != null && course.thumbnailUrl!.isNotEmpty)
                 Image.network(course.thumbnailUrl!, fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const SizedBox()),
+                    errorBuilder: (ctx2, err, st) => const SizedBox()),
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.75),
-                    ],
+                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.75)],
                   ),
                 ),
               ),
@@ -285,9 +326,7 @@ class _CourseDiscoveryScreenPremiumState
                             Colors.white.withValues(alpha: 0.25), Colors.white),
                         const Spacer(),
                         _chip(
-                          course.isFree
-                              ? 'Free'
-                              : '\$${course.price?.toStringAsFixed(0) ?? '0'}',
+                          course.isFree ? 'Free' : '\$${course.price?.toStringAsFixed(0) ?? '0'}',
                           AppColors.warning.withValues(alpha: 0.9),
                           Colors.black87,
                         ),
@@ -300,44 +339,29 @@ class _CourseDiscoveryScreenPremiumState
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                height: 1.3)),
+                                color: Colors.white, fontSize: 16,
+                                fontWeight: FontWeight.w700, height: 1.3)),
                         const SizedBox(height: 8),
                         Row(children: [
-                          const Icon(Icons.people_alt_rounded,
-                              color: Colors.white70, size: 14),
+                          const Icon(Icons.people_alt_rounded, color: Colors.white70, size: 14),
                           const SizedBox(width: 4),
                           Text('${course.totalEnrolled} students',
-                              style: const TextStyle(
-                                  color: Colors.white70, fontSize: 12)),
+                              style: const TextStyle(color: Colors.white70, fontSize: 12)),
                           const SizedBox(width: 12),
                           if (course.averageRating > 0) ...[
-                            const Icon(Icons.star_rounded,
-                                color: AppColors.warning, size: 14),
+                            const Icon(Icons.star_rounded, color: AppColors.warning, size: 14),
                             const SizedBox(width: 3),
                             Text(course.averageRating.toStringAsFixed(1),
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600)),
+                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
                           ],
                         ]),
                         const SizedBox(height: 10),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(30)),
                           child: Text(
                             course.isFree ? 'Enroll Free' : 'View Course',
-                            style: TextStyle(
-                                color: colors.first,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13),
+                            style: TextStyle(color: colors.first, fontWeight: FontWeight.w700, fontSize: 13),
                           ),
                         ),
                       ],
@@ -355,8 +379,7 @@ class _CourseDiscoveryScreenPremiumState
   Widget _chip(String label, Color bg, Color fg) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
     decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-    child: Text(label,
-        style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w600)),
+    child: Text(label, style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w600)),
   );
 
   Widget _buildDots() {
@@ -378,13 +401,14 @@ class _CourseDiscoveryScreenPremiumState
     );
   }
 
-  // ── Category pills ─────────────────────────────────────────────────────────
+  // ── Category pills ───────────────────────────────────────────────────────────
+
   Widget _buildCategoryPills() {
     return SizedBox(
-      height: 38,
+      height: 40,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: _categories.length,
         itemBuilder: (_, i) {
           final cat = _categories[i];
@@ -396,22 +420,27 @@ class _CourseDiscoveryScreenPremiumState
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: sel ? ThemeColors.primary : Colors.white,
+                gradient: sel
+                    ? const LinearGradient(colors: [ThemeColors.primary, Color(0xFFE65100)])
+                    : null,
+                color: sel ? null : Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                    color: sel ? ThemeColors.primary : AppColors.gray300,
-                    width: 1.5),
-                boxShadow: sel ? [
-                  BoxShadow(
-                      color: ThemeColors.primary.withValues(alpha: 0.3),
-                      blurRadius: 8, offset: const Offset(0, 3))
-                ] : [],
+                  color: sel ? Colors.transparent : AppColors.gray300,
+                  width: 1.5,
+                ),
+                boxShadow: sel
+                    ? [BoxShadow(color: ThemeColors.primary.withValues(alpha: 0.30), blurRadius: 10, offset: const Offset(0, 4))]
+                    : [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2))],
               ),
-              child: Text(cat,
-                  style: TextStyle(
-                      color: sel ? Colors.white : AppColors.gray700,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13)),
+              child: Text(
+                cat,
+                style: TextStyle(
+                  color: sel ? Colors.white : AppColors.gray700,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
             ),
           );
         },
@@ -419,7 +448,8 @@ class _CourseDiscoveryScreenPremiumState
     );
   }
 
-  // ── Course card ────────────────────────────────────────────────────────────
+  // ── Course card ──────────────────────────────────────────────────────────────
+
   Widget _buildCard(CourseModel course) {
     final colors = _colorsForCourse(course);
     return GestureDetector(
@@ -427,54 +457,51 @@ class _CourseDiscoveryScreenPremiumState
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: ThemeColors.primary.withValues(alpha: 0.08), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.07),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              color: colors.first.withValues(alpha: 0.10),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Thumbnail
             Expanded(
               flex: 5,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    if (course.thumbnailUrl != null &&
-                        course.thumbnailUrl!.isNotEmpty)
-                      Image.network(course.thumbnailUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              _gradientPlaceholder(colors))
+                    if (course.thumbnailUrl != null && course.thumbnailUrl!.isNotEmpty)
+                      Image.network(course.thumbnailUrl!, fit: BoxFit.cover,
+                          errorBuilder: (ctx2, err, st) => _gradientPlaceholder(colors))
                     else
                       _gradientPlaceholder(colors),
-                    // Price badge
                     Positioned(
                       top: 8, right: 8,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: course.isFree
-                              ? AppColors.success
-                              : ThemeColors.primary,
+                          gradient: LinearGradient(
+                            colors: course.isFree
+                                ? [const Color(0xFF06D6A0), const Color(0xFF028090)]
+                                : [ThemeColors.primary, const Color(0xFFE65100)],
+                          ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          course.isFree
-                              ? 'Free'
-                              : '\$${course.price?.toStringAsFixed(0) ?? '0'}',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 11),
+                          course.isFree ? 'Free' : '\$${course.price?.toStringAsFixed(0) ?? '0'}',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 11),
                         ),
                       ),
                     ),
@@ -482,7 +509,6 @@ class _CourseDiscoveryScreenPremiumState
                 ),
               ),
             ),
-            // Info
             Expanded(
               flex: 4,
               child: Padding(
@@ -490,35 +516,29 @@ class _CourseDiscoveryScreenPremiumState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(course.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                            color: ThemeColors.black,
-                            height: 1.3)),
+                    Text(
+                      course.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 13,
+                          color: Color(0xFF1A1A1A), height: 1.3),
+                    ),
                     const Spacer(),
                     if (course.averageRating > 0) ...[
                       Row(children: [
-                        const Icon(Icons.star_rounded,
-                            color: AppColors.warning, size: 13),
+                        const Icon(Icons.star_rounded, color: AppColors.warning, size: 13),
                         const SizedBox(width: 3),
                         Text(course.averageRating.toStringAsFixed(1),
-                            style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.gray700)),
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.gray700)),
                       ]),
                       const SizedBox(height: 4),
                     ],
                     Row(children: [
-                      const Icon(Icons.people_alt_rounded,
-                          size: 12, color: AppColors.gray400),
+                      const Icon(Icons.people_alt_rounded, size: 12, color: AppColors.gray400),
                       const SizedBox(width: 3),
                       Text('${course.totalEnrolled} enrolled',
-                          style: const TextStyle(
-                              fontSize: 11, color: AppColors.gray500)),
+                          style: const TextStyle(fontSize: 11, color: AppColors.gray500)),
                     ]),
                   ],
                 ),
@@ -532,18 +552,15 @@ class _CourseDiscoveryScreenPremiumState
 
   Widget _gradientPlaceholder(List<Color> colors) => Container(
     decoration: BoxDecoration(
-      gradient: LinearGradient(
-          colors: colors,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight),
+      gradient: LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight),
     ),
     child: Center(
-      child: Icon(Icons.play_circle_outline_rounded,
-          color: Colors.white.withValues(alpha: 0.7), size: 36),
+      child: Icon(Icons.play_circle_outline_rounded, color: Colors.white.withValues(alpha: 0.7), size: 36),
     ),
   );
 
-  // ── Empty state ────────────────────────────────────────────────────────────
+  // ── Empty state ───────────────────────────────────────────────────────────────
+
   Widget _buildEmpty() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 40, 24, 40),
@@ -568,8 +585,7 @@ class _CourseDiscoveryScreenPremiumState
             _searchQuery.isNotEmpty || _selectedCategory != 'All'
                 ? 'No courses match your search'
                 : 'No published courses yet',
-            style: const TextStyle(
-                fontSize: 17, fontWeight: FontWeight.bold, color: ThemeColors.black),
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: ThemeColors.black),
           ),
           const SizedBox(height: 8),
           Text(
@@ -577,19 +593,7 @@ class _CourseDiscoveryScreenPremiumState
                 ? 'Try a different keyword or category.'
                 : 'Teachers can publish courses from the Teacher Dashboard.',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.gray500, fontSize: 13, height: 1.5),
-          ),
-          const SizedBox(height: 20),
-          OutlinedButton.icon(
-            onPressed: _loadCourses,
-            icon: const Icon(Icons.refresh_rounded, size: 16),
-            label: const Text('Refresh'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: ThemeColors.primary,
-              side: const BorderSide(color: ThemeColors.primary),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
+            style: const TextStyle(fontSize: 13, color: AppColors.gray500),
           ),
         ],
       ),

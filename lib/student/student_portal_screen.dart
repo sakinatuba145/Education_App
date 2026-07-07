@@ -23,25 +23,11 @@ class _StudentPortalScreenState extends State<StudentPortalScreen> {
     ProfileScreen(),
   ];
 
-  static const List<String> _titles = [
-    'My Courses',
-    'Explore',
-    'Learn',
-    'Profile',
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final isLearn = _selectedIndex == 2;
-
     return Scaffold(
       backgroundColor: ThemeColors.background,
-      appBar: isLearn
-          ? null
-          : AppBar(
-              title: Text(_titles[_selectedIndex]),
-              automaticallyImplyLeading: false,
-            ),
+      // No outer AppBar — each tab screen manages its own
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,

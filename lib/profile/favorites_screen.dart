@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
@@ -223,7 +223,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                               ? 'Free'
                               : '\$${course.price?.toStringAsFixed(0) ?? '0'}',
                           style: textTheme.labelMedium?.copyWith(
-                            color: AppColors.primary,
+                            color: ThemeColors.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -251,8 +251,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.3),
-            AppColors.primaryLight.withValues(alpha: 0.2),
+            ThemeColors.primary.withValues(alpha: 0.3),
+            ThemeColors.secondary.withValues(alpha: 0.2),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
@@ -260,7 +260,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       child: Center(
         child: Icon(
           Icons.video_library,
-          color: AppColors.primary.withValues(alpha: 0.6),
+          color: ThemeColors.primary.withValues(alpha: 0.6),
           size: 28,
         ),
       ),

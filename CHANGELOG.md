@@ -4,6 +4,30 @@ This file tracks every change made to the app outside of the Teacher module (`li
 
 ---
 
+## Session 22
+
+### Changelog 22 — Full theme migration: all student screens now use the leader's ThemeColors
+
+File(s): `lib/core/widgets/app_button.dart`, `lib/quiz/quiz_screen.dart`, `lib/student/favorites_screen.dart`, `lib/student/student_assignments_tab.dart`, `lib/student/student_quiz_browser_screen.dart`, `lib/student/leaderboard_screen.dart`, `lib/student/flashcard_screen.dart`, `lib/student/my_courses_screen.dart`, `lib/student/student_project_screen.dart`, `lib/student/word_puzzle_screen.dart`, `lib/core/widgets/animated_button.dart`, `lib/core/widgets/animated_progress_indicators.dart`, `lib/quiz/quiz_player_screen_premium.dart`, `lib/courses/course_discovery_screen_premium.dart`, `lib/courses/course_detail_screen_premium.dart`
+
+What it was: All 15 student-facing files used `AppColors.primary`, `AppColors.primaryLight`, `AppColors.primaryDark`, `AppColors.primarySubtle`, `AppColors.lightBackground`, and `AppColors.dark` directly — colours defined locally in `app_colors.dart`. This meant student screens were not tied to the team leader's central theme file (`lib/core/constants/theme.dart`), so any future theme change by the leader would have no effect on the student UI.
+
+What we did: Replaced every primary-palette colour reference in all 15 files with the equivalent from `ThemeColors` (the leader's theme):
+- `AppColors.primary` → `ThemeColors.primary`
+- `AppColors.primaryLight` → `ThemeColors.secondary`
+- `AppColors.primaryDark` → `Color(0xFFE65100)` (deep orange accent)
+- `AppColors.primarySubtle` → `ThemeColors.gradient1`
+- `AppColors.lightBackground` → `ThemeColors.background`
+- `AppColors.dark` → `ThemeColors.black`
+
+Semantic / neutral colours (`AppColors.success`, `AppColors.error`, `AppColors.warning`, `AppColors.info`, `AppColors.gray*`) were left untouched — they are shared utilities, not primary-palette colours.
+
+Confirmed zero compilation errors with `flutter build web` after all changes.
+
+Why: The team agreement requires all student screens to source their primary colours exclusively from the leader's `theme.dart`. This makes the student UI consistent with the rest of the app and ensures future theme updates flow through automatically.
+
+---
+
 ## Session 01
 
 ### Changelog 01 — Added Sakina's new Student Dashboard design

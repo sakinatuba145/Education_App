@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 import 'package:education_app/courses/course_detail_screen_premium.dart';
@@ -82,7 +83,7 @@ class _CourseDiscoveryScreenPremiumState
   }
 
   List<Color> _colorsForCourse(CourseModel c) =>
-      _catColors[c.category] ?? [AppColors.primary, AppColors.primaryDark];
+      _catColors[c.category] ?? [ThemeColors.primary, const Color(0xFFE65100)];
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +92,7 @@ class _CourseDiscoveryScreenPremiumState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(color: AppColors.primary),
+            CircularProgressIndicator(color: ThemeColors.primary),
             SizedBox(height: 16),
             Text('Loading courses…', style: TextStyle(color: AppColors.gray500)),
           ],
@@ -125,7 +126,7 @@ class _CourseDiscoveryScreenPremiumState
                 onPressed: _loadCourses,
                 icon: const Icon(Icons.refresh_rounded),
                 label: const Text('Try Again'),
-                style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+                style: FilledButton.styleFrom(backgroundColor: ThemeColors.primary),
               ),
             ],
           ),
@@ -218,7 +219,7 @@ class _CourseDiscoveryScreenPremiumState
     padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
     child: Text(text,
         style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700,
-            color: AppColors.dark)),
+            color: ThemeColors.black)),
   );
 
   // ── Featured carousel ──────────────────────────────────────────────────────
@@ -369,7 +370,7 @@ class _CourseDiscoveryScreenPremiumState
           width: _currentPage == i ? 22 : 7,
           height: 7,
           decoration: BoxDecoration(
-            color: _currentPage == i ? AppColors.primary : AppColors.gray300,
+            color: _currentPage == i ? ThemeColors.primary : AppColors.gray300,
             borderRadius: BorderRadius.circular(4),
           ),
         )),
@@ -395,14 +396,14 @@ class _CourseDiscoveryScreenPremiumState
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: sel ? AppColors.primary : Colors.white,
+                color: sel ? ThemeColors.primary : Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                    color: sel ? AppColors.primary : AppColors.gray300,
+                    color: sel ? ThemeColors.primary : AppColors.gray300,
                     width: 1.5),
                 boxShadow: sel ? [
                   BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.3),
+                      color: ThemeColors.primary.withValues(alpha: 0.3),
                       blurRadius: 8, offset: const Offset(0, 3))
                 ] : [],
               ),
@@ -463,7 +464,7 @@ class _CourseDiscoveryScreenPremiumState
                         decoration: BoxDecoration(
                           color: course.isFree
                               ? AppColors.success
-                              : AppColors.primary,
+                              : ThemeColors.primary,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -495,7 +496,7 @@ class _CourseDiscoveryScreenPremiumState
                         style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 13,
-                            color: AppColors.dark,
+                            color: ThemeColors.black,
                             height: 1.3)),
                     const Spacer(),
                     if (course.averageRating > 0) ...[
@@ -551,7 +552,7 @@ class _CourseDiscoveryScreenPremiumState
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.08),
+              color: ThemeColors.primary.withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -559,7 +560,7 @@ class _CourseDiscoveryScreenPremiumState
                   ? Icons.search_off_rounded
                   : Icons.school_outlined,
               size: 52,
-              color: AppColors.primary.withValues(alpha: 0.5),
+              color: ThemeColors.primary.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 20),
@@ -568,7 +569,7 @@ class _CourseDiscoveryScreenPremiumState
                 ? 'No courses match your search'
                 : 'No published courses yet',
             style: const TextStyle(
-                fontSize: 17, fontWeight: FontWeight.bold, color: AppColors.dark),
+                fontSize: 17, fontWeight: FontWeight.bold, color: ThemeColors.black),
           ),
           const SizedBox(height: 8),
           Text(
@@ -584,8 +585,8 @@ class _CourseDiscoveryScreenPremiumState
             icon: const Icon(Icons.refresh_rounded, size: 16),
             label: const Text('Refresh'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.primary,
-              side: const BorderSide(color: AppColors.primary),
+              foregroundColor: ThemeColors.primary,
+              side: const BorderSide(color: ThemeColors.primary),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),

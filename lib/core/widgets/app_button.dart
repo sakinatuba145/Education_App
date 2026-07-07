@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_colors.dart';
+import '../constants/theme.dart';
 
 
 class AppButton extends StatelessWidget {
@@ -22,7 +22,7 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: ThemeColors.primary,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),

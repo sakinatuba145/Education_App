@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_animations.dart';
 import '../constants/app_dimensions.dart';
 import '../constants/app_colors.dart';
+import '../constants/theme.dart';
 
 /// Animated elevated button with smooth feedback
 class AnimatedElevatedButton extends StatefulWidget {
@@ -83,8 +84,8 @@ class _AnimatedElevatedButtonState extends State<AnimatedElevatedButton>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                widget.backgroundColor ?? AppColors.primary,
-                (widget.backgroundColor ?? AppColors.primary).withValues(alpha: 0.8),
+                widget.backgroundColor ?? ThemeColors.primary,
+                (widget.backgroundColor ?? ThemeColors.primary).withValues(alpha: 0.8),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -92,7 +93,7 @@ class _AnimatedElevatedButtonState extends State<AnimatedElevatedButton>
             borderRadius: BorderRadius.circular(AppDimensions.radiusButton),
             boxShadow: [
               BoxShadow(
-                color: (widget.backgroundColor ?? AppColors.primary).withValues(alpha: 0.3),
+                color: (widget.backgroundColor ?? ThemeColors.primary).withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -200,7 +201,7 @@ class _AnimatedTextButtonState extends State<AnimatedTextButton>
               if (widget.icon != null) ...[
                 Icon(
                   widget.icon,
-                  color: widget.color ?? AppColors.primary,
+                  color: widget.color ?? ThemeColors.primary,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -208,7 +209,7 @@ class _AnimatedTextButtonState extends State<AnimatedTextButton>
               Text(
                 widget.label,
                 style: TextStyle(
-                  color: widget.color ?? AppColors.primary,
+                  color: widget.color ?? ThemeColors.primary,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -283,7 +284,7 @@ class _AnimatedIconButtonState extends State<AnimatedIconButton>
           customBorder: const CircleBorder(),
           child: Icon(
             widget.icon,
-            color: widget.color ?? AppColors.primary,
+            color: widget.color ?? ThemeColors.primary,
             size: widget.size,
           ),
         ),
@@ -378,11 +379,11 @@ class _AnimatedCheckboxState extends State<AnimatedCheckbox>
             height: 24,
             decoration: BoxDecoration(
               color: widget.value
-                  ? (widget.activeColor ?? AppColors.primary)
+                  ? (widget.activeColor ?? ThemeColors.primary)
                   : Colors.transparent,
               border: Border.all(
                 color: widget.value
-                    ? (widget.activeColor ?? AppColors.primary)
+                    ? (widget.activeColor ?? ThemeColors.primary)
                     : AppColors.gray400,
                 width: 2,
               ),

@@ -7,6 +7,9 @@ import 'package:education_app/teacher/screens/teacher_course_hub_screen.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/login_screen.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/widgets/wave_header.dart';
+import 'package:education_app/core/widgets/glass_card.dart';
+import 'package:education_app/core/widgets/section_heading.dart';
 import 'package:education_app/profile/profile_screen.dart';
 import 'package:education_app/profile/settings_screen.dart';
 
@@ -16,7 +19,6 @@ const _bg = Color(0xFFFFF8F0);
 class TeacherDashboardScreen extends StatefulWidget {
   static String id = 'teacher_dashboard_screen';
   const TeacherDashboardScreen({super.key});
-
 
   @override
   State<TeacherDashboardScreen> createState() => _TeacherDashboardScreenState();
@@ -28,7 +30,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
 
   List<CourseModel> _allCourses = [];
   bool _isLoading = true;
-  String _filter = 'all'; // all | published | draft
+  String _filter = 'all';
   int _selectedTab = 0; // 0=Courses, 1=Profile, 2=Settings
 
   @override
@@ -44,11 +46,9 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
       final teacherId = _auth.currentUser?.uid;
       if (teacherId == null) return;
       final courses = await _courseService.getMyCourses(teacherId: teacherId);
-      // Self-heal: fix any published courses stuck with private visibility
       for (final c in courses) {
         if (c.status == 'published' && c.visibility == 'private') {
-          _courseService.updateCourse(
-              courseId: c.id, data: {'visibility': 'public'});
+          _courseService.updateCourse(courseId: c.id, data: {'visibility': 'public'});
         }
       }
       if (mounted) setState(() { _allCourses = courses; _isLoading = false; });
@@ -77,39 +77,62 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _bg,
-      body: SafeArea(child: _buildBody()),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedTab,
-        onTap: (i) => setState(() => _selectedTab = i),
-        selectedItemColor: _primary,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
-        elevation: 8,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_rounded),
-            label: 'Courses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_rounded),
-            label: 'Settings',
+      body: Stack(
+        children: [
+          _buildBody(),
+          // ─── Floating bottom nav ───
+          Positioned(
+            bottom: 16,
+            left: 20,
+            right: 20,
+            child: _TeacherBottomNav(
+              selectedIndex: _selectedTab,
+              onTap: (i) => setState(() => _selectedTab = i),
+            ),
           ),
         ],
       ),
       floatingActionButton: _selectedTab == 0
-          ? FloatingActionButton.extended(
-              onPressed: _openCreateCourse,
-              backgroundColor: _primary,
-              icon: const Icon(Icons.add_rounded, color: Colors.white),
-              label: const Text('New Course',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            )
+          ? _buildGradientFab()
           : null,
+    );
+  }
+
+  Widget _buildGradientFab() {
+    return GestureDetector(
+      onTap: _openCreateCourse,
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [_primary, Color(0xFFE65100)],
+          ),
+          borderRadius: BorderRadius.circular(26),
+          boxShadow: [
+            BoxShadow(
+              color: _primary.withValues(alpha: 0.40),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.add_rounded, color: Colors.white, size: 20),
+            SizedBox(width: 8),
+            Text(
+              'New Course',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -120,132 +143,242 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
       case 2:
         return const SettingsScreen();
       default:
-        return Column(
-          children: [
-            _buildHeader(),
-            _buildStatsRow(),
-            _buildFilterRow(),
-            Expanded(child: _buildCourseList()),
-          ],
-        );
+        return _buildCoursesTab();
     }
   }
 
-  Widget _buildHeader() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildCoursesTab() {
+    return CustomScrollView(
+      slivers: [
+        // ── Wave header hero ────────────────────────────────────────────
+        SliverToBoxAdapter(child: _buildWaveHeader()),
+
+        // ── Stat cards ──────────────────────────────────────────────────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: Row(
               children: [
-                Text('Welcome back,',
-                    style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-                Text(_teacherName,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold,
-                        color: Colors.black87)),
+                _statCard(Icons.menu_book_rounded, '${_allCourses.length}', 'Courses', const Color(0xFF6C63FF)),
+                const SizedBox(width: 12),
+                _statCard(Icons.people_rounded, '$_totalStudents', 'Students', const Color(0xFF06D6A0)),
+                const SizedBox(width: 12),
+                _statCard(Icons.public_rounded, '$_published', 'Published', _primary),
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: _primary),
-            onPressed: _loadCourses,
+        ),
+
+        // ── Filter row ──────────────────────────────────────────────────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: Row(
+              children: [
+                _filterPill('All', 'all', _allCourses.length),
+                const SizedBox(width: 8),
+                _filterPill('Published', 'published', _published),
+                const SizedBox(width: 8),
+                _filterPill('Draft', 'draft', _allCourses.where((c) => c.isDraft).length),
+              ],
+            ),
           ),
-          PopupMenuButton(
-            icon: CircleAvatar(
-              backgroundColor: _primary,
-              radius: 20,
-              child: Text(
-                _teacherName.isNotEmpty ? _teacherName[0].toUpperCase() : 'T',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+
+        // ── Section heading ─────────────────────────────────────────────
+        SliverToBoxAdapter(
+          child: SectionHeading(
+            title: 'My Courses',
+            actionLabel: 'Refresh',
+            onAction: _loadCourses,
+          ),
+        ),
+
+        // ── Course list / empty ─────────────────────────────────────────
+        if (_isLoading)
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Center(child: CircularProgressIndicator(color: _primary)),
+            ),
+          )
+        else if (_allCourses.isEmpty)
+          SliverToBoxAdapter(child: _buildEmptyState())
+        else if (_filtered.isEmpty)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              child: Center(
+                child: Text('No $_filter courses',
+                    style: TextStyle(color: Colors.grey[400], fontSize: 16)),
               ),
             ),
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                child: const Row(children: [
-                  Icon(Icons.logout_rounded, size: 18),
-                  SizedBox(width: 8),
-                  Text('Logout'),
-                ]),
-                onTap: _logout,
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, i) => _courseCard(_filtered[i]),
+                childCount: _filtered.length,
+              ),
+            ),
+          ),
+
+        // Bottom padding for floating nav
+        const SliverToBoxAdapter(child: SizedBox(height: 100)),
+      ],
+    );
+  }
+
+  // ── Wave header ──────────────────────────────────────────────────────────
+
+  Widget _buildWaveHeader() {
+    return WaveHeader(
+      waveHeight: 52,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 64),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.22),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.school_rounded, color: Colors.white, size: 16),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'EduAf — Instructor',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.85),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'Welcome back,',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.80),
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      _teacherName,
+                      style: const TextStyle(
+                        fontFamily: 'PlayfairDisplay',
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuButton(
+                offset: const Offset(0, 48),
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.22),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 2),
+                  ),
+                  child: Center(
+                    child: Text(
+                      _teacherName.isNotEmpty ? _teacherName[0].toUpperCase() : 'T',
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ),
+                ),
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                    child: const Row(children: [
+                      Icon(Icons.logout_rounded, size: 18),
+                      SizedBox(width: 8),
+                      Text('Logout'),
+                    ]),
+                    onTap: _logout,
+                  ),
+                ],
               ),
             ],
           ),
-          const SizedBox(width: 4),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatsRow() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      child: Row(
-        children: [
-          _statChip(Icons.menu_book_rounded, '${_allCourses.length}', 'Courses', Colors.blue),
-          const SizedBox(width: 10),
-          _statChip(Icons.people_rounded, '$_totalStudents', 'Students', Colors.green),
-          const SizedBox(width: 10),
-          _statChip(Icons.public_rounded, '$_published', 'Published', _primary),
-        ],
-      ),
-    );
-  }
-
-  Widget _statChip(IconData icon, String value, String label, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(14),
         ),
-        child: Row(
+      ),
+    );
+  }
+
+  // ── Stat card ────────────────────────────────────────────────────────────
+
+  Widget _statCard(IconData icon, String value, String label, Color color) {
+    return Expanded(
+      child: GlassCard(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+        child: Column(
           children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
-                Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
-              ],
+            Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: Icon(icon, color: color, size: 18),
             ),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: const TextStyle(
+                fontFamily: 'PlayfairDisplay',
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            Text(label, style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFilterRow() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Row(
-        children: [
-          _filterChip('All', 'all', _allCourses.length),
-          const SizedBox(width: 8),
-          _filterChip('Published', 'published', _published),
-          const SizedBox(width: 8),
-          _filterChip('Draft', 'draft',
-              _allCourses.where((c) => c.isDraft).length),
-        ],
-      ),
-    );
-  }
+  // ── Filter pill ──────────────────────────────────────────────────────────
 
-  Widget _filterChip(String label, String value, int count) {
+  Widget _filterPill(String label, String value, int count) {
     final selected = _filter == value;
     return GestureDetector(
       onTap: () => setState(() => _filter = value),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? _primary : Colors.grey[100],
+          gradient: selected
+              ? const LinearGradient(colors: [_primary, Color(0xFFE65100)])
+              : null,
+          color: selected ? null : Colors.white,
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? Colors.transparent : Colors.grey.shade300,
+          ),
+          boxShadow: selected
+              ? [BoxShadow(color: _primary.withValues(alpha: 0.30), blurRadius: 10, offset: const Offset(0, 4))]
+              : [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2))],
         ),
         child: Text(
           '$label ($count)',
@@ -259,117 +392,54 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
     );
   }
 
-  Widget _buildCourseList() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: _primary));
-    }
-    if (_allCourses.isEmpty) {
-      return _buildEmptyState();
-    }
-    if (_filtered.isEmpty) {
-      return Center(
-        child: Text('No ${_filter} courses',
-            style: TextStyle(color: Colors.grey[400], fontSize: 16)),
-      );
-    }
-    return RefreshIndicator(
-      color: _primary,
-      onRefresh: _loadCourses,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-        itemCount: _filtered.length,
-        itemBuilder: (_, i) => _courseCard(_filtered[i]),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              color: _primary.withValues(alpha: 0.08),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.school_outlined, size: 64, color: _primary),
-          ),
-          const SizedBox(height: 24),
-          const Text('No courses yet',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          Text('Tap + New Course to create your first course',
-              style: TextStyle(color: Colors.grey[500], fontSize: 14)),
-          const SizedBox(height: 28),
-          FilledButton.icon(
-            onPressed: _openCreateCourse,
-            style: FilledButton.styleFrom(
-              backgroundColor: _primary,
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            ),
-            icon: const Icon(Icons.add_rounded),
-            label: const Text('Create Your First Course',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-          ),
-        ],
-      ),
-    );
-  }
+  // ── Course card ──────────────────────────────────────────────────────────
 
   Widget _courseCard(CourseModel course) {
     final isPublished = course.isPublished;
-    return GestureDetector(
-      onTap: () => _openCourseStudio(course),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 12, offset: const Offset(0, 3))],
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: GlassCard(
+        padding: EdgeInsets.zero,
+        radius: 20,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Thumbnail
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              child: course.thumbnailUrl != null && course.thumbnailUrl!.isNotEmpty
-                  ? Image.network(course.thumbnailUrl!, height: 130,
-                      width: double.infinity, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _thumb())
-                  : _thumb(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Stack(
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: isPublished
-                              ? Colors.green.withValues(alpha: 0.1)
-                              : Colors.orange.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          isPublished ? 'Published' : 'Draft',
-                          style: TextStyle(
-                            fontSize: 11, fontWeight: FontWeight.w600,
-                            color: isPublished ? Colors.green[700] : Colors.orange[700],
-                          ),
-                        ),
+                  course.thumbnailUrl != null && course.thumbnailUrl!.isNotEmpty
+                      ? Image.network(
+                          course.thumbnailUrl!, height: 130,
+                          width: double.infinity, fit: BoxFit.cover,
+                          errorBuilder: (ctx, err, st) => _thumb())
+                      : _thumb(),
+                  // Status badge
+                  Positioned(
+                    top: 10, left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isPublished ? Colors.green : Colors.orange,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const Spacer(),
-                      PopupMenuButton(
-                        icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
+                      child: Text(
+                        isPublished ? 'Published' : 'Draft',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  // More menu
+                  Positioned(
+                    top: 6, right: 6,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.35),
+                        shape: BoxShape.circle,
+                      ),
+                      child: PopupMenuButton(
+                        icon: const Icon(Icons.more_vert, color: Colors.white, size: 18),
                         itemBuilder: (_) => [
                           PopupMenuItem(
                             child: const Row(children: [
@@ -403,50 +473,83 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(course.title,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      maxLines: 2, overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
+            // Info
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    course.title,
+                    style: const TextStyle(
+                      fontFamily: 'PlayfairDisplay',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   if (course.subtitle.isNotEmpty) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text(course.subtitle,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                         maxLines: 1, overflow: TextOverflow.ellipsis),
                   ],
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      _courseChip(Icons.people_outline_rounded,
-                          '${course.totalEnrolled}', Colors.blue),
-                      const SizedBox(width: 10),
-                      _courseChip(Icons.video_library_outlined,
-                          '${course.totalLessons} lessons', Colors.purple),
+                      _infoChip(Icons.people_outline_rounded, '${course.totalEnrolled} students'),
+                      const SizedBox(width: 12),
+                      _infoChip(Icons.video_library_outlined, '${course.totalLessons} lessons'),
                       const Spacer(),
-                      Text(
-                        course.isFree ? 'Free' : '\$${course.price?.toStringAsFixed(0) ?? '0'}',
-                        style: const TextStyle(fontSize: 14,
-                            fontWeight: FontWeight.bold, color: _primary),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _primary.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          course.isFree ? 'Free' : '\$${course.price?.toStringAsFixed(0) ?? '0'}',
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _primary),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   // Open Studio button
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: () => _openCourseStudio(course),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: _primary),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                  GestureDetector(
+                    onTap: () => _openCourseStudio(course),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [_primary, Color(0xFFE65100)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _primary.withValues(alpha: 0.28),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      icon: const Icon(Icons.edit_rounded, size: 16, color: _primary),
-                      label: const Text('Open Course Studio',
-                          style: TextStyle(color: _primary,
-                              fontWeight: FontWeight.w600, fontSize: 13)),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.edit_rounded, size: 15, color: Colors.white),
+                          SizedBox(width: 8),
+                          Text('Open Course Studio',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -462,22 +565,85 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
     height: 130, width: double.infinity,
     decoration: BoxDecoration(
       gradient: LinearGradient(
-        colors: [_primary.withValues(alpha: 0.4), _primary.withValues(alpha: 0.7)],
+        colors: [_primary.withValues(alpha: 0.5), const Color(0xFFE65100).withValues(alpha: 0.8)],
+        begin: Alignment.topLeft, end: Alignment.bottomRight,
       ),
     ),
     child: const Icon(Icons.play_circle_outline_rounded, size: 44, color: Colors.white),
   );
 
-  Widget _courseChip(IconData icon, String label, Color color) {
+  Widget _infoChip(IconData icon, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: Colors.grey[500]),
+        Icon(icon, size: 13, color: Colors.grey.shade400),
         const SizedBox(width: 4),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
       ],
     );
   }
+
+  // ── Empty state ──────────────────────────────────────────────────────────
+
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      child: GlassCard(
+        padding: const EdgeInsets.all(36),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: _primary.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.school_outlined, size: 56, color: _primary),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'No courses yet',
+              style: TextStyle(
+                fontFamily: 'PlayfairDisplay',
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tap + New Course to create your first course',
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: _openCreateCourse,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(colors: [_primary, Color(0xFFE65100)]),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [BoxShadow(color: _primary.withValues(alpha: 0.35), blurRadius: 14, offset: const Offset(0, 5))],
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add_rounded, color: Colors.white, size: 18),
+                    SizedBox(width: 8),
+                    Text('Create Your First Course',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Actions ──────────────────────────────────────────────────────────────
 
   void _openCreateCourse() {
     Navigator.push(context,
@@ -508,8 +674,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
 
   Future<void> _unpublishCourse(CourseModel course) async {
     try {
-      await _courseService.updateCourse(
-          courseId: course.id, data: {'status': 'draft'});
+      await _courseService.updateCourse(courseId: course.id, data: {'status': 'draft'});
       _loadCourses();
     } catch (_) {}
   }
@@ -540,5 +705,86 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   Future<void> _logout() async {
     await AuthService().logout();
     if (mounted) Navigator.pushReplacementNamed(context, LoginScreen.id);
+  }
+}
+
+// ─── Teacher Floating Bottom Nav ───────────────────────────────────────────────
+
+class _TeacherBottomNav extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+
+  const _TeacherBottomNav({required this.selectedIndex, required this.onTap});
+
+  static const _items = [
+    (Icons.menu_book_outlined, Icons.menu_book_rounded, 'Courses'),
+    (Icons.person_outline_rounded, Icons.person_rounded, 'Profile'),
+    (Icons.settings_outlined, Icons.settings_rounded, 'Settings'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 68,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.97),
+        borderRadius: BorderRadius.circular(34),
+        boxShadow: [
+          BoxShadow(
+            color: _primary.withValues(alpha: 0.22),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(_items.length, (i) {
+          final (outIcon, fillIcon, label) = _items[i];
+          final active = i == selectedIndex;
+          return GestureDetector(
+            onTap: () => onTap(i),
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 240),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+              decoration: BoxDecoration(
+                color: active ? _primary.withValues(alpha: 0.13) : Colors.transparent,
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      active ? fillIcon : outIcon,
+                      key: ValueKey(active),
+                      color: active ? _primary : Colors.grey.shade400,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: active ? FontWeight.w700 : FontWeight.w400,
+                      color: active ? _primary : Colors.grey.shade400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+    );
   }
 }

@@ -1,6 +1,38 @@
 # EduAf Changelog
 
-This file tracks every change made to the app outside of the Teacher module (`lib/teacher/**`), written in plain language so anyone on the team can follow along — no coding background required.
+This file tracks every change made to the EduAf app, written in plain language so anyone on the team can follow along — no coding background required.
+
+---
+
+## Session 28
+
+### Changelog 28 — Full teacher portal premium UI upgrade
+
+File(s): `lib/teacher/screens/teacher_dashboard_screen.dart`, `lib/teacher/screens/teacher_course_hub_screen.dart`, `lib/teacher/screens/quiz_builder_screen.dart`, `lib/teacher/screens/course_creation_screen_premium.dart`
+
+**What changed:**
+The entire teacher portal has been upgraded to match the premium style already in place for students — same orange/cream theme, same wave headers, glass cards, and floating navigation — creating a consistent premium look across both portals.
+
+**Details:**
+
+- **Teacher Dashboard** — fully rebuilt with:
+  - Wave header hero with EduAf Instructor branding, teacher's name in Playfair Display, and avatar initials ring with logout menu
+  - Three glass stat cards (Courses / Students / Published) with colour-coded icon badges
+  - Animated gradient filter pills (All / Published / Draft) replacing the plain grey chips
+  - Course cards now use GlassCard with status badge overlaid on the thumbnail, gradient "Open Course Studio" button instead of the old outlined border button
+  - Floating pill bottom nav (Courses / Profile / Settings) matching the student portal — same orange glow shadow, animated icon switcher
+  - Gradient FAB for "+ New Course"
+
+- **Course Studio screen** — AppBar upgraded to an orange gradient header with:
+  - White Playfair Display course title and breadcrumb label
+  - Frosted-glass status pill (Published / Draft) in the top-right
+  - Tab bar restyled with a white tinted active indicator on the gradient background
+
+- **Quiz Builder screen** — AppBar upgraded to matching orange gradient with white title, question count subtitle, and a frosted-glass "Save" pill button
+
+- **Create Course screen** — AppBar upgraded to matching orange gradient with centred Playfair Display title
+
+All Firebase business logic, navigation, and data handling is completely unchanged.
 
 ---
 

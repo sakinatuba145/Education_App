@@ -6,6 +6,9 @@ class AppRoutes {
   static const studentHome = "/studentHome";
   static const teacherHome = "/teacherHome";
 
+  static const profileScreen = '/profileScreen';
+  static const myCourseScreen = '/myCourseScreen';
+
   // Teacher Module Routes
   static const teacherDashboard = '/teacher/dashboard';
   static const teacherCreateCourse = '/teacher/create-course';

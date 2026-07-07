@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/student/enrollment_service.dart';
 
 class WordPuzzleScreen extends StatefulWidget {
@@ -161,10 +162,10 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: ThemeColors.background,
       body: SafeArea(
         child: _loading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            ? const Center(child: CircularProgressIndicator(color: ThemeColors.primary))
             : _sessionDone
                 ? _buildDoneScreen()
                 : _buildPuzzle(),
@@ -182,18 +183,18 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
           child: Row(
             children: [
               const Row(children: [
-                Icon(Icons.extension_rounded, color: AppColors.primary, size: 22),
+                Icon(Icons.extension_rounded, color: ThemeColors.primary, size: 22),
                 SizedBox(width: 8),
                 Text('Word Puzzle', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ]),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
-                child: Row(children: [
-                  const Icon(Icons.star_rounded, color: AppColors.primary, size: 16),
-                  const SizedBox(width: 4),
-                  Text('$_score pts', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
+                decoration: BoxDecoration(color: ThemeColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
+                child: const Row(children: [
+                  Icon(Icons.star_rounded, color: ThemeColors.primary, size: 16),
+                  SizedBox(width: 4),
+                  Text('\$_score pts', style: TextStyle(fontWeight: FontWeight.bold, color: ThemeColors.primary)),
                 ]),
               ),
               if (_streak > 1) ...[
@@ -221,7 +222,7 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Word ${_currentIndex + 1} of ${_words.length}', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                  Text('${((_currentIndex / _words.length) * 100).round()}%', style: const TextStyle(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w600)),
+                  Text('${((_currentIndex / _words.length) * 100).round()}%', style: const TextStyle(fontSize: 12, color: ThemeColors.primary, fontWeight: FontWeight.w600)),
                 ],
               ),
               const SizedBox(height: 6),
@@ -230,7 +231,7 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
                 child: LinearProgressIndicator(
                   value: _currentIndex / _words.length,
                   backgroundColor: Colors.grey.shade200,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  valueColor: const AlwaysStoppedAnimation<Color>(ThemeColors.primary),
                   minHeight: 6,
                 ),
               ),
@@ -242,9 +243,9 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
           margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [AppColors.primary, AppColors.primaryLight], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            gradient: const LinearGradient(colors: [ThemeColors.primary, ThemeColors.secondary], begin: Alignment.topLeft, end: Alignment.bottomRight),
             borderRadius: BorderRadius.circular(18),
-            boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
+            boxShadow: [BoxShadow(color: ThemeColors.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,14 +284,14 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
                           ? AppColors.success.withValues(alpha: 0.2)
                           : _wrong && filled
                               ? AppColors.error.withValues(alpha: 0.1)
-                              : filled ? AppColors.primary.withValues(alpha: 0.1) : Colors.white,
+                              : filled ? ThemeColors.primary.withValues(alpha: 0.1) : Colors.white,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: _correct ? AppColors.success : _wrong && filled ? AppColors.error : filled ? AppColors.primary : Colors.grey.shade300,
+                        color: _correct ? AppColors.success : _wrong && filled ? AppColors.error : filled ? ThemeColors.primary : Colors.grey.shade300,
                         width: 2,
                       ),
                     ),
-                    child: Center(child: Text(letter, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: _correct ? AppColors.success : _wrong ? AppColors.error : AppColors.dark))),
+                    child: Center(child: Text(letter, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: _correct ? AppColors.success : _wrong ? AppColors.error : ThemeColors.black))),
                   ),
                 );
               }),
@@ -298,8 +299,8 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
           ),
         ),
         if (_correct)
-          const Padding(
-            padding: EdgeInsets.only(top: 12),
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
             child: Text('✅ Correct! Well done!', style: TextStyle(color: AppColors.success, fontWeight: FontWeight.bold, fontSize: 16)),
           ),
         if (_revealed)
@@ -324,10 +325,10 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1.5),
+                      border: Border.all(color: ThemeColors.primary.withValues(alpha: 0.3), width: 1.5),
                       boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 4, offset: const Offset(0, 2))],
                     ),
-                    child: Center(child: Text(_shuffledLetters[i], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.dark))),
+                    child: Center(child: Text(_shuffledLetters[i], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: ThemeColors.black))),
                   ),
                 );
               }),
@@ -367,7 +368,7 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
                   icon: const Icon(Icons.arrow_forward_rounded, size: 18),
                   label: const Text('Next'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary, foregroundColor: Colors.white,
+                    backgroundColor: ThemeColors.primary, foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 13),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -390,20 +391,20 @@ class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProvider
           children: [
             Container(
               width: 100, height: 100,
-              decoration: const BoxDecoration(color: AppColors.primarySubtle, shape: BoxShape.circle),
-              child: const Icon(Icons.emoji_events_rounded, size: 54, color: AppColors.primary),
+              decoration: const BoxDecoration(color: ThemeColors.gradient1, shape: BoxShape.circle),
+              child: const Icon(Icons.emoji_events_rounded, size: 54, color: ThemeColors.primary),
             ),
             const SizedBox(height: 24),
             const Text('Puzzle Complete! 🎊', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
-            Text('Your score: $pct points', style: const TextStyle(fontSize: 18, color: AppColors.primary, fontWeight: FontWeight.w600)),
+            Text('Your score: $pct points', style: const TextStyle(fontSize: 18, color: ThemeColors.primary, fontWeight: FontWeight.w600)),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: _loadWords,
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Play Again'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary, foregroundColor: Colors.white,
+                backgroundColor: ThemeColors.primary, foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),

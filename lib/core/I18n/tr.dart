@@ -193,5 +193,53 @@ class TurkishLanguage extends AppTranslationsKeys {
     AppMessages.correct: 'Doğru',
     AppMessages.wrong: 'Yanlış',
     AppMessages.backToHome: 'Ana Sayfaya Dön',
+
+    // Welcome Screen
+    AppMessages.getStarted: 'Başla',
+    AppMessages.tagline: 'Öğren • Büyü • Geleceğini Kur',
+    AppMessages.poweredBy: 'EduAf tarafından desteklenmektedir',
+
+    // Home Dashboard
+    AppMessages.home: 'Ana Sayfa',
+    AppMessages.goodMorning: 'Günaydın',
+    AppMessages.goodAfternoon: 'İyi öğlenler',
+    AppMessages.goodEvening: 'İyi akşamlar',
+    AppMessages.readyToLearn: 'Bugün yeni bir şey öğrenmeye hazır mısın?',
+    AppMessages.continueLearning: 'Öğrenmeye Devam Et',
+    AppMessages.quizPerformance: 'Sınav Performansı',
+    AppMessages.quickActions: 'Hızlı İşlemler',
+    AppMessages.noCoursesYet: 'Henüz kurs yok',
+    AppMessages.exploreToStart: 'Yolculuğuna başlamak için kursları keşfet!',
+    AppMessages.exploreCourses: 'Kursları Keşfet',
+    AppMessages.ranking: 'Sıralama',
+    AppMessages.flashcards: 'Bilgi Kartları',
+    AppMessages.completed: 'Tamamlandı',
+    AppMessages.enrolled: 'Kurslar',
+    AppMessages.avgProgress: 'İlerleme',
+    AppMessages.continueBtn: 'Devam et →',
+    AppMessages.completedCheck: 'Tamamlandı ✓',
+
+    // My Courses
+    AppMessages.myCourses: 'Kurslarım',
+    AppMessages.allTab: 'Tümü',
+    AppMessages.inProgress: 'Devam Ediyor',
+    AppMessages.completedTab: 'Tamamlandı',
+    AppMessages.seeAllCourses: 'Tüm kursları gör',
+
+    // Learn Hub
+    AppMessages.learnHub: 'Öğren',
+    AppMessages.assignments: 'Ödevler',
+    AppMessages.puzzle: 'Bulmaca',
+
+    // Course Discovery
+    AppMessages.exploreTab: 'Keşfet',
+    AppMessages.searchCourses: 'Kurs ara...',
+    AppMessages.featured: 'Öne Çıkan',
+    AppMessages.allCourses: 'Tüm Kurslar',
+    AppMessages.enroll: 'Kayıt Ol',
+
+    // Settings
+    AppMessages.selectLanguage: 'Dil Seçin',
+    AppMessages.appLanguage: 'Uygulama Dili',
   };
 }

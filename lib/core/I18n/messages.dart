@@ -68,24 +68,19 @@ class AppMessages {
   static const String progress = 'Progress';
   static const String achievements = 'Achievements';
   static const String firstQuizCompleted = 'First Quiz Completed';
-  static const String firstQuizDesc =
-      'You completed your first quiz successfully.';
+  static const String firstQuizDesc = 'You completed your first quiz successfully.';
   static const String coursesFinished = 'Courses Finished';
-  static const String coursesFinishedDesc =
-      'You are building your learning journey.';
+  static const String coursesFinishedDesc = 'You are building your learning journey.';
   static const String activeLearner = 'Active Learner';
-  static const String activeLearnerDesc =
-      'Keep learning and improving every day.';
+  static const String activeLearnerDesc = 'Keep learning and improving every day.';
 
   //Posts
   static const String posts = 'Posts';
-  static const String completedFlutterUI =
-      'Completed Flutter UI Practice';
-  static const String flutterUIDesc =
-      'Shared progress about profile screen design.';
+  static const String completedFlutterUI = 'Completed Flutter UI Practice';
+  static const String flutterUIDesc = 'Shared progress about profile screen design.';
   static const String learningDartOOP = 'Learning Dart OOP';
-  static const String dartOOPDesc =
-      'Posted notes about classes and objects.';
+  static const String dartOOPDesc = 'Posted notes about classes and objects.';
+
   // Settings
   static const String myProgress = 'My Progress';
   static const String favorites = 'Favorites';
@@ -111,6 +106,7 @@ class AppMessages {
   // Time
   static const String daysAgo = 'days ago';
   static const String weeksAgo = 'weeks ago';
+
   // Validation & Errors
   static const String passwordMinLength = 'Password must be at least 6 characters';
   static const String emailAlreadyRegistered = 'This email is already registered';
@@ -121,16 +117,16 @@ class AppMessages {
   static const String somethingWentWrong = 'Something went wrong. Try again';
   static const String googleSignInFailed = 'Google Sign-In Failed';
 
-// Forgot Password
+  // Forgot Password
   static const String forgotPassword = 'Forgot Password';
-  static const String forgotPasswordSubtitle = 'No worries, we’ll help you reset it';
+  static const String forgotPasswordSubtitle = "No worries, we'll help you reset it";
   static const String resetPasswordInstruction = 'Enter your email to reset password';
   static const String emailRequired = 'Email is required';
   static const String sendResetLink = 'Send Reset Link';
   static const String backToLogin = 'Back to Login';
   static const String resetLinkSent = 'Reset link sent';
 
-//  Login
+  //  Login
   static const String welcomeBack = 'Welcome Back';
   static const String continueJourney = 'Continue your learning journey';
   static const String passwordRequired = 'Password is required';
@@ -138,7 +134,7 @@ class AppMessages {
   static const String login = 'Login';
   static const String noAccountRegister = "Don't have an account? Register";
 
-//  Register
+  //  Register
   static const String createAccountTitle = 'Create Account';
   static const String startLearningJourney = 'Start your learning journey today';
   static const String academy = 'Academy';
@@ -146,7 +142,7 @@ class AppMessages {
   static const String continueWithGoogle = 'Continue with Google';
   static const String alreadyHaveAccountLogin = 'Already have an account? Login';
 
-// Teacher Exam
+  // Teacher Exam
   static const String createExam = 'Create Exam';
   static const String examTitle = 'Exam Title';
   static const String subject = 'Subject';
@@ -165,17 +161,65 @@ class AppMessages {
   static const String addQuestion = 'Add Question';
   static const String previewQuiz = 'Preview Quiz';
 
-//  Quiz
+  //  Quiz
   static const String writeAnswer = 'Write answer...';
   static const String previous = 'Previous';
   static const String next = 'Next';
   static const String submit = 'Submit';
 
-// Result
+  // Result
   static const String result = 'Result';
   static const String yourAnswer = 'Your Answer:';
   static const String correctAnswer = 'Correct Answer:';
   static const String correct = 'Correct';
   static const String wrong = 'Wrong';
   static const String backToHome = 'Back to Home';
+
+  // ─── NEW: Welcome Screen ───
+  static const String getStarted = 'get started';
+  static const String tagline = 'tagline';
+  static const String poweredBy = 'powered by';
+
+  // ─── NEW: Home Dashboard ───
+  static const String home = 'home';
+  static const String goodMorning = 'good morning';
+  static const String goodAfternoon = 'good afternoon';
+  static const String goodEvening = 'good evening';
+  static const String readyToLearn = 'ready to learn today';
+  static const String continueLearning = 'continue learning';
+  static const String quizPerformance = 'quiz performance';
+  static const String quickActions = 'quick actions';
+  static const String noCoursesYet = 'no courses yet';
+  static const String exploreToStart = 'explore to start';
+  static const String exploreCourses = 'explore courses';
+  static const String ranking = 'ranking';
+  static const String flashcards = 'flashcards';
+  static const String completed = 'completed section';
+  static const String enrolled = 'enrolled count';
+  static const String avgProgress = 'avg progress';
+  static const String continueBtn = 'continue btn';
+  static const String completedCheck = 'completed check';
+
+  // ─── NEW: My Courses Screen ───
+  static const String myCourses = 'my courses';
+  static const String allTab = 'all tab';
+  static const String inProgress = 'in progress';
+  static const String completedTab = 'completed tab';
+  static const String seeAllCourses = 'see all courses';
+
+  // ─── NEW: Learn Hub ───
+  static const String learnHub = 'learn hub';
+  static const String assignments = 'assignments';
+  static const String puzzle = 'puzzle';
+
+  // ─── NEW: Course Discovery ───
+  static const String exploreTab = 'explore tab';
+  static const String searchCourses = 'search courses';
+  static const String featured = 'featured';
+  static const String allCourses = 'all courses';
+  static const String enroll = 'enroll';
+
+  // ─── NEW: Settings ───
+  static const String selectLanguage = 'select language';
+  static const String appLanguage = 'app language';
 }

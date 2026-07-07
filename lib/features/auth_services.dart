@@ -133,7 +133,8 @@ class AuthService {
         return 'No account found with this email';
 
       case 'wrong-password':
-        return 'Incorrect password';
+      case 'invalid-credential':
+        return 'Incorrect email or password';
 
       case 'invalid-email':
         return 'Enter a valid email address';

@@ -1,5 +1,6 @@
-import 'package:education_app/dashboard/dashboard_content.dart';
+import 'package:education_app/student/student_portal_screen.dart';
 import 'package:education_app/features/login_screen.dart';
+import 'package:education_app/core/widgets/portal_shell.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -34,17 +35,20 @@ class Wrapper extends StatelessWidget {
                 }
 
                 if (userSnapshot.hasError || !userSnapshot.hasData) {
-                  return DashboardContent();
+                  return const StudentPortalScreen();
                 }
 
                 final userData = userSnapshot.data?.data() as Map<String, dynamic>?;
-                final position = userData?['position'] ?? 'student';
+                // Check both 'role' and 'position' fields — seed accounts use 'position',
+                // registered accounts use 'role'
+                final position =
+                    userData?['role'] ?? userData?['position'] ?? 'student';
 
                 // Route based on user role
                 if (position == 'teacher' || position == 'admin') {
-                  return TeacherDashboardScreen();
+                  return PortalShell(child: TeacherDashboardScreen());
                 } else {
-                   return DashboardContent();
+                  return const StudentPortalScreen();
                 }
               },
             );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:education_app/core/constants/app_colors.dart';
+import 'package:education_app/core/constants/theme.dart';
+import 'package:education_app/core/I18n/messages.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/student/course_player_screen.dart';
 
@@ -31,20 +34,20 @@ class _MyCoursesScreenState extends State<MyCoursesScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Courses'),
+        title: Text(AppMessages.myCourses.tr),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.primary,
+        backgroundColor: ThemeColors.primary,
         foregroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'In Progress'),
-            Tab(text: 'Completed'),
+          tabs: [
+            Tab(text: AppMessages.allTab.tr),
+            Tab(text: AppMessages.inProgress.tr),
+            Tab(text: AppMessages.completedTab.tr),
           ],
         ),
       ),
@@ -185,7 +188,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen>
                       Text(
                         '${course.progressPercent}%',
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: AppColors.primary,
+                              color: ThemeColors.primary,
                               fontWeight: FontWeight.bold,
                             ),
                       ),
@@ -201,7 +204,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen>
                       valueColor: AlwaysStoppedAnimation<Color>(
                         course.isCompleted
                             ? AppColors.success
-                            : AppColors.primary,
+                            : ThemeColors.primary,
                       ),
                     ),
                   ),
@@ -234,7 +237,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen>
                       style: ElevatedButton.styleFrom(
                         backgroundColor: course.isCompleted
                             ? AppColors.success
-                            : AppColors.primary,
+                            : ThemeColors.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -258,8 +261,8 @@ class _MyCoursesScreenState extends State<MyCoursesScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.3),
-            AppColors.primaryLight.withValues(alpha: 0.2),
+            ThemeColors.primary.withValues(alpha: 0.3),
+            ThemeColors.secondary.withValues(alpha: 0.2),
           ],
         ),
       ),
@@ -267,7 +270,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen>
         child: Icon(
           Icons.play_circle_outline,
           size: 48,
-          color: AppColors.primary.withValues(alpha: 0.6),
+          color: ThemeColors.primary.withValues(alpha: 0.6),
         ),
       ),
     );
@@ -280,7 +283,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen>
       color = AppColors.success;
       label = 'Completed';
     } else {
-      color = AppColors.primary;
+      color = ThemeColors.primary;
       label = 'In Progress';
     }
     return Container(

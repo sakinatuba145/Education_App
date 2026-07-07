@@ -90,28 +90,74 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _bg,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.quizTitle,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
-            Text('${_questions.length} questions',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-          ],
-        ),
-        actions: [
-          if (_isSaving)
-            const Padding(padding: EdgeInsets.all(16),
-                child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: _primary, strokeWidth: 2)))
-          else
-            TextButton(
-              onPressed: _saveQuiz,
-              child: const Text('Save', style: TextStyle(color: _primary, fontWeight: FontWeight.bold, fontSize: 16)),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFA726), Color(0xFFE65100)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-        ],
+            boxShadow: [
+              BoxShadow(color: Color(0x33FFA726), blurRadius: 12, offset: Offset(0, 3)),
+            ],
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: SizedBox(
+              height: kToolbarHeight,
+              child: Row(
+                children: [
+                  Builder(
+                    builder: (ctx) => IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.quizTitle,
+                          style: const TextStyle(fontFamily: 'PlayfairDisplay', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                          maxLines: 1, overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          '${_questions.length} questions',
+                          style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.80)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (_isSaving)
+                    const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GestureDetector(
+                        onTap: _saveQuiz,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.22),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.50)),
+                          ),
+                          child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: _primary))

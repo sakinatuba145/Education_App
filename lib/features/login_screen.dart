@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:education_app/core/constants/theme.dart';
+import 'package:education_app/core/widgets/portal_shell.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/register_screen.dart';
 import 'package:education_app/features/forgot_password.dart';
-import 'package:education_app/dashboard/dashboard_screen.dart';
-import 'package:education_app/teacher/screens/teacher_dashboard_screen_premium.dart';
+import 'package:education_app/student/student_portal_screen.dart';
+import 'package:education_app/teacher/screens/teacher_dashboard_screen.dart';
 /// 3.10 LOGIN SCREEN
 /// This screen lets users login using email + password
 /// After login, user is redirected based on their role
@@ -30,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   /// Controls loading spinner & password visibility
   bool isLoading = false;
   bool obscurePassword = true;
+  String _selectedRole = 'student';
 
   final AuthService authService = AuthService();
 
@@ -50,22 +52,54 @@ class _LoginScreenState extends State<LoginScreen> {
         passwordController.text.trim(),
       );
 
-      final role = user["role"];
+      // Check both 'role' and 'position' fields — Firestore accounts may use either
+      final role = (user["role"] ?? user["position"] ?? "student").toString();
+      final isTeacher = role == "teacher" || role == "admin";
 
       if (!mounted) return;
 
-      if (role == "teacher") {
+      // Enforce role toggle — reject mismatched credentials with a clear message
+      if (_selectedRole == 'student' && isTeacher) {
+        await authService.logout();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "This is a teacher account. Please select 'Teacher' to log in.",
+            ),
+            duration: Duration(seconds: 4),
+          ),
+        );
+        setState(() => isLoading = false);
+        return;
+      }
+      if (_selectedRole == 'teacher' && !isTeacher) {
+        await authService.logout();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "This is a student account. Please select 'Student' to log in.",
+            ),
+            duration: Duration(seconds: 4),
+          ),
+        );
+        setState(() => isLoading = false);
+        return;
+      }
+
+      if (isTeacher) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const TeacherDashboardScreenPremium(),
+            builder: (_) => PortalShell(child: TeacherDashboardScreen()),
           ),
         );
       } else {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => DashboardHome(),
+            builder: (_) => const StudentPortalScreen(),
           ),
         );
       }
@@ -79,6 +113,40 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     setState(() => isLoading = false);
+  }
+
+  Widget _roleTab(String role, IconData icon, String label) {
+    final selected = _selectedRole == role;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedRole = role),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: selected ? ThemeColors.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon,
+                  size: 18,
+                  color: selected ? Colors.white : Colors.grey.shade600),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: selected ? Colors.white : Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -111,12 +179,31 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
 
                         Text(
-                          "Continue your learning journey",
+                          _selectedRole == 'teacher'
+                              ? "Sign in to manage your courses"
+                              : "Continue your learning journey",
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
 
-                        const SizedBox(height: 35),
+                        const SizedBox(height: 28),
+
+                        // Role toggle
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.55),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          child: Row(
+                            children: [
+                              _roleTab('student', Icons.school_rounded, 'Student'),
+                              _roleTab('teacher', Icons.person_rounded, 'Teacher'),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 28),
 
 
                         TextFormField(

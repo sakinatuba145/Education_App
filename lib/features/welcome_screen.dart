@@ -1,5 +1,7 @@
 import 'dart:ui';
+import 'package:get/get.dart';
 import '../core/constants/theme.dart';
+import '../core/I18n/messages.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:education_app/features/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -109,8 +111,8 @@ class WelcomeScreen extends StatelessWidget {
 
                   FadeInUp(
                     delay: const Duration(milliseconds: 500),
-                    child:Text(
-                      "Learn • Grow • Build Your Future",
+                    child: Text(
+                      AppMessages.tagline.tr,
                       textAlign: TextAlign.center,
                       style: Theme.of(context)
                           .textTheme
@@ -126,7 +128,7 @@ class WelcomeScreen extends StatelessWidget {
                   FadeInUp(
                     delay: const Duration(milliseconds: 700),
                     child: Text(
-                      "Discover a new way of learning with modern courses, expert teachers and unlimited opportunities.",
+                      AppMessages.discover.tr,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -152,21 +154,21 @@ class WelcomeScreen extends StatelessWidget {
                           color: ThemeColors.button,
 
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Row(
                             mainAxisAlignment:
                             MainAxisAlignment.center,
                             children: [
                               Text(
-                                "Get Started",
-                                style: TextStyle(
+                                AppMessages.getStarted.tr,
+                                style: const TextStyle(
                                   fontSize: 18,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(width: 10),
-                              Icon(
+                              const SizedBox(width: 10),
+                              const Icon(
                                 Icons.arrow_forward_rounded,
                                 color: Colors.white,
                               )
@@ -179,7 +181,7 @@ class WelcomeScreen extends StatelessWidget {
 
                   const SizedBox(height: 30),
                   Text(
-                    "Powered by EduAf",
+                    AppMessages.poweredBy.tr,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
 

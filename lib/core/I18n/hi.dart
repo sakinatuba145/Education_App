@@ -193,5 +193,53 @@ class HindiLanguage extends AppTranslationsKeys {
     AppMessages.correct: 'सही',
     AppMessages.wrong: 'गलत',
     AppMessages.backToHome: 'होम पर वापस जाएँ',
+
+    // Welcome Screen
+    AppMessages.getStarted: 'शुरू करें',
+    AppMessages.tagline: 'सीखें • बढ़ें • अपना भविष्य बनाएं',
+    AppMessages.poweredBy: 'EduAf द्वारा संचालित',
+
+    // Home Dashboard
+    AppMessages.home: 'होम',
+    AppMessages.goodMorning: 'सुप्रभात',
+    AppMessages.goodAfternoon: 'नमस्कार',
+    AppMessages.goodEvening: 'शुभ संध्या',
+    AppMessages.readyToLearn: 'क्या आप आज कुछ नया सीखने के लिए तैयार हैं?',
+    AppMessages.continueLearning: 'सीखना जारी रखें',
+    AppMessages.quizPerformance: 'क्विज़ प्रदर्शन',
+    AppMessages.quickActions: 'त्वरित क्रियाएं',
+    AppMessages.noCoursesYet: 'अभी तक कोई कोर्स नहीं',
+    AppMessages.exploreToStart: 'अपनी यात्रा शुरू करने के लिए कोर्स खोजें!',
+    AppMessages.exploreCourses: 'कोर्स खोजें',
+    AppMessages.ranking: 'रैंकिंग',
+    AppMessages.flashcards: 'फ्लैशकार्ड',
+    AppMessages.completed: 'पूर्ण',
+    AppMessages.enrolled: 'कोर्स',
+    AppMessages.avgProgress: 'प्रगति',
+    AppMessages.continueBtn: 'जारी रखें →',
+    AppMessages.completedCheck: 'पूर्ण ✓',
+
+    // My Courses
+    AppMessages.myCourses: 'मेरे कोर्स',
+    AppMessages.allTab: 'सभी',
+    AppMessages.inProgress: 'जारी है',
+    AppMessages.completedTab: 'पूर्ण',
+    AppMessages.seeAllCourses: 'सभी कोर्स देखें',
+
+    // Learn Hub
+    AppMessages.learnHub: 'सीखें',
+    AppMessages.assignments: 'असाइनमेंट',
+    AppMessages.puzzle: 'पहेली',
+
+    // Course Discovery
+    AppMessages.exploreTab: 'खोजें',
+    AppMessages.searchCourses: 'कोर्स खोजें...',
+    AppMessages.featured: 'विशेष',
+    AppMessages.allCourses: 'सभी कोर्स',
+    AppMessages.enroll: 'दाखिला लें',
+
+    // Settings
+    AppMessages.selectLanguage: 'भाषा चुनें',
+    AppMessages.appLanguage: 'ऐप भाषा',
   };
 }

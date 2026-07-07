@@ -73,7 +73,7 @@ class AppTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: ThemeColors.primary,
-        foregroundColor: ThemeColors.primary,
+        foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         shape: RoundedRectangleBorder(
@@ -305,7 +305,7 @@ class ThemeColors {
   static const gradient1 = Color(0xFFFFF8F0);
   static const gradient2 = Color(0xFFFFE0B2);
   static const gradient3 = Color(0xFFFFD180);
-  static const button = Color(0xFFFf5b400);
+  static const button = Color(0xFFF5B400);
 
 
   static const white = Colors.white;

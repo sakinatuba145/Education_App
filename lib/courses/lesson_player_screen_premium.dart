@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/core/constants/app_dimensions.dart';
 import 'package:education_app/core/widgets/animated_button.dart';
+import 'package:education_app/core/widgets/inline_video_player.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
 
@@ -197,96 +198,134 @@ class _LessonPlayerScreenPremiumState extends State<LessonPlayerScreenPremium>
       body: SingleChildScrollView(
         child: Column(
           children: [
-            GestureDetector(
-              onTap: videoUrl != null
-                  ? () => launchUrl(Uri.parse(videoUrl))
-                  : _toggleControls,
-              child: Container(
-                width: double.infinity,
-                height: 240,
-                color: Colors.black,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      color: const Color(0xFF1A1A1A),
-                      child: Center(
-                        child: Icon(
-                          videoUrl != null && contentType == 'video'
-                              ? Icons.play_circle_fill
-                              : contentType == 'pdf'
-                                  ? Icons.picture_as_pdf
-                                  : contentType == 'image'
-                                      ? Icons.image
-                                      : Icons.article_outlined,
-                          color: AppColors.primary.withValues(alpha: 0.6),
-                          size: 80,
+            if (videoUrl != null && contentType == 'video')
+              Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  InlineVideoPlayer(url: videoUrl, aspectRatio: 16 / 9),
+                  if (_showControls)
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppDimensions.spacing_8,
+                          vertical: AppDimensions.spacing_4,
                         ),
-                      ),
-                    ),
-                    if (videoUrl != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.black.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.open_in_new,
-                                color: Colors.white, size: 16),
-                            const SizedBox(width: 8),
+                            Icon(
+                              _isCompleted
+                                  ? Icons.check_circle
+                                  : Icons.radio_button_unchecked,
+                              color: _isCompleted
+                                  ? AppColors.success
+                                  : Colors.white54,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
                             Text(
-                              contentType == 'pdf'
-                                  ? 'Open PDF'
-                                  : 'Open Video',
+                              _isCompleted ? 'Completed' : 'In Progress',
                               style: const TextStyle(
-                                  color: Colors.white, fontSize: 14),
+                                  color: Colors.white, fontSize: 12),
                             ),
                           ],
                         ),
                       ),
-                    if (_showControls)
-                      Positioned(
-                        bottom: 12,
-                        right: 12,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: AppDimensions.spacing_8,
-                            vertical: AppDimensions.spacing_4,
+                    ),
+                ],
+              )
+            else
+              GestureDetector(
+                onTap: videoUrl != null
+                    ? () => launchUrl(Uri.parse(videoUrl))
+                    : _toggleControls,
+                child: Container(
+                  width: double.infinity,
+                  height: 240,
+                  color: Colors.black,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        color: const Color(0xFF1A1A1A),
+                        child: Center(
+                          child: Icon(
+                            contentType == 'pdf'
+                                ? Icons.picture_as_pdf
+                                : contentType == 'image'
+                                    ? Icons.image
+                                    : Icons.article_outlined,
+                            color: AppColors.primary.withValues(alpha: 0.6),
+                            size: 80,
                           ),
+                        ),
+                      ),
+                      if (videoUrl != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.6),
-                            borderRadius: BorderRadius.circular(4),
+                            color: Colors.black.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                _isCompleted
-                                    ? Icons.check_circle
-                                    : Icons.radio_button_unchecked,
-                                color: _isCompleted
-                                    ? AppColors.success
-                                    : Colors.white54,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 4),
+                              const Icon(Icons.open_in_new,
+                                  color: Colors.white, size: 16),
+                              const SizedBox(width: 8),
                               Text(
-                                _isCompleted ? 'Completed' : 'In Progress',
+                                contentType == 'pdf' ? 'Open PDF' : 'Open File',
                                 style: const TextStyle(
-                                    color: Colors.white, fontSize: 12),
+                                    color: Colors.white, fontSize: 14),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                  ],
+                      if (_showControls)
+                        Positioned(
+                          bottom: 12,
+                          right: 12,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppDimensions.spacing_8,
+                              vertical: AppDimensions.spacing_4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  _isCompleted
+                                      ? Icons.check_circle
+                                      : Icons.radio_button_unchecked,
+                                  color: _isCompleted
+                                      ? AppColors.success
+                                      : Colors.white54,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  _isCompleted ? 'Completed' : 'In Progress',
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
             Container(
               color: AppColors.lightBackground,

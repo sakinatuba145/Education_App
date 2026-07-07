@@ -187,5 +187,53 @@ class PashtoLanguage extends AppTranslationsKeys {
     AppMessages.correct: 'سم',
     AppMessages.wrong: 'ناسم',
     AppMessages.backToHome: 'کور پاڼې ته ستنېدل',
+
+    // Welcome Screen
+    AppMessages.getStarted: 'پیل کړئ',
+    AppMessages.tagline: 'زده کړه • وده • راتلونکی جوړ کړئ',
+    AppMessages.poweredBy: 'د EduAf لخوا',
+
+    // Home Dashboard
+    AppMessages.home: 'کور',
+    AppMessages.goodMorning: 'سهار مو پخیر',
+    AppMessages.goodAfternoon: 'غرمه مو پخیر',
+    AppMessages.goodEvening: 'ماښام مو پخیر',
+    AppMessages.readyToLearn: 'ایا نن یو نوی شی زده کولو ته چمتو یاست؟',
+    AppMessages.continueLearning: 'زده کړه دوام ورکړئ',
+    AppMessages.quizPerformance: 'د کوئز فعالیت',
+    AppMessages.quickActions: 'چټکې کړنې',
+    AppMessages.noCoursesYet: 'لا هیڅ کورس نشته',
+    AppMessages.exploreToStart: 'خپل سفر پیلولو لپاره کورسونه وپلټئ!',
+    AppMessages.exploreCourses: 'کورسونه وپلټئ',
+    AppMessages.ranking: 'درجه بندي',
+    AppMessages.flashcards: 'فلش کارډونه',
+    AppMessages.completed: 'بشپړ شوی',
+    AppMessages.enrolled: 'کورسونه',
+    AppMessages.avgProgress: 'پرمختګ',
+    AppMessages.continueBtn: 'دوام ←',
+    AppMessages.completedCheck: 'بشپړ شوی ✓',
+
+    // My Courses
+    AppMessages.myCourses: 'زما کورسونه',
+    AppMessages.allTab: 'ټول',
+    AppMessages.inProgress: 'روان دی',
+    AppMessages.completedTab: 'بشپړ شوی',
+    AppMessages.seeAllCourses: 'ټول کورسونه وګورئ',
+
+    // Learn Hub
+    AppMessages.learnHub: 'زده کړه',
+    AppMessages.assignments: 'دندې',
+    AppMessages.puzzle: 'پزل',
+
+    // Course Discovery
+    AppMessages.exploreTab: 'پلټل',
+    AppMessages.searchCourses: 'کورسونه وپلټئ...',
+    AppMessages.featured: 'ځانګړي',
+    AppMessages.allCourses: 'ټول کورسونه',
+    AppMessages.enroll: 'ثبت نام',
+
+    // Settings
+    AppMessages.selectLanguage: 'ژبه غوره کړئ',
+    AppMessages.appLanguage: 'د اپ ژبه',
   };
 }

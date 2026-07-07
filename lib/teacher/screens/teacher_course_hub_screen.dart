@@ -178,61 +178,99 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     final title = _course?.title ?? 'Course Studio';
     return Scaffold(
       backgroundColor: _bg,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Course Studio',
-                style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w500)),
-            Text(title,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-                maxLines: 1, overflow: TextOverflow.ellipsis),
-          ],
-        ),
-        actions: [
-          if (_course != null)
-            Container(
-              margin: const EdgeInsets.only(right: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: _course!.isPublished
-                    ? Colors.green.withValues(alpha: 0.12)
-                    : Colors.orange.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                _course!.isPublished ? 'Published' : 'Draft',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: _course!.isPublished ? Colors.green[700] : Colors.orange[700],
-                ),
-              ),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 52),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFA726), Color(0xFFE65100)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: _orange,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: _orange,
-          indicatorWeight: 3,
-          labelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-          unselectedLabelStyle: const TextStyle(fontSize: 11),
-          tabs: const [
-            Tab(icon: Icon(Icons.tune_rounded, size: 18), text: 'Overview'),
-            Tab(icon: Icon(Icons.play_lesson_rounded, size: 18), text: 'Content'),
-            Tab(icon: Icon(Icons.quiz_rounded, size: 18), text: 'Quiz'),
-            Tab(icon: Icon(Icons.people_alt_rounded, size: 18), text: 'Students'),
-            Tab(icon: Icon(Icons.bar_chart_rounded, size: 18), text: 'Analytics'),
-            Tab(icon: Icon(Icons.assignment_rounded, size: 18), text: 'Project'),
-            Tab(icon: Icon(Icons.verified_rounded, size: 18), text: 'Certs'),
-          ],
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x44FFA726),
+                blurRadius: 16,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ── Title row ──
+                SizedBox(
+                  height: kToolbarHeight,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Course Studio',
+                              style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.80), fontWeight: FontWeight.w500, letterSpacing: 0.8),
+                            ),
+                            Text(
+                              title,
+                              style: const TextStyle(fontFamily: 'PlayfairDisplay', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (_course != null)
+                        Container(
+                          margin: const EdgeInsets.only(right: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.22),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.40)),
+                          ),
+                          child: Text(
+                            _course!.isPublished ? 'Published' : 'Draft',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                // ── Tab bar ──
+                TabBar(
+                  controller: _tabController,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.white60,
+                  indicator: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.22),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+                  unselectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w400),
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  tabs: const [
+                    Tab(icon: Icon(Icons.tune_rounded, size: 16), text: 'Overview'),
+                    Tab(icon: Icon(Icons.play_lesson_rounded, size: 16), text: 'Content'),
+                    Tab(icon: Icon(Icons.quiz_rounded, size: 16), text: 'Quiz'),
+                    Tab(icon: Icon(Icons.people_alt_rounded, size: 16), text: 'Students'),
+                    Tab(icon: Icon(Icons.bar_chart_rounded, size: 16), text: 'Analytics'),
+                    Tab(icon: Icon(Icons.assignment_rounded, size: 16), text: 'Project'),
+                    Tab(icon: Icon(Icons.verified_rounded, size: 16), text: 'Certs'),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       body: _loading

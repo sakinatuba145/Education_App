@@ -1,5 +1,6 @@
 import 'package:education_app/student/student_portal_screen.dart';
 import 'package:education_app/features/login_screen.dart';
+import 'package:education_app/core/widgets/portal_shell.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -45,7 +46,7 @@ class Wrapper extends StatelessWidget {
 
                 // Route based on user role
                 if (position == 'teacher' || position == 'admin') {
-                  return TeacherDashboardScreen();
+                  return PortalShell(child: TeacherDashboardScreen());
                 } else {
                   return const StudentPortalScreen();
                 }

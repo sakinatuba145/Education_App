@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/theme.dart';
+import 'package:education_app/core/widgets/language_switcher_button.dart';
 import 'package:education_app/student/student_home_screen.dart';
 import 'package:education_app/courses/course_discovery_screen_premium.dart';
 import 'package:education_app/student/student_learn_hub_screen.dart';
@@ -39,9 +40,23 @@ class _StudentPortalScreenState extends State<StudentPortalScreen> {
       },
       child: Scaffold(
         backgroundColor: ThemeColors.background,
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _pages,
+        body: Stack(
+          children: [
+            IndexedStack(
+              index: _selectedIndex,
+              children: _pages,
+            ),
+            // ─── Floating language switcher ───
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8, right: 12),
+                  child: const LanguageSwitcherButton(),
+                ),
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _selectedIndex,

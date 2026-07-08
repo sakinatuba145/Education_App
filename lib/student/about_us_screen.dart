@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/theme.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+
+import '../core/I18n/messages.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -37,17 +40,15 @@ class AboutUsScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Center(
               child: Text(
-                'Learn • Grow • Build Your Future',
+                AppMessages.start.tr,
                 style: TextStyle(fontSize: 14, color: ThemeColors.primary, fontWeight: FontWeight.w600),
               ),
             ),
             const SizedBox(height: 28),
             _sectionCard(
-              title: 'Who we are',
+              title: AppMessages.whoWeAre.tr,
               body:
-                  'EduAf is a modern e-learning platform built to connect students and teachers in one place. '
-                  'Our goal is to make quality courses, quizzes and study tools easy to reach for every learner, '
-                  'no matter where they are.',
+               AppMessages.weAre.tr,
             ),
             const SizedBox(height: 16),
             _sectionCard(

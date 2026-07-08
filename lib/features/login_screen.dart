@@ -7,6 +7,9 @@ import 'package:education_app/features/register_screen.dart';
 import 'package:education_app/features/forgot_password.dart';
 import 'package:education_app/student/student_portal_screen.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+
+import '../core/I18n/messages.dart';
 /// 3.10 LOGIN SCREEN
 /// This screen lets users login using email + password
 /// After login, user is redirected based on their role
@@ -63,9 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
         await authService.logout();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              "This is a teacher account. Please select 'Teacher' to log in.",
+              AppMessages.teacherAccount.tr,
             ),
             duration: Duration(seconds: 4),
           ),
@@ -77,9 +80,9 @@ class _LoginScreenState extends State<LoginScreen> {
         await authService.logout();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+           SnackBar(
             content: Text(
-              "This is a student account. Please select 'Student' to log in.",
+              AppMessages.studentAccount.tr,
             ),
             duration: Duration(seconds: 4),
           ),
@@ -169,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         FadeInDown(
                           child: Text(
-                            "Welcome Back",
+                            AppMessages.comeBack.tr,
                             textAlign: TextAlign.center,
                             style: Theme.of(context)
                                 .textTheme
@@ -215,8 +218,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
-                            hintText: "Email",
+                          decoration: InputDecoration(
+                            hintText: AppMessages.email.tr,
                             prefixIcon: Icon(Icons.email_outlined),
                           ),
                         ),
@@ -233,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                           decoration: InputDecoration(
-                            hintText: "Password",
+                            hintText: AppMessages.password.tr,
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -260,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Navigator.pushNamed(
                                   context, ForgotPasswordScreen.id);
                             },
-                            child: const Text("Forgot Password?"),
+                            child:  Text(AppMessages.forgot.tr),
                           ),
                         ),
 
@@ -292,8 +295,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.pushNamed(
                                 context, RegisterScreen.id);
                           },
-                          child: const Text(
-                            "Don't have an account? Register",
+                          child:  Text(
+                            AppMessages.noAccount.tr,
                           ),
                         ),
 

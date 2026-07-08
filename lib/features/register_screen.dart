@@ -3,6 +3,9 @@ import 'package:animate_do/animate_do.dart';
 import 'package:education_app/core/constants/theme.dart';
 import 'package:education_app/features/auth_services.dart';
 import 'package:education_app/features/login_screen.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+
+import '../core/I18n/messages.dart';
 
 /// 3.1 REGISTER SCREEN
 /// This screen allows users to create a new account
@@ -98,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                               FadeInDown(
                                 child: Text(
-                                  "Create Account",
+                                  AppMessages.createAccountTitle.tr,
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme
@@ -118,8 +121,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                               TextFormField(
                                 controller: nameController,
-                                decoration: const InputDecoration(
-                                  hintText: "Full Name",
+                                decoration: InputDecoration(
+                                  hintText: AppMessages.fullName.tr,
                                   prefixIcon: Icon(Icons.person),
                                 ),
                               ),
@@ -129,8 +132,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextFormField(
                                 controller: emailController,
                                 keyboardType: TextInputType.emailAddress,
-                                decoration: const InputDecoration(
-                                  hintText: "Email",
+                                decoration:  InputDecoration(
+                                  hintText: AppMessages.email.tr,
                                   prefixIcon: Icon(Icons.email),
                                 ),
                               ),
@@ -141,7 +144,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 controller: passwordController,
                                 obscureText: obscurePassword,
                                 decoration: InputDecoration(
-                                  hintText: "Password",
+                                  hintText: AppMessages.password.tr,
                                   prefixIcon: const Icon(Icons.lock),
                                   suffixIcon: IconButton(
                                     icon: Icon(
@@ -165,16 +168,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 decoration: const InputDecoration(
                                   prefixIcon: Icon(Icons.school),
                                 ),
-                                items: const [
+                                items:  [
                                   DropdownMenuItem(
                                       value: "student",
-                                      child: Text("Student")),
+                                      child: Text(AppMessages.student.tr)),
                                   DropdownMenuItem(
                                       value: "teacher",
-                                      child: Text("Teacher")),
+                                      child: Text(AppMessages.teacher.tr)),
                                   DropdownMenuItem(
                                       value: "academy",
-                                      child: Text("Academy")),
+                                      child: Text(AppMessages.academy.tr)),
                                 ],
                                 onChanged: (v) {
                                   setState(() => role = v!);
@@ -198,19 +201,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ? const CircularProgressIndicator(
                                     color: Colors.white,
                                   )
-                                      : const Text("Create Account"),
+                                      : Text(AppMessages.createAccount.tr),
                                 ),
                               ),
 
                               const SizedBox(height: 20),
 
                               Row(
-                                children: const [
+                                children: [
                                   Expanded(child: Divider()),
                                   Padding(
                                     padding:
                                     EdgeInsets.symmetric(horizontal: 10),
-                                    child: Text("OR"),
+                                    child: Text(AppMessages.or.tr),
                                   ),
                                   Expanded(child: Divider()),
                                 ],
@@ -232,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         context, '/dashboard');
                                   },
                                   icon: const Icon(Icons.g_mobiledata),
-                                  label: const Text("Continue with Google"),
+                                  label: Text(AppMessages.continueWithGoogle.tr),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: ThemeColors.button,
                                     foregroundColor: Colors.white,
@@ -250,8 +253,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   Navigator.pushReplacementNamed(
                                       context, LoginScreen.id);
                                 },
-                                child: const Text(
-                                  "Already have an account? Login",
+                                child: Text(
+                                  AppMessages.alreadyHaveAccountLogin.tr,
                                 ),
                               ),
 

@@ -507,7 +507,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'Average Quiz Score by Topic',
+                  AppMessages.quizScore.tr,
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
                 ),
               ],

@@ -9,4 +9,15 @@ class AppAnimations {
 
   static const Curve defaultCurve = Curves.easeInOut;
   static const Curve bounceCurve = Curves.elasticOut;
+//----------------
+  static const Duration pageTransitionDuration =
+  Duration(milliseconds: 400);
+
+  static const Duration modalDuration =
+  Duration(milliseconds: 300);
+
+  static const Duration heroDuration =
+  Duration(milliseconds: 600);
+  //----------------
+
 }

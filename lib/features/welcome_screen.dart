@@ -112,7 +112,7 @@ class WelcomeScreen extends StatelessWidget {
                   FadeInUp(
                     delay: const Duration(milliseconds: 500),
                     child: Text(
-                      AppMessages.tagline.tr,
+                      AppMessages.start.tr,
                       textAlign: TextAlign.center,
                       style: Theme.of(context)
                           .textTheme

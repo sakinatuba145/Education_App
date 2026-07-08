@@ -1,5 +1,6 @@
 class AppMessages {
   static const String learningDashboard = 'learning dashboard';
+  static const String fullName = 'Full Name';
   static const String dashboard = 'Dashboard';
   static const String myLearning = 'My Learning';
   static const String courseCatalog = 'Course Catalog';
@@ -31,7 +32,6 @@ class AppMessages {
   static const String journey = 'Journey';
   static const String student = 'Student';
   static const String teacher = 'Teacher';
-  static const String fullName = 'FullName';
   static const String emailAddress = 'EmailAddress';
   static const String confirmPassword = 'ConfirmPassword';
   static const String enterPassword = 'EnterPassword';
@@ -222,4 +222,11 @@ class AppMessages {
   // ─── NEW: Settings ───
   static const String selectLanguage = 'select language';
   static const String appLanguage = 'app language';
+  static const String teacherAccount = 'Teacher account';
+  static const String studentAccount = 'Student account';
+  static const String quizScore = 'Quiz score';
+  static const String explore = 'Explore';
+  static const String learn = 'Learn';
+  static const String whoWeAre = 'Who we are';
+  static const String weAre = 'in about us screen';
 }

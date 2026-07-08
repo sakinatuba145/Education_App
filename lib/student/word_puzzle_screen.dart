@@ -14,7 +14,7 @@ class WordPuzzleScreen extends StatefulWidget {
 
 class _WordPuzzleScreenState extends State<WordPuzzleScreen> with TickerProviderStateMixin {
   final _enrollment = EnrollmentService();
-  bool _loading = true;
+  bool _loading =true;
   List<_PuzzleWord> _words = [];
   int _currentIndex = 0;
   int _score = 0;

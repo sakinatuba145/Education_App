@@ -5,6 +5,9 @@ import 'package:education_app/student/student_home_screen.dart';
 import 'package:education_app/courses/course_discovery_screen_premium.dart';
 import 'package:education_app/student/student_learn_hub_screen.dart';
 import 'package:education_app/profile/profile_screen.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+
+import '../core/I18n/messages.dart';
 
 class StudentPortalScreen extends StatefulWidget {
   static const String id = 'student_portal';
@@ -85,11 +88,11 @@ class _PremiumBottomNav extends StatelessWidget {
     required this.onTap,
   });
 
-  static const _items = [
-    (Icons.home_outlined, Icons.home_rounded, 'Home'),
-    (Icons.explore_outlined, Icons.explore_rounded, 'Explore'),
-    (Icons.school_outlined, Icons.school_rounded, 'Learn'),
-    (Icons.person_outline_rounded, Icons.person_rounded, 'Profile'),
+  static  final _items = [
+    (Icons.home_outlined, Icons.home_rounded, AppMessages.home.tr),
+    (Icons.explore_outlined, Icons.explore_rounded, AppMessages.explore.tr),
+    (Icons.school_outlined, Icons.school_rounded, AppMessages.learn.tr),
+    (Icons.person_outline_rounded, Icons.person_rounded, AppMessages.profile.tr),
   ];
 
   @override

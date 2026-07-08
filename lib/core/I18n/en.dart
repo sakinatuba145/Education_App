@@ -47,21 +47,27 @@ class EnglishLanguage extends AppTranslationsKeys {
     AppMessages.enterPassword: 'Please enter your email and password',
 
     AppMessages.isHaveAccount: 'Already have an account? Login',
+    AppMessages.or: 'Or',
     AppMessages.createAccount: 'Create Account',
     AppMessages.register: 'Register',
-    AppMessages.noAccount: 'Don’t have an account',
+    AppMessages.noAccount: 'Don’t have an account? Register',
     AppMessages.forgot: 'Forgot password',
     AppMessages.resetP: 'Reset Password',
     AppMessages.sendLink: 'Enter your email and we will send a reset link',
     AppMessages.rLink: 'Send reset link',
+    AppMessages.resetLinkSent: 'Reset link send',
     AppMessages.toLogin: 'Back to login',
 
     AppMessages.lContinue: 'Login to continue your journey',
     AppMessages.lFailed: 'Login failed',
     AppMessages.comeBack: 'Welcome back',
+    AppMessages.home: 'Home',
+
+
 
     // Roles / Users
     AppMessages.student: 'Student',
+    AppMessages.academy: 'Academy',
     AppMessages.teacher: 'Teacher',
     AppMessages.fullName: 'Full name',
     AppMessages.journey: 'Journey',
@@ -82,6 +88,7 @@ class EnglishLanguage extends AppTranslationsKeys {
     AppMessages.bioRole: 'Bio / Role',
     AppMessages.phone: 'Phone',
     AppMessages.university: 'University',
+
 
     // Progress & Learning
     AppMessages.progress: 'Progress',
@@ -242,5 +249,14 @@ class EnglishLanguage extends AppTranslationsKeys {
     // Settings
     AppMessages.selectLanguage: 'Select Language',
     AppMessages.appLanguage: 'App Language',
+    AppMessages.teacherAccount: 'This is a teacher account. Please select "Teacher" to login',
+    AppMessages.studentAccount: 'This is a student account. Please select "Student" to login',
+    AppMessages.quizScore: 'Average Quiz Score by Topic',
+    AppMessages.explore: 'Explore',
+    AppMessages.learn: 'Learn',
+    AppMessages.whoWeAre: 'Who we are',
+    AppMessages.weAre: 'EduAf is a modern e-learning platform built to connect students and teachers in one place. '
+        'Our goal is to make quality courses, quizzes and study tools easy to reach for every learner, '
+        'no matter where they are.',
   };
 }

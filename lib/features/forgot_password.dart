@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/core/constants/theme.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+
+import '../core/I18n/messages.dart';
 /// 3.16 FORGOT PASSWORD SCREEN
 /// This screen lets user reset password using email
 /// Firebase sends a reset link to the email
@@ -46,13 +49,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Reset link sent")),
+         SnackBar(content: Text(AppMessages.resetLinkSent.tr)),
       );
 
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
+        SnackBar(content: Text("${AppMessages.error.tr} $e")),
       );
     }
 
@@ -77,7 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         const SizedBox(height: 40),
 
                         Text(
-                          "Forgot Password",
+                          AppMessages.forgotPassword.tr,
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
@@ -86,14 +89,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         const SizedBox(height: 8),
 
                         Text(
-                          "No worries, we’ll help you reset it",
+                          AppMessages.forgotPasswordSubtitle.tr,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         const SizedBox(height: 10),
 
                         Text(
-                          "Enter your email to reset password",
+                          AppMessages.resetPasswordInstruction.tr,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
@@ -109,8 +112,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
-                            hintText: "Email",
+                          decoration:  InputDecoration(
+                            hintText: AppMessages.email.tr,
                             prefixIcon: Icon(Icons.email_outlined),
                           ),
                         ),
@@ -131,7 +134,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                             child: isLoading
                                 ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text("Send Reset Link"),
+                                :  Text(AppMessages.rLink.tr),
                           ),
                         ),
 
@@ -140,7 +143,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text("Back to Login"),
+                          child:  Text(AppMessages.toLogin.tr),
                         ),
 
                         const SizedBox(height: 40),

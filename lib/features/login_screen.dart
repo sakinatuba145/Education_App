@@ -183,8 +183,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         Text(
                           _selectedRole == 'teacher'
-                              ? "Sign in to manage your courses"
-                              : "Continue your learning journey",
+                              ? AppMessages.signInToManage.tr
+                              : AppMessages.continueJourney.tr,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
@@ -200,8 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.all(4),
                           child: Row(
                             children: [
-                              _roleTab('student', Icons.school_rounded, 'Student'),
-                              _roleTab('teacher', Icons.person_rounded, 'Teacher'),
+                              _roleTab('student', Icons.school_rounded, AppMessages.student.tr),
+                              _roleTab('teacher', Icons.person_rounded, AppMessages.teacher.tr),
                             ],
                           ),
                         ),
@@ -283,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             child: isLoading
                                 ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text("Login"),
+                                : Text(AppMessages.login.tr),
                           ),
                         ),
 

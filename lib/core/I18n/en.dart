@@ -245,6 +245,7 @@ class EnglishLanguage extends AppTranslationsKeys {
     AppMessages.featured: 'Featured',
     AppMessages.allCourses: 'All Courses',
     AppMessages.enroll: 'Enroll',
+    AppMessages.signInToManage: 'Sign in to manage your courses',
 
     // Settings
     AppMessages.selectLanguage: 'Select Language',
@@ -258,5 +259,7 @@ class EnglishLanguage extends AppTranslationsKeys {
     AppMessages.weAre: 'EduAf is a modern e-learning platform built to connect students and teachers in one place. '
         'Our goal is to make quality courses, quizzes and study tools easy to reach for every learner, '
         'no matter where they are.',
+    AppMessages.whatWe: 'what we offer'
+
   };
 }

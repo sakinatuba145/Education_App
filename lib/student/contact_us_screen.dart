@@ -1,5 +1,7 @@
+import 'package:education_app/core/I18n/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/core/constants/theme.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
 class ContactUsScreen extends StatelessWidget {
   const ContactUsScreen({super.key});
@@ -9,7 +11,7 @@ class ContactUsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: ThemeColors.background,
       appBar: AppBar(
-        title: const Text('Contact Us'),
+        title:  Text(AppMessages.contactUs.tr),
         centerTitle: true,
         backgroundColor: ThemeColors.background,
         foregroundColor: ThemeColors.black,
@@ -20,23 +22,23 @@ class ContactUsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "We'd love to hear from you",
+             Text(
+              AppMessages.weLove.tr,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: ThemeColors.black),
             ),
             const SizedBox(height: 6),
             Text(
-              'Questions, feedback or suggestions? Reach out through any of the channels below.',
+              AppMessages.suggestion.tr,
               style: TextStyle(fontSize: 14, color: ThemeColors.black.withValues(alpha: 0.75)),
             ),
             const SizedBox(height: 24),
-            _contactTile(icon: Icons.email_rounded, label: 'Email', value: 'support@eduaf.com'),
+            _contactTile(icon: Icons.email_rounded, label: AppMessages.email.tr, value: 'support@eduaf.com'),
             const SizedBox(height: 14),
-            _contactTile(icon: Icons.phone_rounded, label: 'Phone', value: '+93 70 000 0000'),
+            _contactTile(icon: Icons.phone_rounded, label: AppMessages.phone.tr, value: '+93 70 000 0000'),
             const SizedBox(height: 14),
-            _contactTile(icon: Icons.location_on_rounded, label: 'Address', value: 'Kabul, Afghanistan'),
+            _contactTile(icon: Icons.location_on_rounded, label: AppMessages.address.tr, value: AppMessages.kabul.tr),
             const SizedBox(height: 14),
-            _contactTile(icon: Icons.schedule_rounded, label: 'Support hours', value: 'Sat - Thu, 9:00 - 17:00'),
+            _contactTile(icon: Icons.schedule_rounded, label: AppMessages.supportHour.tr, value: 'Sat - Thu, 9:00 - 17:00'),
             const SizedBox(height: 28),
             Container(
               width: double.infinity,
@@ -51,7 +53,7 @@ class ContactUsScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'For account or course issues, please include your registered email so our team can help faster.',
+                      AppMessages.courseIssue.tr,
                       style: TextStyle(fontSize: 13, color: ThemeColors.black.withValues(alpha: 0.85)),
                     ),
                   ),

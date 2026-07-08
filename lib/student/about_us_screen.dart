@@ -12,7 +12,7 @@ class AboutUsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: ThemeColors.background,
       appBar: AppBar(
-        title: const Text('About Us'),
+        title:  Text(AppMessages.aboutUs.tr),
         centerTitle: true,
         backgroundColor: ThemeColors.background,
         foregroundColor: ThemeColors.black,
@@ -52,20 +52,13 @@ class AboutUsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _sectionCard(
-              title: 'What we offer',
-              body:
-                  '• A growing catalog of courses across many subjects\n'
-                  '• Interactive quizzes, flashcards and puzzles to reinforce learning\n'
-                  '• Progress tracking and leaderboards to keep you motivated\n'
-                  '• A simple, distraction-free way to learn on any device',
+              title: AppMessages.whatWe.tr,
+              body: AppMessages.whatWeBody1.tr
             ),
             const SizedBox(height: 16),
             _sectionCard(
-              title: 'Our mission',
-              body:
-                  'We believe education should be accessible, engaging and rewarding. Every feature in EduAf is '
-                  'built with that mission in mind — helping students learn at their own pace and teachers share '
-                  'their knowledge with ease.',
+              title: AppMessages.ourMission.tr,
+              body: AppMessages.whatWeBody.tr
             ),
           ],
         ),

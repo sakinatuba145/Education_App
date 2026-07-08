@@ -1,8 +1,10 @@
 import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/core/I18n/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/teacher/services/final_project_service.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
 class CertificateScreen extends StatefulWidget {
   final String courseId;
@@ -95,8 +97,8 @@ class _CertificateScreenState extends State<CertificateScreen>
               color: Colors.white70, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Certificate of Achievement',
+        title: Text(
+          AppMessages.certificateOf.tr,
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
         ),
@@ -105,7 +107,7 @@ class _CertificateScreenState extends State<CertificateScreen>
           if (_cert != null)
             IconButton(
               icon: const Icon(Icons.share_rounded, color: Colors.white70),
-              tooltip: 'Share',
+              tooltip: AppMessages.share.tr,
               onPressed: () => _showShareHint(context),
             ),
         ],
@@ -122,7 +124,9 @@ class _CertificateScreenState extends State<CertificateScreen>
   void _showShareHint(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Certificate ID: ${_cert!['certificateId'] ?? ''}'),
+        content: Text(
+          '${AppMessages.certificateId.tr}: ${_cert!['certificateId'] ?? ''}',
+        ),
         backgroundColor: const Color(0xFF0D1B3E),
         behavior: SnackBarBehavior.floating,
       ),
@@ -148,7 +152,7 @@ class _CertificateScreenState extends State<CertificateScreen>
                 size: 52, color: Color(0xFFD4AF37)),
           ),
           const SizedBox(height: 28),
-          const Text('No Certificate Yet',
+           Text(AppMessages.noCertificate.tr,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
@@ -157,7 +161,7 @@ class _CertificateScreenState extends State<CertificateScreen>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              'Complete and pass the final project\nto earn your certificate of achievement.',
+              AppMessages.finalProjectCertificate.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: Colors.grey[400], fontSize: 14, height: 1.6),
@@ -260,7 +264,7 @@ class _CertificateScreenState extends State<CertificateScreen>
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Learn • Grow • Build Your Future',
+                      AppMessages.start.tr,
                       style: TextStyle(
                           fontSize: 9,
                           color: Colors.grey[500],
@@ -273,8 +277,8 @@ class _CertificateScreenState extends State<CertificateScreen>
                     const SizedBox(height: 8),
 
                     // ── Certificate type ─────────────────────────────────
-                    const Text(
-                      'CERTIFICATE  OF  ACHIEVEMENT',
+                     Text(
+                      AppMessages.cerOfAchievement.tr,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w900,
@@ -286,7 +290,7 @@ class _CertificateScreenState extends State<CertificateScreen>
 
                     // ── Certify text ─────────────────────────────────────
                     Text(
-                      'This is to proudly certify that',
+                      AppMessages.certify.tr,
                       style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
@@ -317,7 +321,7 @@ class _CertificateScreenState extends State<CertificateScreen>
                     const SizedBox(height: 10),
 
                     Text(
-                      'has successfully completed the course',
+                      AppMessages.compCourse.tr,
                       style:
                           TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
@@ -349,7 +353,7 @@ class _CertificateScreenState extends State<CertificateScreen>
                         ),
                       ),
                       child: Text(
-                        'Final Score: $score / $maxScore   •   ✓  PASSED',
+                        '${AppMessages.finalScore.tr}: $score / $maxScore   •   ✓ ${AppMessages.passed.tr}',
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -370,7 +374,7 @@ class _CertificateScreenState extends State<CertificateScreen>
                           child: _signatureBlock(
                             seed: teacherLabel,
                             name: teacherLabel,
-                            role: 'Course Instructor',
+                            role: AppMessages.courseInstructor.tr,
                             nameColor: const Color(0xFF0D1B3E),
                           ),
                         ),
@@ -395,7 +399,7 @@ class _CertificateScreenState extends State<CertificateScreen>
                           child: _signatureBlock(
                             seed: 'EduAfAcademy',
                             name: 'EduAf Academy',
-                            role: 'Platform Director',
+                            role: AppMessages.platformDirector.tr,
                             nameColor: const Color(0xFFFF6B35),
                           ),
                         ),
@@ -417,7 +421,7 @@ class _CertificateScreenState extends State<CertificateScreen>
                         ),
                       ),
                       child: Text(
-                        'Certificate ID: $certId   •   Issued by EduAf   •   Verify at eduaf.app',
+                        '${AppMessages.certificateId.tr}: $certId   •   ${AppMessages.issuedBy.tr} EduAf   •   ${AppMessages.verifyAt.tr} eduaf.app',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 8.5,
@@ -545,7 +549,7 @@ class _CertificateScreenState extends State<CertificateScreen>
                     borderRadius: BorderRadius.circular(14)),
               ),
               icon: const Icon(Icons.check_circle_rounded),
-              label: const Text('Done',
+              label: Text(AppMessages.done.tr,
                   style:
                       TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),

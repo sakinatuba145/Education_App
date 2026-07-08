@@ -112,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 8),
 
                               Text(
-                                "Start your learning journey today",
+                                AppMessages.startLearningJourney.tr,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),

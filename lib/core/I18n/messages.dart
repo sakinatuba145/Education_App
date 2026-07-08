@@ -228,5 +228,38 @@ class AppMessages {
   static const String explore = 'Explore';
   static const String learn = 'Learn';
   static const String whoWeAre = 'Who we are';
+  static const String finalProjectCertificate = 'Complete and pass the final project\nto earn your certificate of achievement.';
   static const String weAre = 'in about us screen';
+  static const String signInToManage = 'sign in to manage';
+  static const String learningJourney = 'Start your learning journey today';
+  static const String continueLearn = 'Start your learning journey today';
+  static const String whatWe = 'What we offer';
+  static const String issuedBy = 'Issued by';
+  static const String address= 'Address';
+  static const String courseIssue= 'For account or course issues, please include your registered email so our team can help faster.';
+  static const String kabul = 'Kabul, Afghanistan';
+  static const String supportHour = 'Support hours';
+  static const String verifyAt = 'Verify at';
+  static const String courseInstructor = 'Course Instructor';
+  static const String passed = 'Passed';
+  static const String suggestion = 'Questions, feedback or suggestions? Reach out through any of the channels below.';
+  static const String weLove = "We'd love to hear from you";
+  static const String platformDirector = 'Platform Director';
+  static const String compCourse = 'has successfully completed the course';
+  static const String share = 'Share';
+  static const String done = 'Done';
+  static const String finalScore = ' Final Score';
+  static const String certify ='This is to proudly certify that';
+  static const String cerOfAchievement = 'CERTIFICATE  OF  ACHIEVEMENT';
+  static const String certificateId = 'CertificateId';
+  static const String noCertificate = 'No Certificate Yet';
+  static const String ourMission = 'Our mission';
+  static const String certificateOf = 'Certificate of Achievement';
+  static const String whatWeBody = 'We believe education should be accessible, engaging and rewarding. Every feature in EduAf is '
+      'built with that mission in mind — helping students learn at their own pace and teachers share '
+      'their knowledge with ease.';
+  static const String whatWeBody1 =   '• A growing catalog of courses across many subjects\n'
+      '• Interactive quizzes, flashcards and puzzles to reinforce learning\n'
+      '• Progress tracking and leaderboards to keep you motivated\n'
+      '• A simple, distraction-free way to learn on any device';
 }

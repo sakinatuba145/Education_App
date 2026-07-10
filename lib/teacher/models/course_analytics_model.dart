@@ -1,20 +1,43 @@
+/// Course Analytics Model
+/// 
+/// This file defines the data structure for course-level analytics, including
+/// enrollment counts, completion rates, and financial metrics.
+
+/// Represents comprehensive analytics for a specific course.
 class CourseAnalyticsModel {
+  /// Unique identifier for the course.
   final String courseId;
+  /// Total number of students who have ever enrolled.
   final int totalEnrolled;
+  /// Number of students currently active in the course.
   final int activeStudents;
+  /// Number of students who have completed the course.
   final int completedStudents;
+  /// Percentage of enrolled students who completed the course.
   final double completionRate;
+  /// Sales conversion rate (if applicable).
   final double conversionRate;
+  /// Average time students spend on a single lesson.
   final double avgTimePerLessonMinutes;
+  /// Average total time spent in the course.
   final double avgTimePerCourseMinutes;
+  /// Count of discussion forum posts/threads.
   final int forumDiscussions;
+  /// Average star rating from student reviews.
   final double averageRating;
+  /// Total number of reviews received.
   final int totalReviews;
+  /// Distribution of ratings (e.g., 5-star count, 4-star count).
   final Map<int, int> ratingDistribution;
+  /// Total earnings from the course.
   final double totalRevenue;
+  /// Average selling price per enrollment.
   final double averagePrice;
+  /// Total number of refunds processed.
   final int totalRefunds;
+  /// Time-series data for enrollments.
   final List<DailyMetric> dailyEnrollment;
+  /// Time-series data for revenue.
   final List<DailyMetric> dailyRevenue;
 
   CourseAnalyticsModel({

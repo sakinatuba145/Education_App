@@ -1,14 +1,25 @@
+/// File: quiz_builder_screen.dart
+/// Description: A comprehensive interface for teachers to create and edit course quizzes.
+/// Provides functionality for managing questions, settings, and real-time persistence.
+
 import 'package:flutter/material.dart';
 import 'package:education_app/teacher/services/teacher_quiz_service.dart';
 
 const _primary = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF3E0);
 
+/// QuizBuilderScreen
+///
+/// A StatefulWidget that allows teachers to build or edit a quiz for a specific lesson.
+/// It handles question management (add, edit, delete) and quiz-wide settings.
 class QuizBuilderScreen extends StatefulWidget {
   final String courseId;
   final String lessonId;
   final String quizId;
   final String quizTitle;
+
+  /// Creates a [QuizBuilderScreen].
+  /// [courseId], [lessonId], and [quizId] are required to identify and save the quiz in Firestore.
   const QuizBuilderScreen({
     super.key,
     required this.courseId,
@@ -24,12 +35,25 @@ class QuizBuilderScreen extends StatefulWidget {
 class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
   final TeacherQuizService _quizService = TeacherQuizService();
 
+  /// List of questions for the quiz. Each question is a map containing:
+  /// - 'question': The question text
+  /// - 'options': A list of 4 answer options
+  /// - 'correctIndex': The index of the correct answer (0-3)
   List<Map<String, dynamic>> _questions = [];
+
+  /// Loading state for the initial data fetch.
   bool _isLoading = true;
+
+  /// Saving state for when the quiz is being updated in Firestore.
   bool _isSaving = false;
 
+  /// The percentage score required to pass the quiz.
   int _passingScore = 70;
+
+  /// Whether the questions should be shuffled for each student attempt.
   bool _shuffleQuestions = false;
+
+  /// Determines when students can see the correct answers (immediately, after submit, or never).
   String _showAnswersOption = 'immediately';
 
   @override
@@ -38,6 +62,8 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
     _load();
   }
 
+  /// Loads the quiz data from Firestore using [TeacherQuizService].
+  /// Initializes the local state with the retrieved data.
   Future<void> _load() async {
     setState(() => _isLoading = true);
     try {
@@ -60,6 +86,8 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
     }
   }
 
+  /// Saves the current quiz state (questions and settings) to Firestore.
+  /// Validates the data before calling the service.
   Future<void> _saveQuiz() async {
     setState(() => _isSaving = true);
     try {
@@ -198,6 +226,8 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
     );
   }
 
+  /// Builds the settings card at the top of the screen.
+  /// Allows configuring passing score, answer visibility, and shuffling.
   Widget _buildSettingsCard() {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -275,6 +305,8 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
     );
   }
 
+  /// Builds an individual question card displaying the question and its options.
+  /// Includes actions for editing and deleting the question.
   Widget _questionCard(int index) {
     final q = _questions[index];
     final options = List<String>.from(q['options'] ?? []);
@@ -349,14 +381,20 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
     );
   }
 
+  /// Opens the question dialog to add a new question.
   void _addQuestion() => _showQuestionDialog();
 
+  /// Opens the question dialog to edit an existing question at [index].
   void _editQuestion(int index) => _showQuestionDialog(editIndex: index);
 
+  /// Removes a question from the list at [index].
   void _deleteQuestion(int index) {
     setState(() => _questions.removeAt(index));
   }
 
+  /// Displays a dialog for adding or editing a question.
+  /// [editIndex] is provided when editing an existing question.
+  /// Handles input validation and state updates.
   void _showQuestionDialog({int? editIndex}) {
     final isEdit = editIndex != null;
     final existing = isEdit ? _questions[editIndex] : null;

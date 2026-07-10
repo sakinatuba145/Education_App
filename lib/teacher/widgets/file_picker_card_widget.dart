@@ -1,12 +1,22 @@
+// File Picker Card Widget
+//
+// A custom UI component that provides a stylized drop zone for selecting files.
+// Used in the course creation and lesson editing flows to upload media.
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/core/constants/app_dimensions.dart';
 
+/// A card widget that displays file selection state and handles taps.
 class FilePickerCardWidget extends StatelessWidget {
+  /// The type of content expected (e.g., 'video', 'image').
   final String contentType; // 'video', 'image', 'audio', 'pdf'
+  /// Callback triggered when the card is tapped.
   final VoidCallback onTap;
+  /// Name of the currently selected file, if any.
   final String? selectedFileName;
+  /// String describing the maximum allowed file size.
   final String maxSizeInfo;
 
   const FilePickerCardWidget({
@@ -84,6 +94,7 @@ class FilePickerCardWidget extends StatelessWidget {
     );
   }
 
+  /// Maps content types to their corresponding Material icons.
   IconData _getIconForContentType(String type) {
     switch (type.toLowerCase()) {
       case 'video':

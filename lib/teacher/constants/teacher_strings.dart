@@ -1,4 +1,9 @@
+/// Teacher Module Strings
+/// 
+/// A centralized class containing all UI strings used in the Teacher module.
+/// This facilitates easy localization and maintains UI consistency.
 class TeacherStrings {
+  /// Dashboard section titles
   // Dashboard
   static const String myCourses = 'My Courses';
   static const String createNewCourse = 'Create New Course';
@@ -7,6 +12,7 @@ class TeacherStrings {
   static const String archivedCourses = 'Archived Courses';
   static const String publishedOn = 'Published on';
 
+  /// Course creation and metadata editing labels
   // Course creation & editing
   static const String courseTitle = 'Course Title';
   static const String courseSubtitle = 'Subtitle';

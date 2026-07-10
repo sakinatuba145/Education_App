@@ -1,3 +1,8 @@
+/// File: teacher_course_hub_screen.dart
+/// Description: The central management hub for a course in the teacher module.
+/// This screen provides a multi-tab interface for managing course overview, 
+/// content (lessons), quizzes, student enrollment, analytics, and final projects.
+
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -18,8 +23,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 const _orange = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF8F0);
 
+/// TeacherCourseHubScreen
+///
+/// A StatefulWidget that serves as the "Studio" for a teacher to manage a specific course.
+/// It uses a [TabController] to switch between different management domains.
 class TeacherCourseHubScreen extends StatefulWidget {
   final String courseId;
+
+  /// Creates a [TeacherCourseHubScreen] for the given [courseId].
   const TeacherCourseHubScreen({super.key, required this.courseId});
 
   @override
@@ -34,21 +45,38 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
   final TeacherQuizService _quizService = TeacherQuizService();
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
+  /// The course model loaded from Firestore.
   CourseModel? _course;
+
+  /// List of lessons associated with this course.
   List<LessonModel> _lessons = [];
+
+  /// List of students enrolled in this course with their progress and scores.
   List<Map<String, dynamic>> _students = [];
+
+  /// Mapping of lesson IDs to their respective quiz counts.
   Map<String, int> _quizCounts = {};
+
+  /// Overall loading state for the screen.
   bool _loading = true;
 
-  // Overview form
+  // Overview form controllers
   final _titleCtrl = TextEditingController();
   final _subtitleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _thumbCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
+
+  /// Currently selected category for the course.
   String _selectedCategory = 'Programming';
+
+  /// Currently selected difficulty level.
   String _selectedLevel = 'beginner';
+
+  /// Whether the course is free or paid.
   bool _isFree = true;
+
+  /// Loading state specifically for saving the overview tab changes.
   bool _overviewSaving = false;
 
   // Thumbnail upload state
@@ -81,6 +109,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     super.dispose();
   }
 
+  /// Initialized the screen by loading course details, lessons, students, and quiz metadata.
   Future<void> _loadAll() async {
     setState(() => _loading = true);
     try {
@@ -108,7 +137,8 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     }
   }
 
-
+  /// Fetches enrollment data and student profiles for the course.
+  /// Also aggregates quiz performance for each student.
   Future<void> _loadStudents() async {
     try {
       final snap = await _db
@@ -151,6 +181,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     } catch (_) {}
   }
 
+  /// Counts the number of quizzes per lesson to display in the lessons list.
   Future<void> _loadQuizCounts(List<LessonModel> lessons) async {
     final counts = <String, int>{};
     for (final lesson in lessons) {
@@ -167,6 +198,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     if (mounted) setState(() => _quizCounts = counts);
   }
 
+  /// Refreshes only the lessons list and quiz counts.
   Future<void> _refreshLessons() async {
     final lessons = await _lessonService.getCourseLessons(widget.courseId);
     await _loadQuizCounts(lessons);
@@ -292,6 +324,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
 
   // ── TAB 0: OVERVIEW ──────────────────────────────────────────────────────
 
+  /// Builds the course overview tab allowing teachers to edit metadata and settings.
   Widget _buildOverviewTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
@@ -604,6 +637,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
 
   // ── TAB 1: CONTENT ───────────────────────────────────────────────────────
 
+  /// Builds the content tab, which allows managing course lessons.
   Widget _buildContentTab() {
     return Column(
       children: [
@@ -631,6 +665,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     );
   }
 
+  /// Builds the header for the content tab, showing the total number of lessons and an 'Add Lesson' button.
   Widget _contentHeader() {
     return Container(
       decoration: BoxDecoration(
@@ -679,6 +714,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     );
   }
 
+  /// Builds a placeholder UI when no lessons have been added yet.
   Widget _emptyContent() {
     return Center(
       child: Column(
@@ -857,6 +893,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
 
   // ── TAB 2: QUIZ ──────────────────────────────────────────────────────────
 
+  /// Builds the quiz tab, providing a list of lessons and options to manage their quizzes.
   Widget _buildQuizTab() {
     if (_lessons.isEmpty) {
       return Center(
@@ -936,6 +973,8 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     );
   }
 
+  /// Opens the [QuizBuilderScreen] for a specific [lesson].
+  /// If no quiz exists for the lesson, it creates one first.
   Future<void> _openQuizBuilder(LessonModel lesson) async {
     try {
       final snap = await _db
@@ -981,23 +1020,18 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
 
   // ── TAB 3: STUDENTS ──────────────────────────────────────────────────────
 
+  /// Builds the students tab, displaying a list of enrolled students and their progress.
   Widget _buildStudentsTab() {
     if (_students.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.people_outline_rounded, size: 56, color: Colors.blue[300]),
-            ),
-            const SizedBox(height: 20),
-            const Text('No students yet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            Icon(Icons.people_outline_rounded, size: 64, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text('No students yet',
+                style: TextStyle(color: Colors.grey[600], fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4),
             Text('Students will appear here once they enroll',
                 style: TextStyle(color: Colors.grey[500], fontSize: 14)),
           ],
@@ -1041,6 +1075,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     );
   }
 
+  /// Builds an individual student card with their profile and course statistics.
   Widget _studentCard(Map<String, dynamic> student, int index) {
     final progress = (student['progress'] as double).clamp(0.0, 1.0);
     final name = student['name'] as String;
@@ -1136,6 +1171,7 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
     );
   }
 
+  /// Builds a small chip to display student stats.
   Widget _studentStatChip(IconData icon, String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -1496,9 +1532,13 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
   }
 
   // ── TAB 5: PROJECT ────────────────────────────────────────────────────────
+
+  /// Builds the project tab, delegating to [TeacherProjectTab].
   Widget _buildProjectTab() => TeacherProjectTab(courseId: widget.courseId);
 
-  // ── Certificates tab ────────────────────────────────────────────────────────
+  // ── TAB 6: CERTIFICATES ──────────────────────────────────────────────────
+
+  /// Builds the certificates tab, showing students who have earned certificates by passing the final project.
   Widget _buildCertificatesTab() {
     return StreamBuilder<QuerySnapshot>(
       stream: _db
@@ -1850,6 +1890,10 @@ class _TeacherCourseHubScreenState extends State<TeacherCourseHubScreen>
 
 // ── LESSON CARD with inline editor ──────────────────────────────────────────
 
+/// _LessonCard
+///
+/// A private widget that represents a single lesson within the course content list.
+/// It supports collapsing/expanding to reveal an inline editor for the lesson's details.
 class _LessonCard extends StatefulWidget {
   final LessonModel lesson;
   final int index;
@@ -1859,6 +1903,10 @@ class _LessonCard extends StatefulWidget {
   final VoidCallback onDelete;
   final VoidCallback onQuiz;
 
+  /// Creates a [_LessonCard].
+  /// [lesson] is the data model to display.
+  /// [index] is used for reordering.
+  /// [quizCount] shows the number of questions in the lesson's quiz.
   const _LessonCard({
     super.key,
     required this.lesson,
@@ -1875,7 +1923,10 @@ class _LessonCard extends StatefulWidget {
 }
 
 class _LessonCardState extends State<_LessonCard> {
+  /// Whether the inline editor is visible.
   bool _expanded = false;
+
+  /// Whether the lesson is currently being saved to Firestore.
   bool _saving = false;
 
   final _titleCtrl = TextEditingController();
@@ -1883,6 +1934,8 @@ class _LessonCardState extends State<_LessonCard> {
   final _notesCtrl = TextEditingController();
   final _assignTitleCtrl = TextEditingController();
   final _assignInstrCtrl = TextEditingController();
+
+  /// Whether the lesson includes an assignment.
   bool _hasAssignment = false;
 
   @override
@@ -1891,6 +1944,7 @@ class _LessonCardState extends State<_LessonCard> {
     _loadData();
   }
 
+  /// Loads the detailed lesson data (video URL, notes, assignment) from Firestore.
   Future<void> _loadData() async {
     final db = FirebaseFirestore.instance;
     try {
@@ -1913,6 +1967,7 @@ class _LessonCardState extends State<_LessonCard> {
     }
   }
 
+  /// Saves the lesson's updated metadata to Firestore.
   Future<void> _save() async {
     setState(() => _saving = true);
     try {

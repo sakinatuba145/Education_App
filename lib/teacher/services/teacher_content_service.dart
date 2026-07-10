@@ -1,7 +1,16 @@
+/// Service for managing course content (videos, PDFs, etc.) in Firestore.
+///
+/// This service handles:
+/// 1. Content CRUD operations within lessons
+/// 2. Batch fetching of content for courses or lessons
+/// 3. Usage statistics (views, downloads)
+/// 4. Storage accounting and filtering
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/teacher/constants/teacher_constants.dart';
 import 'package:education_app/teacher/models/course_content_model.dart';
 
+/// [TeacherContentService] provides an interface for interacting with lesson content.
+/// It uses the singleton pattern to ensure efficient resource usage.
 class TeacherContentService {
   static final TeacherContentService _instance =
       TeacherContentService._internal();
@@ -15,6 +24,9 @@ class TeacherContentService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // CREATE - Create content
+  /// Creates a new content entry in a specific lesson.
+  ///
+  /// Adds the content to the [CONTENT_SUBCOLLECTION] and updates the document with its Firestore ID.
   Future<String> createContent({
     required String courseId,
     required String lessonId,
@@ -38,6 +50,7 @@ class TeacherContentService {
   }
 
   // READ - Get content
+  /// Fetches a specific content item by its ID.
   Future<CourseContentModel> getContent({
     required String courseId,
     required String lessonId,
@@ -62,6 +75,7 @@ class TeacherContentService {
   }
 
   // READ - Get all content in lesson
+  /// Fetches all content associated with a particular lesson.
   Future<List<CourseContentModel>> getLessonContent({
     required String courseId,
     required String lessonId,
@@ -84,6 +98,9 @@ class TeacherContentService {
   }
 
   // READ - Get all content in course
+  /// Fetches all content items for an entire course across all lessons.
+  ///
+  /// Iterates through each lesson to retrieve its nested content.
   Future<List<CourseContentModel>> getAllCourseContent(String courseId) async {
     try {
       final lessonsSnapshot = await _firestore
@@ -110,6 +127,9 @@ class TeacherContentService {
   }
 
   // UPDATE - Update content
+  /// Updates existing content data.
+  ///
+  /// Automatically updates the `uploadedAt` timestamp.
   Future<void> updateContent({
     required String courseId,
     required String lessonId,
@@ -133,6 +153,8 @@ class TeacherContentService {
   }
 
   // DELETE - Delete content
+  /// Deletes a content entry from Firestore.
+  /// Note: This doesn't automatically delete the associated file in Storage.
   Future<void> deleteContent({
     required String courseId,
     required String lessonId,
@@ -153,6 +175,7 @@ class TeacherContentService {
   }
 
   // STATS - Get content stats
+  /// Retrieves engagement statistics for a specific content item.
   Future<Map<String, dynamic>> getContentStats({
     required String courseId,
     required String lessonId,
@@ -183,6 +206,7 @@ class TeacherContentService {
   }
 
   // Filter by type
+  /// Retrieves all content of a specific type (e.g., 'video') within a course.
   Future<List<CourseContentModel>> getContentByType({
     required String courseId,
     required String contentType,
@@ -214,6 +238,7 @@ class TeacherContentService {
   }
 
   // Get total storage used
+  /// Calculates the total storage bytes used by all content in a course.
   Future<int> getTotalStorageUsed(String courseId) async {
     try {
       final allContent = await getAllCourseContent(courseId);
@@ -230,6 +255,7 @@ class TeacherContentService {
   }
 
   // Increment views
+  /// Atomically increments the view count for a content item.
   Future<void> incrementViews({
     required String courseId,
     required String lessonId,
@@ -252,6 +278,7 @@ class TeacherContentService {
   }
 
   // Increment downloads
+  /// Atomically increments the download count for a content item.
   Future<void> incrementDownloads({
     required String courseId,
     required String lessonId,

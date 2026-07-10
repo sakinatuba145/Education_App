@@ -1,3 +1,15 @@
+/*
+ * File: lib/teacher/screens/teacher_dashboard_screen.dart
+ * Description: The primary control center for teachers.
+ * Provides a high-level overview of their courses, enrollment stats,
+ * and quick access to course management (Studio, Creation, Profiling).
+ *
+ * WHAT: Displays stat cards (total courses, students, published) and a filterable list of courses.
+ * WHY: To give instructors an immediate sense of their reach and progress, and a gateway to edit content.
+ * HOW: Fetches CourseModel list from TeacherCourseService using current user ID, 
+ *      calculates totals via list aggregation, and uses a CustomScrollView for smooth scrolling with a sticky-header feel.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/teacher/models/course_model.dart';
@@ -16,6 +28,8 @@ import 'package:education_app/profile/settings_screen.dart';
 const _primary = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF8F0);
 
+/// The main landing page for users logged in with a 'teacher' role.
+/// Manages the state for course fetching, filtering, and navigation between dashboard tabs.
 class TeacherDashboardScreen extends StatefulWidget {
   static String id = 'teacher_dashboard_screen';
   const TeacherDashboardScreen({super.key});
@@ -39,6 +53,8 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
     _loadCourses();
   }
 
+  /// Loads all courses owned by the current teacher from Firestore.
+  /// Also includes a migration-safety check: if a course is published but private, it forces it to public.
   Future<void> _loadCourses() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
@@ -57,11 +73,14 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
     }
   }
 
+  /// Cleanly extracts the display name, handling cases where the name field
+  /// might contain metadata separated by '|'.
   String get _teacherName {
     final raw = _auth.currentUser?.displayName ?? 'Instructor';
     return raw.contains('|') ? raw.split('|').first : raw;
   }
 
+  /// Returns a list of courses filtered by the current [_filter] selection ('all', 'published', 'draft').
   List<CourseModel> get _filtered {
     switch (_filter) {
       case 'published': return _allCourses.where((c) => c.isPublished).toList();

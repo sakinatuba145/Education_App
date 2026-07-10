@@ -1,7 +1,15 @@
+/// Service for managing lesson quizzes and student results in Firestore.
+///
+/// This service handles:
+/// 1. Quiz CRUD operations within lessons
+/// 2. Question management within a quiz
+/// 3. Fetching student quiz results and performance metrics
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/teacher/constants/teacher_constants.dart';
 import 'package:education_app/teacher/models/lesson_quiz_model.dart';
 
+/// [TeacherQuizService] provides an interface for interacting with quizzes.
+/// Follows a singleton pattern for centralized quiz management.
 class TeacherQuizService {
   static final TeacherQuizService _instance = TeacherQuizService._internal();
 
@@ -14,6 +22,9 @@ class TeacherQuizService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // CREATE - Create quiz
+  /// Creates a new quiz for a specific lesson.
+  ///
+  /// Adds the quiz to the 'quizzes' subcollection and updates it with the Firestore ID.
   Future<String> createQuiz({
     required String courseId,
     required String lessonId,
@@ -37,6 +48,7 @@ class TeacherQuizService {
   }
 
   // READ - Get quiz
+  /// Fetches a specific quiz by its ID.
   Future<LessonQuizModel> getQuiz({
     required String courseId,
     required String lessonId,
@@ -61,6 +73,7 @@ class TeacherQuizService {
   }
 
   // UPDATE - Update quiz
+  /// Updates quiz configuration and refreshes the `updatedAt` timestamp.
   Future<void> updateQuiz({
     required String courseId,
     required String lessonId,
@@ -84,6 +97,7 @@ class TeacherQuizService {
   }
 
   // DELETE - Delete quiz
+  /// Removes a quiz from a lesson.
   Future<void> deleteQuiz({
     required String courseId,
     required String lessonId,
@@ -104,6 +118,9 @@ class TeacherQuizService {
   }
 
   // ADD QUESTION
+  /// Adds a new question to an existing quiz.
+  ///
+  /// Fetches current questions and appends the new one before updating Firestore.
   Future<void> addQuestion({
     required String courseId,
     required String lessonId,
@@ -136,6 +153,7 @@ class TeacherQuizService {
   }
 
   // GET - Get quiz results
+  /// Fetches a list of student results for a specific quiz, ordered by completion date.
   Future<List<Map<String, dynamic>>> getQuizResults({
     required String courseId,
     required String lessonId,
@@ -160,6 +178,7 @@ class TeacherQuizService {
   }
 
   // GET - Get quiz stats
+  /// Retrieves performance statistics for a specific quiz.
   Future<Map<String, dynamic>> getQuizStats({
     required String courseId,
     required String lessonId,

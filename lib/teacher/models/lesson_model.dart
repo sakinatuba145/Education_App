@@ -1,18 +1,37 @@
+/// Lesson Model
+/// 
+/// Defines a single educational unit within a course. Lessons act as
+/// containers for multiple content items and an optional quiz.
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Represents a lesson within a course.
 class LessonModel {
+  /// Unique identifier for the lesson.
   final String id;
+  /// ID of the course this lesson belongs to.
   final String courseId;
+  /// Title of the lesson.
   final String title;
+  /// Detailed description of lesson objectives.
   final String description;
+  /// Order of the lesson in the course sequence.
   final int sequenceNumber;
+  /// List of IDs for content (video, PDF, etc.) belonging to this lesson.
   final List<String> contentIds;
+  /// ID of the quiz associated with this lesson, if any.
   final String? attachedQuizId;
+  /// Total number of times this lesson has been viewed.
   final int totalViews;
+  /// Total number of students who completed this lesson.
   final int totalCompleted;
+  /// Average student rating for this specific lesson.
   final double averageRating;
+  /// Total estimated duration for consuming all content in the lesson.
   final Duration totalDuration;
+  /// Timestamp of creation.
   final DateTime createdAt;
+  /// Timestamp of last modification.
   final DateTime updatedAt;
 
   LessonModel({
@@ -31,6 +50,7 @@ class LessonModel {
     required this.updatedAt,
   });
 
+  /// Safely parses date fields from Firestore/JSON formats.
   static DateTime _parseDate(dynamic value) {
     if (value == null) return DateTime.now();
     if (value is Timestamp) return value.toDate();
@@ -42,6 +62,7 @@ class LessonModel {
     }
   }
 
+  /// Constructs a [LessonModel] from a Map.
   factory LessonModel.fromJson(Map<String, dynamic> json) {
     return LessonModel(
       id: json['id'] ?? '',

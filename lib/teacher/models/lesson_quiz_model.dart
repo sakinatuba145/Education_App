@@ -1,20 +1,43 @@
+/// Lesson Quiz Model
+/// 
+/// Defines the structure for quizzes attached to lessons. Includes
+/// configuration for scoring, time limits, and performance metrics.
+
+/// Represents a quiz associated with a lesson.
 class LessonQuizModel {
+  /// Unique identifier for the quiz.
   final String id;
+  /// ID of the parent course.
   final String courseId;
+  /// ID of the parent lesson.
   final String lessonId;
+  /// Title of the quiz.
   final String title;
+  /// Brief description of the quiz content.
   final String description;
+  /// Specific instructions for students (e.g., 'Choose the best answer').
   final String instruction;
+  /// Optional time limit in minutes.
   final int? durationMinutes;
+  /// Percentage required to pass (0-100).
   final int passingScore;
+  /// If true, questions are presented in a random order.
   final bool shuffleQuestions;
+  /// When to reveal correct answers: 'immediately', 'after_completion', or 'never'.
   final String showAnswersOption; // 'immediately', 'after_completion', 'never'
+  /// List of quiz questions and their respective options/answers.
   final List<Map<String, dynamic>> questions;
+  /// Total number of times this quiz has been taken.
   final int totalAttempts;
+  /// Average score across all attempts.
   final double averageScore;
+  /// Percentage of students who passed the quiz.
   final double passRate;
+  /// Average time spent on the quiz in seconds.
   final int averageTimeSeconds;
+  /// Timestamp of creation.
   final DateTime createdAt;
+  /// Timestamp of last modification.
   final DateTime updatedAt;
 
   LessonQuizModel({
@@ -37,6 +60,7 @@ class LessonQuizModel {
     required this.updatedAt,
   });
 
+  /// Constructs a [LessonQuizModel] from a Map.
   factory LessonQuizModel.fromJson(Map<String, dynamic> json) {
     return LessonQuizModel(
       id: json['id'] ?? '',

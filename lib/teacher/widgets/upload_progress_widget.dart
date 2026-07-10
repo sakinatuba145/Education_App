@@ -3,13 +3,26 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/core/constants/app_colors.dart';
 import 'package:education_app/core/constants/app_dimensions.dart';
 
+/// Upload Progress Widget
+/// 
+/// A specialized card that displays the real-time progress of a file upload.
+/// Includes progress percentage, file details, and control buttons.
+
+/// A widget that visualizes the status of an ongoing file upload.
 class UploadProgressWidget extends StatelessWidget {
+  /// Current progress from 0.0 to 1.0.
   final double progress; // 0.0 to 1.0
+  /// Name of the file being uploaded.
   final String fileName;
+  /// Human-readable file size (e.g., '12 MB').
   final String fileSizeDisplay;
+  /// Optional current upload speed (e.g., '2 MB/s').
   final String? uploadSpeed;
+  /// Optional estimated time remaining.
   final String? timeRemaining;
+  /// Callback for cancelling the upload.
   final VoidCallback? onCancel;
+  /// Callback for pausing the upload.
   final VoidCallback? onPause;
 
   const UploadProgressWidget({

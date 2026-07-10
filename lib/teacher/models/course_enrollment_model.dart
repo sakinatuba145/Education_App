@@ -1,20 +1,43 @@
+/// Course Enrollment Model
+/// 
+/// Tracks the relationship between a student and a course, including
+/// progress, completion status, and certification details.
+
+/// Represents a student's enrollment in a specific course.
 class CourseEnrollmentModel {
+  /// Unique identifier for the enrollment record.
   final String id;
+  /// ID of the course the student is enrolled in.
   final String courseId;
+  /// ID of the student user.
   final String studentId;
+  /// Cached student name for display in the teacher dashboard.
   final String studentName;
+  /// Cached student email for contact purposes.
   final String studentEmail;
+  /// Enrollment status: 'active', 'completed', or 'dropped'.
   final String status; // 'active', 'completed', 'dropped'
+  /// Overall progress through the course (0.0 to 100.0).
   final double progressPercentage;
+  /// Number of lessons the student has marked as completed.
   final int lessonsCompleted;
+  /// Timestamp when the student first enrolled.
   final DateTime enrolledAt;
+  /// Timestamp when the course was finished.
   final DateTime? completedAt;
+  /// Timestamp of the student's most recent interaction with the course.
   final DateTime? lastAccessedAt;
+  /// Whether the student has met the criteria for a certificate.
   final bool certificateEarned;
+  /// ID of the issued certificate document.
   final String? certificateId;
+  /// Timestamp when the certificate was generated.
   final DateTime? certificateIssuedAt;
+  /// Star rating given by the student (1-5).
   final double? rating;
+  /// Text review provided by the student.
   final String? review;
+  /// Timestamp when the review was submitted.
   final DateTime? reviewedAt;
 
   CourseEnrollmentModel({

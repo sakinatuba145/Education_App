@@ -1,33 +1,67 @@
+/// Course Model
+/// 
+/// The core data structure for educational courses in the system.
+/// Contains metadata, pricing, status, and aggregated statistics.
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Represents a complete course entity.
 class CourseModel {
+  /// Unique identifier for the course.
   final String id;
+  /// ID of the teacher who created the course.
   final String teacherId;
+  /// Name of the primary instructor.
   final String instructorName;
+  /// Main title of the course.
   final String title;
+  /// Brief catchy subtitle.
   final String subtitle;
+  /// Comprehensive course description.
   final String description;
+  /// Course category (e.g. subject area).
   final String category;
+  /// List of searchable tags.
   final List<String> tags;
+  /// URL to the main course cover image.
   final String? thumbnailUrl;
+  /// Difficulty level (e.g., 'beginner', 'intermediate', 'advanced').
   final String level;
+  /// Primary language of instruction.
   final String language;
+  /// List of requirements before taking this course.
   final List<String> prerequisites;
+  /// Aggregated count of student enrollments.
   final int totalEnrolled;
+  /// Aggregated count of students who finished the course.
   final int totalCompleted;
+  /// Total number of lessons in this course.
   final int totalLessons;
+  /// Estimated time required to finish (in hours).
   final double totalDurationHours;
+  /// Average student rating (calculated from reviews).
   final double averageRating;
+  /// Total number of ratings received.
   final int totalReviews;
+  /// Whether the course is accessible without payment.
   final bool isFree;
+  /// Price of the course (if not free).
   final double? price;
+  /// Total financial earnings from this course.
   final double totalRevenue;
+  /// Current lifecycle stage: 'draft', 'published', or 'archived'.
   final String status; // 'draft', 'published', 'archived'
+  /// Access control: 'public', 'private', or 'invitation-only'.
   final String visibility; // 'public', 'private', 'invitation-only'
+  /// URL-friendly version of the title.
   final String slug;
+  /// SEO keywords for search discovery.
   final String keywords;
+  /// Timestamp of creation.
   final DateTime createdAt;
+  /// Timestamp of last modification.
   final DateTime updatedAt;
+  /// Timestamp when the course was first made public.
   final DateTime? publishedAt;
 
   CourseModel({
@@ -61,7 +95,10 @@ class CourseModel {
     this.publishedAt,
   });
 
-  /// Handles Firestore Timestamp, ISO string, or null safely.
+  /// Handles conversion from various date formats used in Firestore/JSON.
+  /// 
+  /// Supports [DateTime], Firestore [Timestamp], and ISO-8601 strings.
+  /// Returns [fallback] or current time if parsing fails.
   static DateTime _parseDate(dynamic value, {DateTime? fallback}) {
     if (value == null) return fallback ?? DateTime.now();
     if (value is DateTime) return value;
@@ -73,6 +110,7 @@ class CourseModel {
     }
   }
 
+  /// Same as [_parseDate] but returns null instead of a fallback.
   static DateTime? _parseDateNullable(dynamic value) {
     if (value == null) return null;
     if (value is DateTime) return value;
@@ -84,6 +122,7 @@ class CourseModel {
     }
   }
 
+  /// Creates a [CourseModel] from a Map (JSON/Firestore).
   factory CourseModel.fromJson(Map<String, dynamic> json) {
     return CourseModel(
       id: json['id'] ?? '',

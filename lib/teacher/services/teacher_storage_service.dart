@@ -1,8 +1,17 @@
+// Service for managing file uploads and deletions in Firebase Storage.
+//
+// This service handles:
+// 1. File uploads (videos, images, PDFs, audio) with progress tracking
+// 2. Thumbnail management for courses
+// 3. Recursive directory deletion
+// 4. Storage quota monitoring and calculation
+// 5. Path generation for organized storage
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:education_app/teacher/constants/teacher_constants.dart';
 import 'package:education_app/teacher/models/validation_models.dart';
 
+/// [TeacherStorageService] provides an interface for interacting with Firebase Storage.
+/// Implements a singleton pattern for consistent storage operations.
 class TeacherStorageService {
   static final TeacherStorageService _instance =
       TeacherStorageService._internal();
@@ -16,6 +25,10 @@ class TeacherStorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // Upload file to Firebase Storage with progress tracking
+  /// Uploads a file to a lesson-specific path in Firebase Storage.
+  ///
+  /// Monitors upload progress and provides callbacks.
+  /// Returns the download URL of the uploaded file.
   Future<String> uploadFile({
     required File file,
     required String courseId,
@@ -59,6 +72,7 @@ class TeacherStorageService {
   }
 
   // Delete file from storage
+  /// Deletes a file from Firebase Storage given its path.
   Future<void> deleteFile(String filePath) async {
     try {
       await _storage.ref(filePath).delete();
@@ -70,6 +84,7 @@ class TeacherStorageService {
   }
 
   // Get download URL for a file
+  /// Retrieves a download URL for a specific file path.
   Future<String> getDownloadUrl(String filePath) async {
     try {
       return await _storage.ref(filePath).getDownloadURL();
@@ -81,6 +96,7 @@ class TeacherStorageService {
   }
 
   // Upload thumbnail
+  /// Uploads a course thumbnail image to a dedicated storage path.
   Future<String> uploadThumbnail({
     required File file,
     required String courseId,
@@ -97,6 +113,7 @@ class TeacherStorageService {
   }
 
   // Delete directory (all files in folder)
+  /// Recursively deletes all files and subdirectories within a given folder path.
   Future<void> deleteDirectory(String folderPath) async {
     try {
       final ref = _storage.ref(folderPath);
@@ -119,6 +136,7 @@ class TeacherStorageService {
   }
 
   // Get file metadata
+  /// Retrieves metadata for a specific file, such as size and content type.
   Future<FileMetadata> getFileMetadata(String filePath) async {
     try {
       final metadata = await _storage.ref(filePath).getMetadata();
@@ -138,6 +156,7 @@ class TeacherStorageService {
   }
 
   // Get storage quota info
+  /// Calculates storage usage for a teacher and compares it against a 500GB limit.
   Future<Map<String, dynamic>> getStorageQuota(String teacherUid) async {
     try {
       final ref = _storage.ref('uploads/teacher_courses/$teacherUid/');
@@ -176,6 +195,7 @@ class TeacherStorageService {
   }
 
   // Calculate directory size recursively
+  /// Helper method to recursively calculate the total size of a directory.
   Future<int> _calculateDirectorySize(Reference ref) async {
     int totalBytes = 0;
 
@@ -198,6 +218,7 @@ class TeacherStorageService {
   }
 
   // Build storage path for content
+  /// Constructs an organized storage path based on teacher, course, lesson, and content type.
   String _buildStoragePath({
     required String teacherUid,
     required String courseId,
@@ -212,22 +233,24 @@ class TeacherStorageService {
   }
 
   // Get content folder based on type
+  /// Maps content types to their respective storage folder names.
   String _getContentFolder(String contentType) {
     switch (contentType) {
       case 'video':
-        return VIDEOS_PATH;
+        return 'videos';
       case 'image':
-        return IMAGES_PATH;
+        return 'images';
       case 'audio':
-        return AUDIO_PATH;
+        return 'audio';
       case 'pdf':
-        return DOCUMENTS_PATH;
+        return 'documents';
       default:
         return 'files';
     }
   }
 
   // Format bytes to human readable
+  /// Converts byte values into human-readable strings (e.g., KB, MB, GB).
   String _formatBytes(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(2)} KB';
@@ -238,6 +261,7 @@ class TeacherStorageService {
   }
 
   // Check if file exists
+  /// Checks if a file exists at the given path by attempting to fetch its metadata.
   Future<bool> fileExists(String filePath) async {
     try {
       await _storage.ref(filePath).getMetadata();
@@ -248,6 +272,7 @@ class TeacherStorageService {
   }
 
   // Generate unique filename
+  /// Appends a timestamp to a filename to ensure uniqueness.
   String generateUniqueFilename(String originalFilename) {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     return '${timestamp}_$originalFilename';

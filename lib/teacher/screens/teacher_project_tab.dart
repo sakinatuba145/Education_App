@@ -1,9 +1,20 @@
+/*
+ * File: lib/teacher/screens/teacher_project_tab.dart
+ * Description: Management interface for a course's final project.
+ *
+ * WHAT: Allows teachers to define project requirements and grade student submissions.
+ * WHY: Projects are the final validation of learning; teachers need a dedicated space to manage this.
+ * HOW: Split into two sub-tabs: 'Project Setup' (CRUD for the project definition) 
+ *      and 'Submissions' (list of student uploads with a grading dialog).
+ */
+
 import 'package:flutter/material.dart';
 import 'package:education_app/teacher/services/final_project_service.dart';
 
 const _orange = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF8F0);
 
+/// A tabbed view for managing the capstone project of a specific course.
 class TeacherProjectTab extends StatefulWidget {
   final String courseId;
   const TeacherProjectTab({super.key, required this.courseId});
@@ -43,6 +54,7 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
     super.dispose();
   }
 
+  /// Fetches both the project definition and the list of student submissions for this course.
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
@@ -265,6 +277,7 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
     );
   }
 
+  /// Persists project details (title, instructions, grading thresholds) to the backend.
   Future<void> _save() async {
     if (_titleCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -446,6 +459,8 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
     );
   }
 
+  /// Opens a modal to review a student's work, assign a score, and provide feedback.
+  /// If the score meets the 'passingScore' threshold, the student is marked as 'passed'.
   void _gradeDialog(Map<String, dynamic> sub) {
     final maxScore = _project?['maxScore'] ?? 100;
     final passingScore = _project?['passingScore'] ?? 70;

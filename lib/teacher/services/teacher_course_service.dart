@@ -1,7 +1,17 @@
+/// Service for managing course lifecycle (creation, updates, deletion, publishing) in Firestore.
+///
+/// This service handles:
+/// 1. Course CRUD operations
+/// 2. Teacher-specific course listing with client-side sorting
+/// 3. Course publishing and draft management
+/// 4. Aggregate statistics calculation
+/// 5. Recursive deletion of course subcollections
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/teacher/constants/teacher_constants.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 
+/// [TeacherCourseService] provides an interface for interacting with courses in Firestore.
+/// Employs a singleton pattern to maintain a single Firestore connection instance.
 class TeacherCourseService {
   static final TeacherCourseService _instance = TeacherCourseService._internal();
 
@@ -14,6 +24,9 @@ class TeacherCourseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // CREATE - Create new course
+  /// Creates a new course in the main courses collection.
+  ///
+  /// Returns the ID of the newly created course document.
   Future<String> createCourse({required CourseModel course}) async {
     try {
       final docRef = await _firestore
@@ -30,6 +43,7 @@ class TeacherCourseService {
   }
 
   // READ - Get course by ID
+  /// Fetches a single course by its document ID.
   Future<CourseModel> getCourseById(String courseId) async {
     try {
       final doc = await _firestore
@@ -48,6 +62,9 @@ class TeacherCourseService {
   }
 
   // READ - Get teacher's courses
+  /// Fetches all courses created by a specific teacher.
+  ///
+  /// Supports filtering by status and client-side sorting to avoid Firestore index requirements.
   Future<List<CourseModel>> getMyCourses({
     required String teacherId,
     String status = 'all', // 'active', 'draft', 'archived', 'all'
@@ -85,6 +102,7 @@ class TeacherCourseService {
   }
 
   // UPDATE - Update course
+  /// Updates course data and refreshes the `updatedAt` timestamp.
   Future<void> updateCourse({
     required String courseId,
     required Map<String, dynamic> data,
@@ -102,6 +120,7 @@ class TeacherCourseService {
   }
 
   // DELETE - Archive course
+  /// Sets the course status to 'archived' instead of performing a hard delete.
   Future<void> archiveCourse(String courseId) async {
     try {
       await _firestore
@@ -117,6 +136,9 @@ class TeacherCourseService {
   }
 
   // DELETE - Hard delete course (with all subcollections)
+  /// Performs a thorough deletion of a course, including all lessons, content, and enrollments.
+  ///
+  /// Note: This is an expensive operation as it iterates through all subcollections.
   Future<void> deleteCourse(String courseId) async {
     try {
       final courseRef = _firestore.collection(COURSES_COLLECTION).doc(courseId);
@@ -155,6 +177,7 @@ class TeacherCourseService {
   }
 
   // PUBLISH - Publish course
+  /// Makes a course public and updates its status to 'published'.
   Future<void> publishCourse(String courseId) async {
     try {
       await _firestore
@@ -172,6 +195,7 @@ class TeacherCourseService {
   }
 
   // DRAFT - Save as draft
+  /// Sets a course to 'draft' status and makes it private.
   Future<void> saveDraft(String courseId) async {
     try {
       await _firestore
@@ -188,6 +212,7 @@ class TeacherCourseService {
   }
 
   // VISIBILITY - Set course visibility
+  /// Changes the course visibility (e.g., 'public', 'private').
   Future<void> setCourseVisibility({
     required String courseId,
     required String visibility, // 'public', 'private', 'invitation-only'
@@ -206,6 +231,7 @@ class TeacherCourseService {
   }
 
   // STATS - Get course statistics
+  /// Retrieves aggregate performance data for a course.
   Future<Map<String, dynamic>> getCourseStats(String courseId) async {
     try {
       final courseDoc = await _firestore
@@ -236,6 +262,7 @@ class TeacherCourseService {
   }
 
   // Get enrolled students
+  /// Fetches a list of student enrollment data for the course.
   Future<List<Map<String, dynamic>>> getCourseEnrolledStudents(
       String courseId) async {
     try {
@@ -252,6 +279,9 @@ class TeacherCourseService {
   }
 
   // Search courses by teacher
+  /// Searches for courses by title or description within a teacher's collection.
+  ///
+  /// Filters published courses and performs case-insensitive client-side search.
   Future<List<CourseModel>> searchCourses({
     required String teacherId,
     required String query,
@@ -278,6 +308,11 @@ class TeacherCourseService {
   }
 
   // Get public courses — no composite index needed; filter + sort client-side
+  /// Fetches published, public courses for discovery.
+  ///
+  /// Uses a layered approach:
+  /// 1. Attempt a filtered query.
+  /// 2. Fall back to a limited collection scan if the filtered query fails or is empty.
   Future<List<CourseModel>> getPublicCourses({int limit = 20}) async {
     // Try 1: filtered query (default source = cache-then-server)
     try {
@@ -323,6 +358,7 @@ class TeacherCourseService {
   }
 
   // Increment student count
+  /// Atomically increments the enrollment count for a course.
   Future<void> incrementStudentCount(String courseId) async {
     try {
       await _firestore
@@ -338,6 +374,9 @@ class TeacherCourseService {
   }
 
   // Update course rating
+  /// Calculates and updates the course's new average rating.
+  ///
+  /// Uses the weighted average formula based on current total reviews.
   Future<void> updateCourseRating({
     required String courseId,
     required double rating,

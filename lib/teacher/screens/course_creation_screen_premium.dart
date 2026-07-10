@@ -1,3 +1,14 @@
+/*
+ * File: lib/teacher/screens/course_creation_screen_premium.dart
+ * Description: A multi-step wizard for creating a new course.
+ *
+ * WHAT: A 3-step form (Basic Info -> Thumbnail -> Settings) that collects course metadata.
+ * WHY: Breaking down course creation into steps reduces cognitive load for the teacher.
+ * HOW: Uses a Page-like structure driven by [_currentStep]. 
+ *      Integrates FilePicker for local image selection and FirebaseStorage for uploads.
+ *      Finally persists the CourseModel to Firestore via TeacherCourseService.
+ */
+
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,6 +21,7 @@ import 'package:education_app/core/widgets/animated_progress_indicators.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
 
+/// A premium-styled multi-step form widget for initiating a new course.
 class CourseCreationScreenPremium extends StatefulWidget {
   const CourseCreationScreenPremium({super.key});
 
@@ -85,6 +97,8 @@ class _CourseCreationScreenPremiumState
     }
   }
 
+  /// Finalizes course data and sends it to the [TeacherCourseService].
+  /// Generates a slug from the title and sets initial analytics to zero.
   Future<void> _createCourse() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -349,6 +363,8 @@ class _CourseCreationScreenPremiumState
   }
 
   // ── Pick + upload thumbnail ────────────────────────────────────────────────
+  /// Opens the native file picker to select an image, then immediately
+  /// streams the upload to Firebase Storage while updating [_uploadProgress].
   Future<void> _pickAndUploadThumbnail() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;

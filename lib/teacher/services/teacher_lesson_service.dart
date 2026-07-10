@@ -1,7 +1,16 @@
+/// Service for managing course lessons in Firestore.
+///
+/// This service handles:
+/// 1. Lesson CRUD operations within a course
+/// 2. Lesson reordering via sequence numbers
+/// 3. Engagement statistics for lessons
+/// 4. Aggregate duration calculation based on content
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/teacher/constants/teacher_constants.dart';
 import 'package:education_app/teacher/models/lesson_model.dart';
 
+/// [TeacherLessonService] provides an interface for interacting with lessons.
+/// Uses a singleton pattern for consistent access.
 class TeacherLessonService {
   static final TeacherLessonService _instance = TeacherLessonService._internal();
 
@@ -14,6 +23,9 @@ class TeacherLessonService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // CREATE - Create lesson
+  /// Creates a new lesson in a course.
+  ///
+  /// Adds the lesson to the [LESSONS_SUBCOLLECTION] and stores its Firestore ID.
   Future<String> createLesson({
     required String courseId,
     required LessonModel lesson,
@@ -34,6 +46,7 @@ class TeacherLessonService {
   }
 
   // READ - Get lesson
+  /// Fetches a specific lesson by its ID.
   Future<LessonModel> getLesson({
     required String courseId,
     required String lessonId,
@@ -55,6 +68,7 @@ class TeacherLessonService {
   }
 
   // READ - Get all lessons
+  /// Fetches all lessons in a course, ordered by their sequence number.
   Future<List<LessonModel>> getCourseLessons(String courseId) async {
     try {
       final snapshot = await _firestore
@@ -73,6 +87,7 @@ class TeacherLessonService {
   }
 
   // UPDATE - Update lesson
+  /// Updates lesson data and refreshes the `updatedAt` timestamp.
   Future<void> updateLesson({
     required String courseId,
     required String lessonId,
@@ -93,6 +108,7 @@ class TeacherLessonService {
   }
 
   // DELETE - Delete lesson
+  /// Deletes a lesson and all its associated content subcollections.
   Future<void> deleteLesson({
     required String courseId,
     required String lessonId,
@@ -121,6 +137,7 @@ class TeacherLessonService {
   }
 
   // REORDER - Reorder lessons
+  /// Updates the sequence numbers of multiple lessons in a batch operation.
   Future<void> reorderLessons({
     required String courseId,
     required List<String> lessonIds,
@@ -146,6 +163,7 @@ class TeacherLessonService {
   }
 
   // STATS - Get lesson statistics
+  /// Retrieves engagement and completion metrics for a lesson.
   Future<Map<String, dynamic>> getLessonStats({
     required String courseId,
     required String lessonId,
@@ -175,6 +193,7 @@ class TeacherLessonService {
   }
 
   // Calculate duration
+  /// Calculates the total duration of a lesson by summing the duration of all its content items.
   Future<int> calculateLessonDuration({
     required String courseId,
     required String lessonId,

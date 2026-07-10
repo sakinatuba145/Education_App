@@ -1,26 +1,55 @@
+/// Course Content Model
+/// 
+/// Defines the structure for various types of educational materials 
+/// (video, audio, PDF, image) attached to a lesson.
+
+/// Represents a single piece of educational content within a lesson.
 class CourseContentModel {
+  /// Unique identifier for the content.
   final String id;
+  /// ID of the parent course.
   final String courseId;
+  /// ID of the parent lesson.
   final String lessonId;
+  /// Name of the file stored in storage.
   final String fileName;
+  /// Category of content: 'video', 'image', 'audio', or 'pdf'.
   final String contentType; // 'video', 'image', 'audio', 'pdf'
+  /// Public or signed URL to access the file.
   final String fileUrl;
+  /// Size of the file in bytes.
   final int fileSizeBytes;
+  /// MIME type (e.g., 'application/pdf', 'video/mp4').
   final String mimeType;
+  /// User-facing title of the content.
   final String title;
+  /// Detailed description of the content.
   final String description;
+  /// Text transcript for audio/video files.
   final String? transcript;
+  /// Alternative text for accessibility.
   final String? altText;
+  /// Duration in seconds for media files.
   final int? durationSeconds;
+  /// Total number of pages for PDF documents.
   final int? pageCount;
+  /// URL to the content's preview thumbnail.
   final String? thumbnailUrl;
+  /// Whether subtitles are provided for the media.
   final bool hasSubtitles;
+  /// List of available subtitle language codes.
   final List<String> subtitleLanguages;
+  /// If true, students can download the file for offline use.
   final bool isDownloadable;
+  /// Counter for how many times the content was viewed.
   final int totalViews;
+  /// Counter for how many times the content was downloaded.
   final int totalDownloads;
+  /// Average progress percentage for video/audio consumption.
   final double? averageWatchPercentage;
+  /// Timestamp of record creation.
   final DateTime createdAt;
+  /// Timestamp of the last successful file upload.
   final DateTime uploadedAt;
 
   CourseContentModel({

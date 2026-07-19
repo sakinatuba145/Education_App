@@ -1,3 +1,5 @@
+import 'package:education_app/dashboard/dashboard_screen.dart';
+import 'package:education_app/teacher/screens/teacher_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:education_app/core/constants/theme.dart';
@@ -51,7 +53,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final auth = AuthService();
-
       await auth.register(
         nameController.text.trim(),
         emailController.text.trim(),
@@ -61,7 +62,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (!mounted) return;
 
-      Navigator.pop(context);
+      if (role == 'teacher') {
+        Navigator.pushReplacementNamed(
+          context,
+          TeacherDashboardScreen.id,
+        );
+      } else {
+        Navigator.pushReplacementNamed(
+          context,
+          DashboardHome.id,
+        );
+      }
 
     } catch (e) {
       final message = e.toString().replaceAll("Exception: ", "");

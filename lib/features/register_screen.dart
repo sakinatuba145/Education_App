@@ -1,4 +1,5 @@
-import 'package:education_app/dashboard/dashboard_screen.dart';
+
+import 'package:education_app/student/student_portal_screen.dart';
 import 'package:education_app/teacher/screens/teacher_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
@@ -70,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else {
         Navigator.pushReplacementNamed(
           context,
-          DashboardHome.id,
+          StudentPortalScreen.id,
         );
       }
 

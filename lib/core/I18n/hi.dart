@@ -197,7 +197,7 @@ class HindiLanguage extends AppTranslationsKeys {
     // Welcome Screen
     AppMessages.getStarted: 'शुरू करें',
     AppMessages.tagline: 'सीखें • बढ़ें • अपना भविष्य बनाएं',
-    AppMessages.poweredBy: 'EduAf द्वारा संचालित',
+    AppMessages.poweredBy: 'HSAI द्वारा संचालित',
 
     // Home Dashboard
     AppMessages.home: 'होम',

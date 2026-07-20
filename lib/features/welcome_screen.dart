@@ -1,12 +1,12 @@
 import 'dart:ui';
 import 'package:get/get.dart';
+import '../core/constants/app_colors.dart';
 import '../core/constants/theme.dart';
 import '../core/I18n/messages.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:education_app/features/login_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
   static String id = 'welcome_screen';
@@ -66,23 +66,23 @@ class WelcomeScreen extends StatelessWidget {
                         width: 220,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(40),
-                          color: Colors.white.withOpacity(.45),
+                          color: Colors.white.withOpacity(.18),
                           border: Border.all(
-                            color: Colors.white,
+                            color: Colors.white.withOpacity(.4),
                             width: 1.5,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.orange.withOpacity(.25),
-                              blurRadius: 40,
-                              spreadRadius: 10,
+                              color: AppColors.primary.withOpacity(.25),
+                              blurRadius: 50,
+                              spreadRadius: 5,
                             ),
                           ],
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(40),
                           child: Image.asset(
-                            "assets/images/EDU.jpg",
+                            "assets/images/hazara.jpg",
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -95,7 +95,7 @@ class WelcomeScreen extends StatelessWidget {
                   FadeInUp(
                     delay: const Duration(milliseconds: 300),
                     child: Text(
-                      "EduAf",
+                      "HSAI",
                       style: Theme.of(context)
                           .textTheme
                           .headlineLarge
@@ -109,6 +109,20 @@ class WelcomeScreen extends StatelessWidget {
 
                   const SizedBox(height: 15),
 
+
+                  FadeInUp(
+                    delay: const Duration(milliseconds: 500),
+                    child: Text(
+                      'Hazara Students Association - India ',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                   FadeInUp(
                     delay: const Duration(milliseconds: 500),
                     child: Text(
@@ -122,7 +136,6 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 15),
 
                   FadeInUp(
@@ -151,8 +164,19 @@ class WelcomeScreen extends StatelessWidget {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(22),
-                          color: ThemeColors.button,
-
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.primary,
+                              AppColors.primaryLight,
+                            ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(.35),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
                         child: Center(
                           child: Row(
@@ -206,7 +230,7 @@ class WelcomeScreen extends StatelessWidget {
         width: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.orange.withOpacity(.25),
+          color: AppColors.primaryLight.withOpacity(.25),
         ),
       ),
     );

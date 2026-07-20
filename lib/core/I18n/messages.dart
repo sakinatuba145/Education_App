@@ -255,7 +255,7 @@ class AppMessages {
   static const String noCertificate = 'No Certificate Yet';
   static const String ourMission = 'Our mission';
   static const String certificateOf = 'Certificate of Achievement';
-  static const String whatWeBody = 'We believe education should be accessible, engaging and rewarding. Every feature in EduAf is '
+  static const String whatWeBody = 'We believe education should be accessible, engaging and rewarding. Every feature in HSAI is '
       'built with that mission in mind — helping students learn at their own pace and teachers share '
       'their knowledge with ease.';
   static const String whatWeBody1 =   '• A growing catalog of courses across many subjects\n'

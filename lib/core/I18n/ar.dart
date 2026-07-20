@@ -180,7 +180,7 @@ class ArabicLanguage extends AppTranslationsKeys {
     // Welcome Screen
     AppMessages.getStarted: 'ابدأ الآن',
     AppMessages.tagline: 'تعلم • طور • ابنِ مستقبلك',
-    AppMessages.poweredBy: 'مدعوم بواسطة EduAf',
+    AppMessages.poweredBy: 'مدعوم بواسطة HSAI',
 
     // Home Dashboard
     AppMessages.home: 'الرئيسية',

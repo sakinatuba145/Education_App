@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 class AppColors {
   // =============== PRIMARY PALETTE ===============
   // Vibrant orange - energetic and engaging
-  static const Color primary = Color(0xFFFF6B35);
-  static const Color primaryLight = Color(0xFFFF8C42);
-  static const Color primaryDark = Color(0xFFD84315);
-  static const Color primarySubtle = Color(0xFFFFF4E6);
+  static const Color primary = Color(0xFF3B82F6);
+  static const Color primaryLight = Color(0xFF93C5FD);
+  static const Color primaryDark = Color(0xFF2563EB);
+  static const Color primarySubtle = Color(0xFFF0F9FF);
 
   // =============== SECONDARY PALETTE (ACCENTS) ===============
   static const Color success = Color(0xFF4CAF50);
@@ -63,9 +63,18 @@ class AppColors {
   static const Color rejectedRed = Color(0xFFF44336);
 
   // =============== GRADIENT COLORS (as lists for LinearGradient) ===============
+  static const Color gradient1 = Color(0xFF082F49);
+  static const Color gradient2 = Color(0xFF0F4C81);
+  static const Color gradient3 = Color(0xFF2563EB);
   static const List<Color> primaryGradient = [
-    Color(0xFFFF6B35),
-    Color(0xFFFF8C42),
+    Color(0xFF2563EB),
+    Color(0xFF60A5FA),
+  ];
+
+  static const List<Color> premiumGradient = [
+    Color(0xFF0F4C81),
+    Color(0xFF2563EB),
+    Color(0xFF60A5FA),
   ];
 
   static const List<Color> successGradient = [
@@ -84,8 +93,8 @@ class AppColors {
   ];
 
   static const List<Color> infoGradient = [
-    Color(0xFF2196F3),
-    Color(0xFF64B5F6),
+    Color(0xFF2563EB),
+    Color(0xFF60A5FA),
   ];
 
   // =============== SHIMMER EFFECT COLORS ===============

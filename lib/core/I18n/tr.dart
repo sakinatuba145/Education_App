@@ -197,7 +197,7 @@ class TurkishLanguage extends AppTranslationsKeys {
     // Welcome Screen
     AppMessages.getStarted: 'Başla',
     AppMessages.tagline: 'Öğren • Büyü • Geleceğini Kur',
-    AppMessages.poweredBy: 'EduAf tarafından desteklenmektedir',
+    AppMessages.poweredBy: 'HSAI tarafından desteklenmektedir',
 
     // Home Dashboard
     AppMessages.home: 'Ana Sayfa',

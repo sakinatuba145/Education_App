@@ -70,6 +70,7 @@ class UrduLanguage extends AppTranslationsKeys {
     AppMessages.switchTO: 'سوئچ کریں',
 
     // Start / Intro
+
     AppMessages.start: 'سیکھیں۔ بڑھیں۔ مستقبل بنائیں',
     AppMessages.discover:
     'جدید کورسز اور ماہر اساتذہ کے ساتھ نیا طریقہ سیکھیں',
@@ -192,7 +193,7 @@ class UrduLanguage extends AppTranslationsKeys {
     // Welcome Screen
     AppMessages.getStarted: 'شروع کریں',
     AppMessages.tagline: 'سیکھیں • بڑھیں • مستقبل بنائیں',
-    AppMessages.poweredBy: 'EduAf کی طرف سے',
+    AppMessages.poweredBy: 'HSAI کی طرف سے',
 
     // Home Dashboard
     AppMessages.home: 'ہوم',

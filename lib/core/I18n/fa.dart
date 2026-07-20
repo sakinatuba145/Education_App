@@ -189,7 +189,7 @@ class PersianLanguage extends AppTranslationsKeys {
     // Welcome Screen
     AppMessages.getStarted: 'شروع کن',
     AppMessages.tagline: 'یاد بگیر • رشد کن • آینده‌ات را بساز',
-    AppMessages.poweredBy: 'پشتیبانی شده توسط EduAf',
+    AppMessages.poweredBy: 'پشتیبانی شده توسط HSAI',
 
     // Home Dashboard
     AppMessages.home: 'خانه',

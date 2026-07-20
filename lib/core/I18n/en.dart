@@ -205,7 +205,7 @@ class EnglishLanguage extends AppTranslationsKeys {
     // Welcome Screen
     AppMessages.getStarted: 'Get Started',
     AppMessages.tagline: 'Learn • Grow • Build Your Future',
-    AppMessages.poweredBy: 'Powered by EduAf',
+    AppMessages.poweredBy: 'Powered by HSAI',
 
     // Home Dashboard
     AppMessages.home: 'Home',
@@ -256,7 +256,7 @@ class EnglishLanguage extends AppTranslationsKeys {
     AppMessages.explore: 'Explore',
     AppMessages.learn: 'Learn',
     AppMessages.whoWeAre: 'Who we are',
-    AppMessages.weAre: 'EduAf is a modern e-learning platform built to connect students and teachers in one place. '
+    AppMessages.weAre: 'HSAI is a modern e-learning platform built to connect students and teachers in one place. '
         'Our goal is to make quality courses, quizzes and study tools easy to reach for every learner, '
         'no matter where they are.',
     AppMessages.whatWe: 'what we offer'

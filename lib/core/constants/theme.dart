@@ -297,19 +297,20 @@ class AppTheme {
 }
 
 class ThemeColors {
-  static const primary = Color(0xFFFFA726);
-  static const secondary = Color(0xFFFFCC80);
-  static const background = Color(0xFFFFF3E0);
+  static const Color primary = Color(0xFF3B82F6);
+  static const Color secondary = Color(0xFF60A5FA);
 
+  static const Color background = Color(0xFFF8FBFF);
 
-  static const gradient1 = Color(0xFFFFF8F0);
-  static const gradient2 = Color(0xFFFFE0B2);
-  static const gradient3 = Color(0xFFFFD180);
-  static const button = Color(0xFFF5B400);
+  static const Color gradient1 = Color(0xFFE0F2FE);
+  static const Color gradient2 = Color(0xFFBAE6FD);
+  static const Color gradient3 = Color(0xFF60A5FA);
 
+  static const Color button = Color(0xFF3B82F6);
 
-  static const white = Colors.white;
-  static const black = Colors.black;
+  static const Color white = Colors.white;
+  static const Color black = Colors.black;
+
 }
 
 class AppDarkColors {
@@ -358,13 +359,13 @@ class AppBackground extends StatelessWidget {
         Positioned(
           top: -80,
           right: -50,
-          child: _blurCircle(220, Colors.orange),
+          child: _blurCircle(220, ThemeColors.primary),
         ),
 
         Positioned(
           bottom: -100,
           left: -60,
-          child: _blurCircle(250, Colors.orange),
+          child: _blurCircle(220, ThemeColors.primary),
         ),
 
         child,

@@ -191,7 +191,7 @@ class PashtoLanguage extends AppTranslationsKeys {
     // Welcome Screen
     AppMessages.getStarted: 'پیل کړئ',
     AppMessages.tagline: 'زده کړه • وده • راتلونکی جوړ کړئ',
-    AppMessages.poweredBy: 'د EduAf لخوا',
+    AppMessages.poweredBy: 'د HSAI لخوا',
 
     // Home Dashboard
     AppMessages.home: 'کور',

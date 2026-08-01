@@ -7,6 +7,7 @@ import 'package:education_app/core/I18n/messages.dart';
 import '../theme_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
+  static String id = 'settings_screen';
   const SettingsScreen({super.key});
 
   @override
@@ -64,49 +65,76 @@ class _SettingsScreenState extends State<SettingsScreen>
   void _showLanguagePicker() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => SafeArea(
+      builder: (context) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40, height: 4,
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                child: Text(
-                  AppMessages.selectLanguage.tr,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-              ),
-              ..._languages.map((lang) {
-                final isSelected = lang['code'] == _currentLangCode;
-                return ListTile(
-                  leading: Text(
-                    lang['native']!,
-                    style: const TextStyle(fontSize: 16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                  title: Text(lang['label']!),
-                  trailing: isSelected
-                      ? Icon(Icons.check_circle_rounded,
-                          color: Theme.of(context).colorScheme.primary)
-                      : null,
-                  selected: isSelected,
-                  selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
-                  onTap: () => _setLanguage(lang['code']!),
-                );
-              }),
-              const SizedBox(height: 8),
-            ],
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                  child: Text(
+                    AppMessages.selectLanguage.tr,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: _languages.map((lang) {
+                      final isSelected =
+                          lang['code'] == _currentLangCode;
+
+                      return ListTile(
+                        leading: Text(
+                          lang['native']!,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        title: Text(lang['label']!),
+                        trailing: isSelected
+                            ? Icon(
+                          Icons.check_circle_rounded,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary,
+                        )
+                            : null,
+                        selected: isSelected,
+                        selectedTileColor: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.08),
+                        onTap: () => _setLanguage(lang['code']!),
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
         ),
       ),

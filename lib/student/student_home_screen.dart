@@ -9,7 +9,8 @@ import 'package:education_app/core/widgets/glass_card.dart';
 import 'package:education_app/core/widgets/section_heading.dart';
 import 'package:education_app/student/enrollment_service.dart';
 import 'package:education_app/student/progress_service.dart';
-import 'package:education_app/student/course_player_screen.dart';
+
+import '../core/widgets/students_widgets/continue_leaning_section.dart';
 
 class StudentHomeScreen extends StatefulWidget {
   final ValueChanged<int> onNavigate;
@@ -89,10 +90,10 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
         onRefresh: _loadStats,
         child: CustomScrollView(
           slivers: [
-            // ─── Wave Header ───────────────────────────────────────────────
+            // Wave Header
             SliverToBoxAdapter(child: _buildWaveHeader()),
 
-            // ─── Stats Row ─────────────────────────────────────────────────
+            // Stats Row
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -100,7 +101,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
               ),
             ),
 
-            // ─── Continue Learning ─────────────────────────────────────────
+            // Continue Learning
             SliverToBoxAdapter(
               child: SectionHeading(
                 title: AppMessages.continueLearning.tr,
@@ -108,9 +109,12 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                 onAction: () => widget.onNavigate(1),
               ),
             ),
-            SliverToBoxAdapter(child: _buildContinueLearning()),
+            SliverToBoxAdapter(child: ContinueLearningSection(
+              enrollment: _enrollment,
+              onNavigate: widget.onNavigate,
+            )),
 
-            // ─── Quiz Performance Chart ────────────────────────────────────
+            //Quiz Performance Chart
             if (_quizResults.isNotEmpty) ...[
               SliverToBoxAdapter(
                 child: SectionHeading(title: AppMessages.quizPerformance.tr),
@@ -118,7 +122,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
               SliverToBoxAdapter(child: _buildChart()),
             ],
 
-            // ─── Quick Actions ─────────────────────────────────────────────
+            // Quick Actions
             SliverToBoxAdapter(
               child: SectionHeading(title: AppMessages.quickActions.tr),
             ),
@@ -220,7 +224,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
     );
   }
 
-  // ── Stats Row ──────────────────────────────────────────────────────────────
+  // Stats Row
 
   Widget _buildStatsRow() {
     if (_statsLoading) {
@@ -256,8 +260,9 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
   Widget _premiumStatCard(IconData icon, String value, String label) {
     return Expanded(
       child: GlassCard(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.all(8),
@@ -272,7 +277,10 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
                 fontFamily: 'PlayfairDisplay',
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -282,6 +290,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
             const SizedBox(height: 2),
             Text(
               label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 10,
                 color: Colors.grey.shade500,
@@ -290,192 +300,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
               textAlign: TextAlign.center,
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // ── Continue Learning ──────────────────────────────────────────────────────
-
-  Widget _buildContinueLearning() {
-    return StreamBuilder<List<EnrolledCourse>>(
-      stream: _enrollment.streamMyEnrollments(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Center(child: CircularProgressIndicator(color: ThemeColors.primary)),
-          );
-        }
-
-        final courses = snapshot.data ?? [];
-
-        if (courses.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: GlassCard(
-              padding: const EdgeInsets.all(28),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: ThemeColors.primary.withValues(alpha: 0.08),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.school_outlined, size: 40, color: ThemeColors.primary.withValues(alpha: 0.6)),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    AppMessages.noCoursesYet.tr,
-                    style: const TextStyle(
-                      fontFamily: 'PlayfairDisplay',
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1A1A1A),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    AppMessages.exploreToStart.tr,
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 18),
-                  GestureDetector(
-                    onTap: () => widget.onNavigate(1),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [ThemeColors.primary, Color(0xFFE65100)],
-                        ),
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: ThemeColors.primary.withValues(alpha: 0.35),
-                            blurRadius: 14,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.explore_rounded, color: Colors.white, size: 16),
-                          const SizedBox(width: 8),
-                          Text(
-                            AppMessages.exploreCourses.tr,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
-        // Horizontal scroll cards
-        return SizedBox(
-          height: 158,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: courses.length,
-            itemBuilder: (_, i) => _horizontalCourseCard(courses[i]),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _horizontalCourseCard(EnrolledCourse course) {
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => CoursePlayerScreen(courseId: course.courseId)),
-      ),
-      child: Container(
-        width: 220,
-        margin: const EdgeInsets.only(right: 14, bottom: 4),
-        child: GlassCard(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [ThemeColors.primary, Color(0xFFE65100)],
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 20),
-                  ),
-                  const SizedBox(width: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: course.isCompleted
-                          ? Colors.green.withValues(alpha: 0.12)
-                          : ThemeColors.primary.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '${course.progressPercent}%',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: course.isCompleted ? Colors.green.shade700 : ThemeColors.primary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                course.courseTitle,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                  color: Color(0xFF1A1A1A),
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                course.instructorName.isNotEmpty ? course.instructorName : 'EduAf',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-              ),
-              const Spacer(),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: course.progress,
-                  minHeight: 5,
-                  color: course.isCompleted ? Colors.green : ThemeColors.primary,
-                  backgroundColor: ThemeColors.primary.withValues(alpha: 0.10),
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                '${course.completedLessons.length}/${course.totalLessons} lessons',
-                style: TextStyle(fontSize: 10, color: Colors.grey.shade400),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -643,3 +467,151 @@ class _QuickAction {
   final Color color;
   const _QuickAction(this.icon, this.label, this.sublabel, this.tabIndex, this.color);
 }
+
+//
+// import 'package:education_app/student/progress_service.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import '../core/I18n/messages.dart';
+// import '../core/constants/theme.dart';
+// import '../core/widgets/section_heading.dart';
+// import '../core/widgets/students_widgets/activity_chart.dart';
+// import '../core/widgets/students_widgets/build_quick_action.dart';
+// import '../core/widgets/students_widgets/build_wave_header.dart';
+// import '../core/widgets/students_widgets/chart_entry.dart';
+// import '../core/widgets/students_widgets/continue_leaning_section.dart';
+// import '../core/widgets/students_widgets/state_row.dart';
+// import 'enrollment_service.dart';
+//
+//
+// class StudentHomeScreen extends StatefulWidget {
+//   final ValueChanged<int> onNavigate;
+//
+//   const StudentHomeScreen({super.key, required this.onNavigate});
+//
+//   @override
+//   State<StudentHomeScreen> createState() => _StudentHomeScreenState();
+// }
+//
+// class _StudentHomeScreenState extends State<StudentHomeScreen> {
+//   final _enrollment = EnrollmentService();
+//   final _progress = ProgressService();
+//
+//   StudentStats? _stats;
+//   List<QuizResult> _quizResults = [];
+//   bool _statsLoading = true;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadStats();
+//   }
+//
+//   Future<void> _loadStats() async {
+//     try {
+//       final results = await Future.wait([
+//         _progress.getStudentStats(),
+//         _progress.getMyQuizResults(),
+//       ]);
+//       if (mounted) {
+//         setState(() {
+//           _stats = results[0] as StudentStats;
+//           _quizResults = (results[1] as List<QuizResult>).take(10).toList();
+//           _statsLoading = false;
+//         });
+//       }
+//     } catch (_) {
+//       if (mounted) setState(() => _statsLoading = false);
+//     }
+//   }
+//
+//   String get _greeting {
+//     final hour = DateTime.now().hour;
+//     if (hour < 12) return AppMessages.goodMorning.tr;
+//     if (hour < 17) return AppMessages.goodAfternoon.tr;
+//     return AppMessages.goodEvening.tr;
+//   }
+//
+//   String get _userName {
+//     final user = FirebaseAuth.instance.currentUser;
+//     final raw = user?.displayName ?? user?.email ?? '';
+//     final name = raw.split('|').first.split('@').first.trim();
+//     return name.isNotEmpty ? name : 'Student';
+//   }
+//
+//   List<ChartEntry> get _chartData {
+//     final Map<String, List<double>> byCourse = {};
+//     for (final r in _quizResults) {
+//       final label = r.quizTitle.length > 12
+//           ? '${r.quizTitle.substring(0, 10)}…'
+//           : r.quizTitle;
+//       byCourse.putIfAbsent(label, () => []).add(r.percentage * 100);
+//     }
+//     return byCourse.entries.map((e) {
+//       final avg = e.value.reduce((a, b) => a + b) / e.value.length;
+//       return ChartEntry(label: e.key, score: avg);
+//     }).toList();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: ThemeColors.background,
+//       body: RefreshIndicator(
+//         color: ThemeColors.primary,
+//         onRefresh: _loadStats,
+//         child: CustomScrollView(
+//           slivers: [
+//             // ─── Wave Header ───────────────────────────────────────────────
+//             SliverToBoxAdapter(
+//               child: WaveHeaderSection(
+//                 greeting: _greeting,
+//                 userName: _userName,
+//                 onProfileTap: () => widget.onNavigate(3),
+//               ),
+//             ),
+//
+//             // ─── Stats Row ─────────────────────────────────────────────────
+//             SliverToBoxAdapter(
+//               child: Padding(
+//                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+//                 child: StatsRow(
+//                   loading: _statsLoading,
+//                   stats: _stats,
+//                 ),
+//               ),
+//             ),
+//
+//             // ─── Continue Learning ─────────────────────────────────────────
+//             SliverToBoxAdapter(
+//               child: SectionHeading(
+//                 title: AppMessages.continueLearning.tr,
+//                 actionLabel: 'See All',
+//                 onAction: () => widget.onNavigate(1),
+//               ),
+//             ),
+//             SliverToBoxAdapter(child: ContinueLearningSection(enrollment: _enrollment, onNavigate: widget.onNavigate)),
+//
+//             // ─── Quiz Performance Chart ────────────────────────────────────
+//             if (_quizResults.isNotEmpty) ...[
+//               SliverToBoxAdapter(
+//                 child: SectionHeading(title: AppMessages.quizPerformance.tr),
+//               ),
+//               SliverToBoxAdapter(child: ActivityChart(data: _chartData)),
+//             ],
+//
+//             // ─── Quick Actions ─────────────────────────────────────────────
+//             SliverToBoxAdapter(
+//               child: SectionHeading(title: AppMessages.quickActions.tr),
+//             ),
+//             SliverToBoxAdapter(child: QuickActions(onNavigate: widget.onNavigate)),
+//
+//             // Bottom padding for floating nav
+//             const SliverToBoxAdapter(child: SizedBox(height: 100)),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

@@ -4,6 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:education_app/teacher/services/teacher_quiz_service.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+
+import '../../core/I18n/messages.dart';
 
 const _primary = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF3E0);
@@ -104,12 +107,12 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
       );
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Quiz saved!')));
+        ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(AppMessages.quizSaved.tr)));
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppMessages.errorMessage.tr}: $e')));
       }
     }
   }
@@ -153,9 +156,12 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                           style: const TextStyle(fontFamily: 'PlayfairDisplay', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
                           maxLines: 1, overflow: TextOverflow.ellipsis,
                         ),
-                        Text(
-                          '${_questions.length} questions',
-                          style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.80)),
+                    Text(
+                      '${_questions.length} ${AppMessages.question.tr}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withValues(alpha: 0.80),
+                      ),
                         ),
                       ],
                     ),
@@ -177,7 +183,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: Colors.white.withValues(alpha: 0.50)),
                           ),
-                          child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
+                          child: Text(AppMessages.save.tr, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
                         ),
                       ),
                     ),
@@ -200,9 +206,9 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                             children: [
                               Icon(Icons.help_outline, size: 72, color: Colors.grey[300]),
                               const SizedBox(height: 16),
-                              Text('No questions yet', style: TextStyle(fontSize: 16, color: Colors.grey[500])),
+                              Text(AppMessages.noQuestionsYet.tr, style: TextStyle(fontSize: 16, color: Colors.grey[500])),
                               const SizedBox(height: 8),
-                              Text('Tap + to add your first question',
+                              Text(AppMessages.addFirstQuestion.tr,
                                   style: TextStyle(fontSize: 13, color: Colors.grey[400])),
                             ],
                           ),
@@ -221,7 +227,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
         onPressed: _addQuestion,
         backgroundColor: _primary,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Add Question', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: Text(AppMessages.addQuestion.tr, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -240,7 +246,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Quiz Settings', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          Text(AppMessages.quizSettings.tr, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -248,7 +254,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Passing Score (%)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                    Text(AppMessages.passingScore.tr, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<int>(
                       value: _passingScore,
@@ -270,7 +276,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Show Answers', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                    Text(AppMessages.showAnswers.tr, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       value: _showAnswersOption,
@@ -279,10 +285,10 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                       ),
-                      items: const [
-                        DropdownMenuItem(value: 'immediately', child: Text('Immediately')),
-                        DropdownMenuItem(value: 'after_completion', child: Text('After Submit')),
-                        DropdownMenuItem(value: 'never', child: Text('Never')),
+                      items: [
+                        DropdownMenuItem(value: 'immediately', child: Text(AppMessages.immediately.tr)),
+                        DropdownMenuItem(value: 'after_completion', child: Text(AppMessages.afterSubmit.tr)),
+                        DropdownMenuItem(value: 'never', child: Text(AppMessages.never.tr)),
                       ],
                       onChanged: (v) => setState(() => _showAnswersOption = v ?? 'immediately'),
                     ),
@@ -295,8 +301,8 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             activeColor: _primary,
-            title: const Text('Shuffle Questions', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-            subtitle: const Text('Randomize question order for each attempt', style: TextStyle(fontSize: 12)),
+            title: Text(AppMessages.shuffleQuestions.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            subtitle: Text(AppMessages.randomizeQuestions.tr, style: TextStyle(fontSize: 12)),
             value: _shuffleQuestions,
             onChanged: (v) => setState(() => _shuffleQuestions = v),
           ),
@@ -410,7 +416,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(isEdit ? 'Edit Question' : 'Add Question'),
+          title: Text(isEdit ? AppMessages.editQuestion.tr : AppMessages.addQuestion.tr),
           contentPadding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
           content: SizedBox(
             width: double.maxFinite,
@@ -419,21 +425,21 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Question *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  Text(AppMessages.questionRequired.tr, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   TextField(
                     controller: questionCtrl,
                     maxLines: 3,
                     decoration: InputDecoration(
-                      hintText: 'Enter your question here...',
+                      hintText: AppMessages.enterQuestion.tr,
                       filled: true, fillColor: const Color(0xFFF5F7FB),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text('Answer Options *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                   Text(AppMessages.answerOptions.tr, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  const Text('Tap ✓ to mark as correct answer', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(AppMessages.markCorrectAnswer.tr, style: TextStyle(fontSize: 12, color: Colors.grey)),
                   const SizedBox(height: 10),
                   ...List.generate(4, (i) => Padding(
                     padding: const EdgeInsets.only(bottom: 10),
@@ -461,7 +467,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                           child: TextField(
                             controller: optionCtrls[i],
                             decoration: InputDecoration(
-                              hintText: 'Option ${String.fromCharCode(65 + i)}',
+                              hintText: '${AppMessages.option.tr} ${String.fromCharCode(65 + i)}',
                               filled: true,
                               fillColor: selectedCorrect == i ? Colors.green.withValues(alpha: 0.06) : const Color(0xFFF5F7FB),
                               border: OutlineInputBorder(
@@ -484,7 +490,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppMessages.cancel.tr)),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: _primary),
               onPressed: () {
@@ -492,7 +498,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                 final options = optionCtrls.map((c) => c.text.trim()).toList();
                 if (question.isEmpty || options.any((o) => o.isEmpty)) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please fill in the question and all 4 options')),
+                    SnackBar(content: Text(AppMessages.fillQuestionAndOptions.tr)),
                   );
                   return;
                 }
@@ -506,7 +512,7 @@ class _QuizBuilderScreenState extends State<QuizBuilderScreen> {
                   }
                 });
               },
-              child: Text(isEdit ? 'Update' : 'Add', style: const TextStyle(color: Colors.white)),
+              child: Text(isEdit ? AppMessages.update.tr :  AppMessages.add.tr, style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),

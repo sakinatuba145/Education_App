@@ -815,7 +815,7 @@ class _CourseDetailScreenPremiumState
                           : Text(
                               course.isFree ? 'Enroll Free' : 'Enroll Now',
                               style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w700)),
+                                  fontSize: 14, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],

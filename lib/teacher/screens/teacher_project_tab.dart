@@ -8,8 +8,10 @@
  *      and 'Submissions' (list of student uploads with a grading dialog).
  */
 
+import 'package:education_app/core/I18n/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/teacher/services/final_project_service.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
 const _orange = Color(0xFFFFA726);
 const _bg = Color(0xFFFFF8F0);
@@ -17,6 +19,7 @@ const _bg = Color(0xFFFFF8F0);
 /// A tabbed view for managing the capstone project of a specific course.
 class TeacherProjectTab extends StatefulWidget {
   final String courseId;
+
   const TeacherProjectTab({super.key, required this.courseId});
 
   @override
@@ -95,19 +98,20 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
               labelColor: _orange,
               unselectedLabelColor: Colors.grey,
               indicatorColor: _orange,
-              tabs: const [
-                Tab(icon: Icon(Icons.edit_note_rounded, size: 18), text: 'Project Setup'),
-                Tab(icon: Icon(Icons.grading_rounded, size: 18), text: 'Submissions'),
+              tabs: [
+                Tab(
+                  icon: Icon(Icons.edit_note_rounded, size: 18),
+                  text: AppMessages.projectSetUp.tr,
+                ),
+                Tab(
+                  icon: Icon(Icons.grading_rounded, size: 18),
+                  text: AppMessages.submission.tr,
+                ),
               ],
             ),
           ),
           Expanded(
-            child: TabBarView(
-              children: [
-                _buildEditor(),
-                _buildSubmissions(),
-              ],
-            ),
+            child: TabBarView(children: [_buildEditor(), _buildSubmissions()]),
           ),
         ],
       ),
@@ -126,7 +130,9 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [_orange.withValues(alpha: 0.15), Colors.white]),
+              gradient: LinearGradient(
+                colors: [_orange.withValues(alpha: 0.15), Colors.white],
+              ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: _orange.withValues(alpha: 0.3)),
             ),
@@ -138,16 +144,28 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
                     color: _orange.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.assignment_rounded, color: _orange, size: 24),
+                  child: const Icon(
+                    Icons.assignment_rounded,
+                    color: _orange,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Final Project', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      Text('Set project requirements, instructions & grading criteria',
-                          style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text(
+                        AppMessages.finalProject.tr,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        AppMessages.projectRequirements.tr,
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
                     ],
                   ),
                 ),
@@ -156,19 +174,33 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
           ),
           const SizedBox(height: 24),
 
-          _label('Project Details'),
+          _label(AppMessages.projectDetails.tr),
           const SizedBox(height: 12),
-          _field(_titleCtrl, 'Project Title *', Icons.title_rounded,
-              hint: 'e.g. Build a Complete Todo App'),
+          _field(
+            _titleCtrl,
+            AppMessages.projectTitle.tr,
+            Icons.title_rounded,
+            hint: AppMessages.todoAppHint.tr,
+          ),
           const SizedBox(height: 12),
-          _field(_descCtrl, 'Short Description *', Icons.description_rounded,
-              maxLines: 2, hint: 'Brief overview of what students will build'),
+          _field(
+            _descCtrl,
+            AppMessages.shortDescription.tr,
+            Icons.description_rounded,
+            maxLines: 2,
+            hint: AppMessages.briefOverview.tr,
+          ),
           const SizedBox(height: 12),
-          _field(_instrCtrl, 'Detailed Instructions', Icons.list_alt_rounded,
-              maxLines: 6, hint: 'Step-by-step instructions, requirements, submission format...'),
+          _field(
+            _instrCtrl,
+            AppMessages.detailedInstruction.tr,
+            Icons.list_alt_rounded,
+            maxLines: 6,
+            hint: AppMessages.stepByStep.tr,
+          ),
           const SizedBox(height: 24),
 
-          _label('Grading Criteria'),
+          _label(AppMessages.gradingCriteria.tr),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -177,12 +209,18 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
                   controller: _passingCtrl,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: 'Passing Score',
+                    labelText: AppMessages.passingScore.tr,
                     suffixText: 'pts',
-                    helperText: 'Minimum to pass',
-                    prefixIcon: const Icon(Icons.check_circle_outline_rounded, color: Colors.green),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    filled: true, fillColor: Colors.grey[50],
+                    helperText: AppMessages.minimumToPass.tr,
+                    prefixIcon: const Icon(
+                      Icons.check_circle_outline_rounded,
+                      color: Colors.green,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
                   ),
                 ),
               ),
@@ -192,12 +230,15 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
                   controller: _maxCtrl,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: 'Maximum Score',
+                    labelText: AppMessages.maximumScore.tr,
                     suffixText: 'pts',
-                    helperText: 'Total points available',
+                    helperText: AppMessages.totalPoint.tr,
                     prefixIcon: const Icon(Icons.star_rounded, color: _orange),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    filled: true, fillColor: Colors.grey[50],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
                   ),
                 ),
               ),
@@ -216,13 +257,18 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
               children: [
                 const Icon(Icons.flag_rounded, color: Colors.red, size: 20),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Project is Required', style: TextStyle(fontWeight: FontWeight.w600)),
-                      Text('Students must pass to complete the course',
-                          style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text(
+                        AppMessages.projectIsRequired.tr,
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        AppMessages.studentMustPass.tr,
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
                     ],
                   ),
                 ),
@@ -243,12 +289,14 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
                   child: OutlinedButton.icon(
                     onPressed: () => _confirmDelete(),
                     icon: const Icon(Icons.delete_outline_rounded, size: 18),
-                    label: const Text('Delete Project'),
+                    label: Text(AppMessages.deleteProject.tr),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.red),
                       foregroundColor: Colors.red,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
@@ -260,14 +308,28 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
                   style: FilledButton.styleFrom(
                     backgroundColor: _orange,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   icon: _saving
-                      ? const SizedBox(width: 16, height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
                       : const Icon(Icons.save_rounded, size: 18),
-                  label: Text(_saving ? 'Saving…' : (_project == null ? 'Create Project' : 'Update Project'),
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  label: Text(
+                    _saving
+                        ? AppMessages.saving.tr
+                        : (_project == null
+                              ? AppMessages.createProject.tr
+                              : AppMessages.updateProject.tr),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
@@ -280,8 +342,12 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
   /// Persists project details (title, instructions, grading thresholds) to the backend.
   Future<void> _save() async {
     if (_titleCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Please enter a project title'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppMessages.enterProjectTitle.tr),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
     setState(() => _saving = true);
@@ -297,11 +363,13 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
       );
       await _load();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Final project saved!'),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppMessages.finalProjectSaved.tr),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -312,23 +380,32 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete Project?'),
-        content: const Text('This will remove the project definition. Existing submissions will remain.'),
+        title: Text(AppMessages.deletePjt.tr),
+        content: Text(AppMessages.projectDefinition.tr),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(AppMessages.delete.tr),
           ),
         ],
       ),
     );
     if (ok == true) {
       await _service.deleteProject(widget.courseId);
-      _titleCtrl.clear(); _descCtrl.clear(); _instrCtrl.clear();
-      _passingCtrl.text = '70'; _maxCtrl.text = '100';
-      setState(() { _project = null; _required = true; });
+      _titleCtrl.clear();
+      _descCtrl.clear();
+      _instrCtrl.clear();
+      _passingCtrl.text = '70';
+      _maxCtrl.text = '100';
+      setState(() {
+        _project = null;
+        _required = true;
+      });
     }
   }
 
@@ -344,14 +421,22 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
                 children: [
                   Icon(Icons.inbox_rounded, size: 56, color: Colors.grey[300]),
                   const SizedBox(height: 12),
-                  Text('No submissions yet',
-                      style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    AppMessages.noStudentsYet.tr,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 6),
-                  Text(_project == null
-                      ? 'Create a project first so students can submit'
-                      : 'Students will appear here once they submit',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey[400], fontSize: 13)),
+                  Text(
+                    _project == null
+                        ? AppMessages.createProjectFirst.tr
+                        : AppMessages.studentsAppearAfterSubmission.tr,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey[400], fontSize: 13),
+                  ),
                 ],
               ),
             )
@@ -372,9 +457,19 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
     Color statusColor;
     IconData statusIcon;
     String statusLabel;
-    if (status == 'passed') { statusColor = Colors.green; statusIcon = Icons.check_circle_rounded; statusLabel = 'Passed'; }
-    else if (status == 'failed') { statusColor = Colors.red; statusIcon = Icons.cancel_rounded; statusLabel = 'Failed'; }
-    else { statusColor = Colors.blue; statusIcon = Icons.hourglass_top_rounded; statusLabel = 'Pending'; }
+    if (status == 'passed') {
+      statusColor = Colors.green;
+      statusIcon = Icons.check_circle_rounded;
+      statusLabel = AppMessages.passed.tr;
+    } else if (status == 'failed') {
+      statusColor = Colors.red;
+      statusIcon = Icons.cancel_rounded;
+      statusLabel = AppMessages.failed.tr;
+    } else {
+      statusColor = Colors.blue;
+      statusIcon = Icons.hourglass_top_rounded;
+      statusLabel = AppMessages.pending.tr;
+    }
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -391,30 +486,58 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
                 CircleAvatar(
                   backgroundColor: _orange.withValues(alpha: 0.15),
                   radius: 22,
-                  child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: const TextStyle(color: _orange, fontWeight: FontWeight.bold, fontSize: 18)),
+                  child: Text(
+                    name.isNotEmpty ? name[0].toUpperCase() : '?',
+                    style: const TextStyle(
+                      color: _orange,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                      Text(sub['studentEmail'] ?? '', style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        sub['studentEmail'] ?? '',
+                        style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                      ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(statusIcon, size: 13, color: statusColor),
-                    const SizedBox(width: 4),
-                    Text(statusLabel, style: TextStyle(fontSize: 11, color: statusColor, fontWeight: FontWeight.bold)),
-                  ]),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(statusIcon, size: 13, color: statusColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        statusLabel,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -422,21 +545,45 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(10)),
-              child: Text(sub['submissionText'] ?? '',
-                  maxLines: 3, overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12, height: 1.4)),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                sub['submissionText'] ?? '',
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 12, height: 1.4),
+              ),
             ),
             if (score != null) ...[
               const SizedBox(height: 8),
-              Row(children: [
-                Icon(passed == true ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                    size: 14, color: passed == true ? Colors.green : Colors.red),
-                const SizedBox(width: 4),
-                Text('Score: $score / ${_project?['maxScore'] ?? 100}',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold,
-                        color: passed == true ? Colors.green : Colors.red)),
-              ]),
+              Row(
+                children: [
+                  Icon(
+                    passed == true
+                        ? Icons.check_circle_rounded
+                        : Icons.cancel_rounded,
+                    size: 14,
+                    color: passed == true ? Colors.green : Colors.red,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    AppMessages.scoreWithMax.tr
+                        .replaceFirst('{score}', score.toString())
+                        .replaceFirst(
+                          '{maxScore}',
+                          (_project?['maxScore'] ?? 100).toString(),
+                        ),
+
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: passed == true ? Colors.green : Colors.red,
+                    ),
+                  ),
+                ],
+              ),
             ],
             const SizedBox(height: 12),
             SizedBox(
@@ -444,13 +591,27 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
               child: FilledButton.icon(
                 onPressed: () => _gradeDialog(sub),
                 style: FilledButton.styleFrom(
-                  backgroundColor: status == 'submitted' ? _orange : Colors.grey[600],
+                  backgroundColor: status == 'submitted'
+                      ? _orange
+                      : Colors.grey[600],
                   padding: const EdgeInsets.symmetric(vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                icon: Icon(status == 'submitted' ? Icons.grading_rounded : Icons.edit_rounded, size: 16),
-                label: Text(status == 'submitted' ? 'Grade Submission' : 'Update Grade',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                icon: Icon(
+                  status == 'submitted'
+                      ? Icons.grading_rounded
+                      : Icons.edit_rounded,
+                  size: 16,
+                ),
+                label: Text(
+                  status == 'submitted' ? AppMessages.gradSubmission.tr : AppMessages.updateGrad.tr,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
               ),
             ),
           ],
@@ -470,124 +631,226 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
 
     showDialog(
       context: context,
-      builder: (ctx) => StatefulBuilder(builder: (ctx, setS) {
-        final entered = int.tryParse(scoreCtrl.text) ?? 0;
-        final willPass = entered >= passingScore;
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Grade Submission', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(sub['studentName'] ?? '',
-                style: const TextStyle(fontSize: 13, color: Colors.grey, fontWeight: FontWeight.normal)),
-          ]),
-          content: SingleChildScrollView(
-            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-              TextField(
-                controller: scoreCtrl,
-                keyboardType: TextInputType.number,
-                onChanged: (_) => setS(() {}),
-                decoration: InputDecoration(
-                  labelText: 'Score (out of $maxScore)',
-                  prefixIcon: const Icon(Icons.grade_rounded),
-                  suffixText: '/$maxScore',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  filled: true, fillColor: Colors.grey[50],
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setS) {
+          final entered = int.tryParse(scoreCtrl.text) ?? 0;
+          final willPass = entered >= passingScore;
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                 Text(
+                  AppMessages.gradSubmission.tr,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: (willPass ? Colors.green : Colors.red).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                Text(
+                  sub['studentName'] ?? '',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
-                child: Row(children: [
-                  Icon(willPass ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                      color: willPass ? Colors.green : Colors.red, size: 16),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      willPass ? 'PASS — above passing score ($passingScore)' : 'FAIL — below passing score ($passingScore)',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold,
-                          color: willPass ? Colors.green[700] : Colors.red[700]),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: scoreCtrl,
+                    keyboardType: TextInputType.number,
+                    onChanged: (_) => setS(() {}),
+                    decoration: InputDecoration(
+                      labelText: AppMessages.scoreOutOf.tr
+                          .replaceFirst('{maxScore}', maxScore.toString()),
+                      prefixIcon: const Icon(Icons.grade_rounded),
+                      suffixText: '/$maxScore',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
                     ),
                   ),
-                ]),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: (willPass ? Colors.green : Colors.red).withValues(
+                        alpha: 0.1,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          willPass
+                              ? Icons.check_circle_rounded
+                              : Icons.cancel_rounded,
+                          color: willPass ? Colors.green : Colors.red,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            (willPass
+                                    ? AppMessages.passAboveScore
+                                    : AppMessages.failBelowScore)
+                                .tr
+                                .replaceFirst(
+                                  '{passingScore}',
+                                  passingScore.toString(),
+                                ),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: willPass
+                                  ? Colors.green[700]
+                                  : Colors.red[700],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: feedbackCtrl,
+                    maxLines: 4,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      labelText: AppMessages.feedbackComments.tr,
+                      hintText: AppMessages.feedbackCommentsHint.tr,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: feedbackCtrl,
-                maxLines: 4,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  labelText: 'Feedback / Comments',
-                  hintText: 'Great work! You could improve...',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  filled: true, fillColor: Colors.grey[50],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(AppMessages.cancel.tr),
+              ),
+              FilledButton.icon(
+                onPressed: saving
+                    ? null
+                    : () async {
+                        final score = int.tryParse(scoreCtrl.text);
+                        if (score == null || score < 0 || score > maxScore) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                AppMessages.enterScoreRange.tr.replaceFirst(
+                                  '{maxScore}',
+                                  maxScore.toString(),
+                                ),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+                        setS(() => saving = true);
+                        try {
+                          await _service.gradeSubmission(
+                            widget.courseId,
+                            sub['studentId'],
+                            score: score,
+                            maxScore: maxScore,
+                            passingScore: passingScore,
+                            feedback: feedbackCtrl.text.trim(),
+                          );
+                          if (ctx.mounted) Navigator.pop(ctx);
+                          await _load();
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  score >= passingScore
+                                      ? AppMessages
+                                            .studentPassedCertificateIssued
+                                            .tr
+                                      : AppMessages.studentFailedCanResubmit.tr,
+                                ),
+                                backgroundColor: score >= passingScore
+                                    ? Colors.green
+                                    : Colors.orange,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          setS(() => saving = false);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                AppMessages.errorWithDetails.tr
+                                    .replaceFirst('{error}', e.toString()),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                style: FilledButton.styleFrom(
+                  backgroundColor: _orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                icon: saving
+                    ? const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.grading_rounded, size: 16),
+                label: Text(
+                  saving ? AppMessages.grading.tr : AppMessages.submitGrad.tr,
                 ),
               ),
-            ]),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-            FilledButton.icon(
-              onPressed: saving ? null : () async {
-                final score = int.tryParse(scoreCtrl.text);
-                if (score == null || score < 0 || score > maxScore) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Enter a score between 0 and $maxScore'),
-                    backgroundColor: Colors.red,
-                  ));
-                  return;
-                }
-                setS(() => saving = true);
-                try {
-                  await _service.gradeSubmission(
-                    widget.courseId, sub['studentId'],
-                    score: score, maxScore: maxScore,
-                    passingScore: passingScore,
-                    feedback: feedbackCtrl.text.trim(),
-                  );
-                  if (ctx.mounted) Navigator.pop(ctx);
-                  await _load();
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(score >= passingScore
-                          ? '✅ Graded — Student PASSED! Certificate issued.'
-                          : '❌ Graded — Student failed. They can resubmit.'),
-                      backgroundColor: score >= passingScore ? Colors.green : Colors.orange,
-                      behavior: SnackBarBehavior.floating,
-                    ));
-                  }
-                } catch (e) {
-                  setS(() => saving = false);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
-                }
-              },
-              style: FilledButton.styleFrom(
-                backgroundColor: _orange,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              icon: saving
-                  ? const SizedBox(width: 14, height: 14,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.grading_rounded, size: 16),
-              label: Text(saving ? 'Grading…' : 'Submit Grade'),
-            ),
-          ],
-        );
-      }),
+            ],
+          );
+        },
+      ),
     );
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  Widget _label(String text) => Text(text,
-      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.grey, letterSpacing: 0.5));
+  Widget _label(String text) => Text(
+    text,
+    style: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w700,
+      color: Colors.grey,
+      letterSpacing: 0.5,
+    ),
+  );
 
-  Widget _field(TextEditingController ctrl, String label, IconData icon,
-      {int maxLines = 1, String? hint}) {
+  Widget _field(
+    TextEditingController ctrl,
+    String label,
+    IconData icon, {
+    int maxLines = 1,
+    String? hint,
+  }) {
     return TextField(
       controller: ctrl,
       maxLines: maxLines,
@@ -596,10 +859,16 @@ class _TeacherProjectTabState extends State<TeacherProjectTab> {
         labelText: label,
         hintText: hint,
         prefixIcon: maxLines == 1 ? Icon(icon, size: 20) : null,
-        prefixIconConstraints: maxLines > 1 ? null : const BoxConstraints(minWidth: 48, minHeight: 48),
+        prefixIconConstraints: maxLines > 1
+            ? null
+            : const BoxConstraints(minWidth: 48, minHeight: 48),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true, fillColor: Colors.grey[50],
-        contentPadding: EdgeInsets.symmetric(horizontal: maxLines > 1 ? 14 : 0, vertical: 14),
+        filled: true,
+        fillColor: Colors.grey[50],
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: maxLines > 1 ? 14 : 0,
+          vertical: 14,
+        ),
       ),
     );
   }

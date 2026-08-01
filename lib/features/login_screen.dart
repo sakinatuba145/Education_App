@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => PortalShell(child: TeacherDashboardScreen()),
+            builder: (_) => PortalShell(child: TeacherDashboardScreen(), showLanguage: false,),
           ),
         );
       } else {
@@ -268,7 +268,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
 
                         const SizedBox(height: 10),
-
                         SizedBox(
                           width: double.infinity,
                           height: 56,

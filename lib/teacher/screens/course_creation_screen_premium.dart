@@ -20,6 +20,10 @@ import 'package:education_app/core/widgets/animated_button.dart';
 import 'package:education_app/core/widgets/animated_progress_indicators.dart';
 import 'package:education_app/teacher/models/course_model.dart';
 import 'package:education_app/teacher/services/teacher_course_service.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+import 'package:get/get.dart';
+import '../../core/I18n/messages.dart';
+import '../../core/constants/theme.dart';
 
 /// A premium-styled multi-step form widget for initiating a new course.
 class CourseCreationScreenPremium extends StatefulWidget {
@@ -148,8 +152,8 @@ class _CourseCreationScreenPremiumState
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Course created successfully!'),
+          SnackBar(
+            content: Text(AppMessages.courseCreatedSuccessfully.tr),
             backgroundColor: AppColors.success,
           ),
         );
@@ -159,7 +163,7 @@ class _CourseCreationScreenPremiumState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to create course: $e'),
+            content: Text('${AppMessages.failedToCreateCourse.tr} $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -172,7 +176,7 @@ class _CourseCreationScreenPremiumState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: ThemeColors.background,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Container(
@@ -198,10 +202,10 @@ class _CourseCreationScreenPremiumState
                       onPressed: () => Navigator.pop(ctx),
                     ),
                   ),
-                  const Expanded(
+                   Expanded(
                     child: Center(
                       child: Text(
-                        'Create Course',
+                        AppMessages.createCourse.tr,
                         style: TextStyle(fontFamily: 'PlayfairDisplay', fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
                       ),
                     ),
@@ -213,59 +217,67 @@ class _CourseCreationScreenPremiumState
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(AppDimensions.spacing_16),
-            child: StepProgressIndicator(
-              totalSteps: 3,
-              currentStep: _currentStep,
-              stepLabels: const ['Basic Info', 'Thumbnail', 'Settings'],
-            ),
-          ),
-          Expanded(
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0.3, 0),
-                end: Offset.zero,
-              ).animate(
-                CurvedAnimation(parent: _stepController, curve: Curves.easeOut),
-              ),
-              child: FadeTransition(
-                opacity: _stepController,
-                child: _buildStepContent(),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(AppDimensions.spacing_16),
-            child: Row(
-              children: [
-                if (_currentStep > 0)
-                  Expanded(
-                    child: SizedBox(
-                      height: AppDimensions.button_height,
-                      child: OutlinedButton(
-                        onPressed: _saving ? null : _previousStep,
-                        child: const Text('Previous'),
-                      ),
-                    ),
-                  ),
-                if (_currentStep > 0)
-                  SizedBox(width: AppDimensions.spacing_12),
-                Expanded(
-                  child: _saving
-                      ? const Center(child: CircularProgressIndicator())
-                      : AnimatedElevatedButton(
-                          label: _currentStep == 2 ? 'Create Course' : 'Next',
-                          onPressed: _nextStep,
-                          isFullWidth: true,
-                        ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(bottom: 120),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(AppDimensions.spacing_16),
+                child: StepProgressIndicator(
+                  totalSteps: 3,
+                  currentStep: _currentStep,
+                  stepLabels: [
+                    AppMessages.basicInfo.tr,
+                    AppMessages.thumbnail.tr,
+                    AppMessages.settingsStep.tr,
+                  ],
                 ),
-              ],
-            ),
+              ),
+              SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.3, 0),
+                    end: Offset.zero,
+                  ).animate(
+                    CurvedAnimation(parent: _stepController, curve: Curves.easeOut),
+                  ),
+                  child: FadeTransition(
+                    opacity: _stepController,
+                    child: _buildStepContent(),
+                  ),
+                ),
+              Padding(
+                padding: EdgeInsets.all(AppDimensions.spacing_16),
+                child: Row(
+                  children: [
+                    if (_currentStep > 0)
+                      Expanded(
+                        child: SizedBox(
+                          height: AppDimensions.button_height,
+                          child: OutlinedButton(
+                            onPressed: _saving ? null : _previousStep,
+                            child: Text(AppMessages.previous.tr),
+                          ),
+                        ),
+                      ),
+                    if (_currentStep > 0)
+                      SizedBox(width: AppDimensions.spacing_12),
+                    Expanded(
+                      child: _saving
+                          ? const Center(child: CircularProgressIndicator())
+                          : AnimatedElevatedButton(
+                              label: _currentStep == 2 ? AppMessages.createCourse.tr : AppMessages.next.tr,
+                              onPressed: _nextStep,
+                              isFullWidth: true,
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -291,25 +303,25 @@ class _CourseCreationScreenPremiumState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Course Information',
+            Text(AppMessages.courseInformation.tr,
                 style: Theme.of(context).textTheme.headlineSmall),
             SizedBox(height: AppDimensions.spacing_24),
             TextFormField(
               controller: _titleController,
               decoration: InputDecoration(
-                labelText: 'Course Title *',
-                hintText: 'Enter course title',
+                labelText: '${AppMessages.courseTitle.tr} *',
+                hintText: AppMessages.enterCourseTitle.tr,
                 prefixIcon: const Icon(Icons.title),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              validator: (v) => (v?.isEmpty ?? true) ? 'Title is required' : null,
+              validator: (v) => (v?.isEmpty ?? true) ? AppMessages.titleRequired.tr : null,
             ),
             SizedBox(height: AppDimensions.spacing_16),
             TextFormField(
               controller: _subtitleController,
               decoration: InputDecoration(
-                labelText: 'Subtitle (optional)',
-                hintText: 'Short course tagline',
+                labelText:AppMessages.subtitleOptional.tr,
+                hintText: AppMessages.shortCourseTagline.tr,
                 prefixIcon: const Icon(Icons.short_text),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -318,20 +330,20 @@ class _CourseCreationScreenPremiumState
             TextFormField(
               controller: _descriptionController,
               decoration: InputDecoration(
-                labelText: 'Description *',
-                hintText: 'Describe your course',
+                labelText: '${AppMessages.description.tr} *',
+                hintText: AppMessages.describeCourse.tr,
                 prefixIcon: const Icon(Icons.description),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
               maxLines: 4,
               validator: (v) =>
-                  (v?.isEmpty ?? true) ? 'Description is required' : null,
+                  (v?.isEmpty ?? true) ? AppMessages.descriptionRequired.tr : null,
             ),
             SizedBox(height: AppDimensions.spacing_16),
             DropdownButtonFormField<String>(
               value: _selectedCategory,
               decoration: InputDecoration(
-                labelText: 'Category',
+                labelText: AppMessages.category.tr,
                 prefixIcon: const Icon(Icons.category),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -344,7 +356,7 @@ class _CourseCreationScreenPremiumState
             DropdownButtonFormField<String>(
               value: _selectedLevel,
               decoration: InputDecoration(
-                labelText: 'Level',
+                labelText: AppMessages.level.tr,
                 prefixIcon: const Icon(Icons.signal_cellular_alt),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -356,9 +368,13 @@ class _CourseCreationScreenPremiumState
                   .toList(),
               onChanged: (v) => setState(() => _selectedLevel = v!),
             ),
+
           ],
+
         ),
+
       ),
+
     );
   }
 
@@ -421,7 +437,7 @@ class _CourseCreationScreenPremiumState
         setState(() => _uploadingThumb = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Upload failed: $e'),
+            content: Text('${AppMessages.uploadFailed.tr} $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -438,11 +454,11 @@ class _CourseCreationScreenPremiumState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Course Thumbnail',
+          Text(AppMessages.courseThumbnail.tr,
               style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 6),
           Text(
-            'Upload a cover image — we auto-fit it to 16:9. JPG or PNG, any size.',
+            AppMessages.thumbnailDescription.tr,
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
@@ -501,8 +517,8 @@ class _CourseCreationScreenPremiumState
                                 const SizedBox(height: 12),
                                 Text(
                                   _uploadProgress > 0
-                                      ? 'Uploading… ${(_uploadProgress * 100).toInt()}%'
-                                      : 'Preparing…',
+                                      ? '${AppMessages.uploading.tr} ${(_uploadProgress * 100).toInt()}%'
+                                      : AppMessages.preparing.tr,
                                   style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600),
@@ -535,13 +551,13 @@ class _CourseCreationScreenPremiumState
                                 color: Colors.black.withValues(alpha: 0.65),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Row(
+                              child:  Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(Icons.edit_rounded,
                                         size: 13, color: Colors.white),
                                     SizedBox(width: 4),
-                                    Text('Change',
+                                    Text(AppMessages.change.tr,
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 11,
@@ -565,7 +581,7 @@ class _CourseCreationScreenPremiumState
                                     .withValues(alpha: 0.8)),
                           ),
                           const SizedBox(height: 16),
-                          Text('Tap to upload thumbnail',
+                          Text(AppMessages.tapUploadThumbnail.tr,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
@@ -573,7 +589,7 @@ class _CourseCreationScreenPremiumState
                                       color: AppColors.primary,
                                       fontWeight: FontWeight.w600)),
                           const SizedBox(height: 6),
-                          Text('JPG · PNG  •  Any size  •  Auto-cropped to 16:9',
+                          Text(AppMessages.thumbnailHint.tr,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -591,7 +607,7 @@ class _CourseCreationScreenPremiumState
               const Icon(Icons.check_circle_rounded,
                   color: AppColors.success, size: 15),
               const SizedBox(width: 5),
-              Text('Image uploaded successfully',
+              Text(AppMessages.thumbnailOptional.tr,
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
@@ -599,7 +615,7 @@ class _CourseCreationScreenPremiumState
             ]),
           ] else if (!hasPreview) ...[
             const SizedBox(height: 10),
-            Text('Optional — you can also add a thumbnail later from the course editor.',
+            Text(AppMessages.thumbnailOptional.tr,
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
@@ -616,12 +632,12 @@ class _CourseCreationScreenPremiumState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Course Settings',
+          Text(AppMessages.courseSettings.tr,
               style: Theme.of(context).textTheme.headlineSmall),
           SizedBox(height: AppDimensions.spacing_24),
           SwitchListTile(
-            title: const Text('Make course paid'),
-            subtitle: Text(_isPaid ? 'Students pay to enroll' : 'Free for all students'),
+            title: Text(AppMessages.makeCoursePaid.tr),
+            subtitle: Text(_isPaid ? AppMessages.studentsPayToEnroll.tr : AppMessages.freeForStudents.tr),
             value: _isPaid,
             activeColor: AppColors.primary,
             onChanged: (v) => setState(() => _isPaid = v),
@@ -631,7 +647,7 @@ class _CourseCreationScreenPremiumState
             TextFormField(
               controller: _priceController,
               decoration: InputDecoration(
-                labelText: 'Price (USD)',
+                labelText: AppMessages.priceUsd.tr,
                 prefixIcon: const Icon(Icons.attach_money),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -657,7 +673,7 @@ class _CourseCreationScreenPremiumState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Ready to create!',
+                        AppMessages.readyToCreate.tr,
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall
@@ -665,7 +681,7 @@ class _CourseCreationScreenPremiumState
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Your course will be saved as a draft. You can add lessons and publish it afterwards.',
+                        AppMessages.draftMessage.tr,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],

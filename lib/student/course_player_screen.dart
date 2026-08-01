@@ -398,7 +398,8 @@ class _CoursePlayerScreenState extends State<CoursePlayerScreen> {
 
   Widget _buildSidebar() => Container(
     width: 280,
-    color: _sidebarBg,
+    // -----------1--------
+    // color: _sidebarBg,
     decoration: const BoxDecoration(
       border: Border(right: BorderSide(color: Color(0xFFEEEEEE))),
     ),

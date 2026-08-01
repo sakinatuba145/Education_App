@@ -6,23 +6,30 @@ import 'language_switcher_button.dart';
 /// Used for the teacher portal where we cannot modify lib/teacher/** files.
 class PortalShell extends StatelessWidget {
   final Widget child;
+  final bool showLanguage;
 
-  const PortalShell({super.key, required this.child});
+  const PortalShell({
+    super.key,
+    required this.child,
+    this.showLanguage = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         child,
-        SafeArea(
-          child: Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8, right: 12),
-              child: const LanguageSwitcherButton(),
+
+        if (showLanguage)
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8, right: 12),
+                child: const LanguageSwitcherButton(),
+              ),
             ),
           ),
-        ),
       ],
     );
   }

@@ -569,3 +569,154 @@ class _StudentProjectScreenState extends State<StudentProjectScreen> {
     );
   }
 }
+
+//
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import '../core/constants/app_colors.dart';
+// import '../core/constants/theme.dart';
+// import '../core/widgets/students_widgets/no_project.dart';
+// import '../core/widgets/students_widgets/project_content.dart';
+//
+// import '../teacher/services/final_project_service.dart';
+// import 'certificate_screen.dart';
+//
+// class StudentProjectScreen extends StatefulWidget {
+//   final String courseId;
+//   final String courseTitle;
+//
+//   const StudentProjectScreen({
+//     super.key,
+//     required this.courseId,
+//     required this.courseTitle,
+//   });
+//
+//   @override
+//   State<StudentProjectScreen> createState() => _StudentProjectScreenState();
+// }
+//
+// class _StudentProjectScreenState extends State<StudentProjectScreen> {
+//   final FinalProjectService _service = FinalProjectService();
+//
+//   Map<String, dynamic>? _project;
+//   Map<String, dynamic>? _submission;
+//   bool _loading = true;
+//   bool _submitting = false;
+//
+//   final _textCtrl = TextEditingController();
+//   final _urlCtrl = TextEditingController();
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _load();
+//   }
+//
+//   @override
+//   void dispose() {
+//     _textCtrl.dispose();
+//     _urlCtrl.dispose();
+//     super.dispose();
+//   }
+//
+//   Future<void> _load() async {
+//     setState(() => _loading = true);
+//     try {
+//       final results = await Future.wait([
+//         _service.getProject(widget.courseId),
+//         _service.getMySubmission(widget.courseId),
+//       ]);
+//       if (mounted) {
+//         setState(() {
+//           _project = results[0] as Map<String, dynamic>?;
+//           _submission = results[1] as Map<String, dynamic>?;
+//           _loading = false;
+//         });
+//       }
+//     } catch (_) {
+//       if (mounted) setState(() => _loading = false);
+//     }
+//   }
+//
+//   Future<void> _submit() async {
+//     if (_textCtrl.text.trim().isEmpty) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//           const SnackBar(content: Text('Please describe your project work'),
+//               backgroundColor: Colors.red));
+//       return;
+//     }
+//     setState(() => _submitting = true);
+//     try {
+//       await _service.submitProject(widget.courseId,
+//           submissionText: _textCtrl.text.trim(),
+//           submissionUrl: _urlCtrl.text.trim());
+//       final submission = await _service.getMySubmission(widget.courseId);
+//       if (mounted) {
+//         setState(() { _submission = submission; _submitting = false; });
+//         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+//           content: Text('Project submitted! Your teacher will review it.'),
+//           backgroundColor: AppColors.success,
+//           behavior: SnackBarBehavior.floating,
+//         ));
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() => _submitting = false);
+//         ScaffoldMessenger.of(context).showSnackBar(
+//             SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+//       }
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         backgroundColor: const Color(0xFFF5F7FA),
+//         appBar: AppBar(
+//           backgroundColor: Colors.white,
+//           elevation: 0,
+//           leading: IconButton(
+//             icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87, size: 20),
+//             onPressed: () => Navigator.pop(context),
+//           ),
+//           title: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Text(widget.courseTitle,
+//                   style: const TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w500),
+//                   maxLines: 1, overflow: TextOverflow.ellipsis),
+//               const Text('Final Project',
+//                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+//             ],
+//           ),
+//         ),
+//         body: _loading
+//             ? const Center(child: CircularProgressIndicator(color: ThemeColors.primary))
+//             : _project == null
+//             ? const NoProject()
+//             : ProjectContent(
+//           project: _project!,
+//           submission: _submission,
+//
+//           courseId: widget.courseId,
+//           courseTitle: widget.courseTitle,
+//
+//           textController: _textCtrl,
+//           urlController: _urlCtrl,
+//
+//           submitting: _submitting,
+//
+//           onRefresh: _load,
+//
+//           onSubmit: _submit,
+//
+//           onResubmit: (){
+//             setState(() {
+//               _submission = null;
+//             });
+//           },
+//         )
+//     );
+//   }
+//
+// }

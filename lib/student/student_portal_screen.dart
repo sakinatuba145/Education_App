@@ -50,15 +50,15 @@ class _StudentPortalScreenState extends State<StudentPortalScreen> {
             ),
 
             // ─── Language switcher (top-right) ───
-            SafeArea(
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8, right: 12),
-                  child: const LanguageSwitcherButton(),
-                ),
-              ),
-            ),
+            // SafeArea(
+            //   child: Align(
+            //     alignment: Alignment.topRight,
+            //     child: Padding(
+            //       padding: const EdgeInsets.only(top: 8, right: 12),
+            //       child: const LanguageSwitcherButton(),
+            //     ),
+            //   ),
+            // ),
 
             // ─── Floating premium bottom nav ───
             Positioned(

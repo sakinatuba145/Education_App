@@ -8,6 +8,11 @@ import 'package:education_app/core/widgets/animated_button.dart';
 import 'package:education_app/core/widgets/animated_progress_indicators.dart';
 import 'package:education_app/student/progress_service.dart';
 
+import '../core/widgets/students_widgets/quiz_empty_view.dart';
+import '../core/widgets/students_widgets/quiz_loading_view.dart';
+import '../core/widgets/students_widgets/quiz_option_card.dart';
+import '../core/widgets/students_widgets/quiz_screen_body.dart';
+
 class Quiz {
   final String id;
   final String question;
@@ -286,297 +291,26 @@ class _QuizPlayerScreenPremiumState extends State<QuizPlayerScreenPremium>
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
+
     if (_loading) {
-      return Scaffold(
-        backgroundColor: ThemeColors.background,
-        appBar: AppBar(
-          title: const Text('Quizzes'),
-          elevation: 0,
-          centerTitle: true,
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
+      return const QuizLoadingView();
     }
 
     if (_quizzes.isEmpty) {
-      return Scaffold(
-        backgroundColor: ThemeColors.background,
-        appBar: AppBar(
-          title: const Text('Quizzes'),
-          elevation: 0,
-          centerTitle: true,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.quiz_outlined, size: 80, color: Colors.grey[300]),
-              const SizedBox(height: 24),
-              Text(
-                'No Quizzes Yet',
-                style:
-                    Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.bold,
-                        ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Your teacher hasn\'t assigned any quizzes yet.\nCheck back soon!',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[400],
-                    ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return const QuizEmptyView();
     }
 
-    final quiz = _quizzes[_currentQuestion];
-    final progress = (_currentQuestion + 1) / _quizzes.length;
-
-    return Scaffold(
-      backgroundColor: ThemeColors.background,
-      appBar: AppBar(
-        title: Text(_quizTitle ?? 'Quiz'),
-        elevation: 0,
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3),
-          child: LinearProgressIndicator(
-            value: progress,
-            backgroundColor: AppColors.gray300,
-            valueColor:
-                const AlwaysStoppedAnimation<Color>(ThemeColors.primary),
-            minHeight: 3,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(AppDimensions.spacing_16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Question ${_currentQuestion + 1} of ${_quizzes.length}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                CircularProgressAnimated(
-                  value: progress,
-                  size: 60,
-                  strokeWidth: 4,
-                  showPercentage: false,
-                  centerChild: Text(
-                    '${(progress * 100).toStringAsFixed(0)}%',
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: AppDimensions.spacing_24),
-
-            Container(
-              padding: EdgeInsets.all(AppDimensions.spacing_20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(AppDimensions.radius_large),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Text(
-                quiz.question,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            ),
-            SizedBox(height: AppDimensions.spacing_24),
-
-            ...List.generate(
-              quiz.options.length,
-              (index) => _buildOptionCard(quiz, index),
-            ),
-            SizedBox(height: AppDimensions.spacing_32),
-
-            if (_answered)
-              Column(
-                children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    padding: EdgeInsets.all(AppDimensions.spacing_12),
-                    decoration: BoxDecoration(
-                      color: (_selectedAnswer == quiz.correctAnswer)
-                          ? AppColors.success.withValues(alpha: 0.1)
-                          : AppColors.error.withValues(alpha: 0.1),
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radius_large),
-                      border: Border.all(
-                        color: (_selectedAnswer == quiz.correctAnswer)
-                            ? AppColors.success.withValues(alpha: 0.3)
-                            : AppColors.error.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          (_selectedAnswer == quiz.correctAnswer)
-                              ? Icons.check_circle
-                              : Icons.cancel,
-                          color: (_selectedAnswer == quiz.correctAnswer)
-                              ? AppColors.success
-                              : AppColors.error,
-                        ),
-                        SizedBox(width: AppDimensions.spacing_12),
-                        Expanded(
-                          child: Text(
-                            (_selectedAnswer == quiz.correctAnswer)
-                                ? 'Correct! Great job!'
-                                : 'Incorrect. The correct answer is: ${quiz.options[quiz.correctAnswer]}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: (_selectedAnswer ==
-                                          quiz.correctAnswer)
-                                      ? AppColors.success
-                                      : AppColors.error,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: AppDimensions.spacing_16),
-                  AnimatedElevatedButton(
-                    label: _currentQuestion == _quizzes.length - 1
-                        ? 'Finish & See Results'
-                        : 'Next Question →',
-                    onPressed: _nextQuestion,
-                    isFullWidth: true,
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ),
+    return QuizScreenBody(
+      quizTitle: _quizTitle,
+      quizzes: _quizzes,
+      currentQuestion: _currentQuestion,
+      selectedAnswer: _selectedAnswer,
+      answered: _answered,
+      onSelectAnswer: _selectAnswer,
+      onNextQuestion: _nextQuestion,
     );
   }
 
-  Widget _buildOptionCard(Quiz quiz, int index) {
-    final isSelected = _selectedAnswer == index;
-    final isCorrect = index == quiz.correctAnswer;
-    final showResult = _answered;
-
-    Color backgroundColor;
-    Color borderColor;
-    Color textColor;
-
-    if (showResult) {
-      if (isCorrect) {
-        backgroundColor = AppColors.success.withValues(alpha: 0.1);
-        borderColor = AppColors.success;
-        textColor = AppColors.success;
-      } else if (isSelected && !isCorrect) {
-        backgroundColor = AppColors.error.withValues(alpha: 0.1);
-        borderColor = AppColors.error;
-        textColor = AppColors.error;
-      } else {
-        backgroundColor = AppColors.gray100;
-        borderColor = AppColors.gray300;
-        textColor = AppColors.gray700;
-      }
-    } else {
-      if (isSelected) {
-        backgroundColor = ThemeColors.primary.withValues(alpha: 0.1);
-        borderColor = ThemeColors.primary;
-        textColor = ThemeColors.primary;
-      } else {
-        backgroundColor = Colors.white;
-        borderColor = AppColors.gray300;
-        textColor = ThemeColors.black;
-      }
-    }
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: AppDimensions.spacing_12),
-      child: GestureDetector(
-        onTap: () => _selectAnswer(index),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: EdgeInsets.all(AppDimensions.spacing_16),
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius:
-                BorderRadius.circular(AppDimensions.radius_large),
-            border: Border.all(
-              color: borderColor,
-              width: isSelected ? 2 : 1,
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: borderColor.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: borderColor.withValues(alpha: 0.2),
-                  border: Border.all(color: borderColor, width: 2),
-                ),
-                child: Center(
-                  child: showResult
-                      ? Icon(
-                          isCorrect
-                              ? Icons.check
-                              : (isSelected ? Icons.close : null),
-                          color: borderColor,
-                          size: 18,
-                        )
-                      : Text(
-                          String.fromCharCode(65 + index),
-                          style: TextStyle(
-                            color: borderColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                ),
-              ),
-              SizedBox(width: AppDimensions.spacing_16),
-              Expanded(
-                child: Text(
-                  quiz.options[index],
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: textColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
